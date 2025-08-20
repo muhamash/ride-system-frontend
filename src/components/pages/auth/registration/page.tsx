@@ -12,9 +12,13 @@ export default function RegistrationPage() {
             </div>
             <div className="flex flex-col gap-4 p-6 md:p-10">
                 
-                <div className="flex flex-1 items-center justify-center">
+                <div className="flex flex-col gap-5 justify-center items-center min-h-screen">
+                    <div className="flex flex-col items-center gap-2">
+                        <h1 className="text-xl text-center md:text-4xl font-bold text-chart-5">Please register to Free Ride Inc.</h1>
+                        
+                    </div>
                     <div className="w-full max-w-xs">
-                        <RegistrationForm/>
+                        <RegistrationForm />
                     </div>
                 </div>
             </div>
