@@ -12,7 +12,7 @@ import
     } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { useLogoutMutation } from "@/redux/features/api/auth.api";
+import { useLoginMutation } from "@/redux/features/api/auth.api";
 import { loginSchema } from "@/validations/auth.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type FieldValue, type SubmitHandler } from "react-hook-form";
@@ -32,7 +32,7 @@ export function LoginForm({
     }
   } );
 
-  const [ loginUser, { isLoading, error } ] = useLogoutMutation();
+  const [ loginUser, { isLoading, error } ] = useLoginMutation();
   const navigate = useNavigate();
   const { showToast } = useMyToast();
 

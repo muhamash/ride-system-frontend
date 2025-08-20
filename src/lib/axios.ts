@@ -2,7 +2,7 @@ import axios from "axios";
 import { envString } from "./envString";
 
 export const axiosInstance = axios.create( {
-    baseURL: envString.baseUrl || "http://localhost:3000/api/v1",
+    baseURL: envString.baseUrl || "http://localhost:3000/api",
     timeout: 10000,
     headers: { "X-Custom-Header": "test" , "Authorization": "eikhane token er kono kaj nai!!"},
     withCredentials: true

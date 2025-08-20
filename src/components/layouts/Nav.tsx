@@ -134,8 +134,8 @@ const Navbar = ({
     },
   ],
   auth = {
-    login: { title: "Login", url: "#" },
-    signup: { title: "Sign up", url: "#" },
+    login: { title: "Login", url: "/login" },
+    signup: { title: "Sign up", url: "/registration" },
   },
 }: NavbarProps) => {
   return (
@@ -174,7 +174,7 @@ const Navbar = ({
         </nav>
 
         {/* Mobile Menu */}
-        <div className="block lg:hidden">
+        <div className="block md:hidden">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <a href={logo.url} className="flex items-center gap-2">
