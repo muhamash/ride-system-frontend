@@ -1,0 +1,5 @@
+[build]
+entrypoints = ["src/main.tsx"]
+outdir = "dist"
+minify = true
+sourcemap = true
