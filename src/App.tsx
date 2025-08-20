@@ -1,13 +1,13 @@
+import { Outlet } from 'react-router'
 import './App.css'
-import { Button } from './components/ui/button'
+import BaseLayout from './components/layouts/BaseLayout'
 
 function App() {
 
   return (
-    <div className='bg-teal-600 p-5'>
-      <Button>Test</Button>
-      <p>hello world</p>
-    </div>
+    <BaseLayout>
+      <Outlet/>
+    </BaseLayout>
   )
 }
 
