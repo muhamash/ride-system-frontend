@@ -1,143 +1,65 @@
-import { Book, Menu, Sunset, Trees, Zap } from "lucide-react";
+// import { Book, Menu, Sunset, Trees, Zap } from "lucide-react";
 
 import
-    {
-        Accordion,
-        AccordionContent,
-        AccordionItem,
-        AccordionTrigger,
-    } from "@/components/ui/accordion";
+  {
+    Accordion
+  } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import
-    {
-        NavigationMenu,
-        NavigationMenuContent,
-        NavigationMenuItem,
-        NavigationMenuLink,
-        NavigationMenuList,
-        NavigationMenuTrigger,
-    } from "@/components/ui/navigation-menu";
+  {
+    NavigationMenu,
+    NavigationMenuList
+  } from "@/components/ui/navigation-menu";
 import
-    {
-        Sheet,
-        SheetContent,
-        SheetHeader,
-        SheetTitle,
-        SheetTrigger,
-    } from "@/components/ui/sheet";
+  {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+  } from "@/components/ui/sheet";
+import { navItemLinks } from "@/constants/links";
+import { authApi, useLogoutMutation, useUserDataQuery } from "@/redux/features/api/auth.api";
+import { useAppDispatch } from "@/redux/hooks";
+import { Menu } from "lucide-react";
+import { Link, useNavigate } from "react-router";
+import { renderMenuItem, renderMobileMenuItem } from "../ui/NavComponents";
 
-interface MenuItem {
-  title: string;
-  url: string;
-  description?: string;
-  icon?: React.ReactNode;
-  items?: MenuItem[];
-}
 
-interface NavbarProps {
-  logo?: {
-    url: string;
-    src: string;
-    alt: string;
-    title: string;
-  };
-  menu?: MenuItem[];
-  auth?: {
-    login: {
-      title: string;
-      url: string;
-    };
-    signup: {
-      title: string;
-      url: string;
-    };
-  };
-}
 
-const Navbar = ({
-  logo = {
-    url: "/",
-    src: "/public/ride.ico",
-    alt: "logo",
-    title: "Let's Ride",
-  },
-  menu = [
-    { title: "Home", url: "#" },
-    {
-      title: "Products",
-      url: "#",
-      items: [
-        {
-          title: "Blog",
-          description: "The latest industry news, updates, and info",
-          icon: <Book className="size-5 shrink-0" />,
-          url: "#",
-        },
-        {
-          title: "Company",
-          description: "Our mission is to innovate and empower the world",
-          icon: <Trees className="size-5 shrink-0" />,
-          url: "#",
-        },
-        {
-          title: "Careers",
-          description: "Browse job listing and discover our workspace",
-          icon: <Sunset className="size-5 shrink-0" />,
-          url: "#",
-        },
-        {
-          title: "Support",
-          description:
-            "Get in touch with our support team or visit our community forums",
-          icon: <Zap className="size-5 shrink-0" />,
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Resources",
-      url: "#",
-      items: [
-        {
-          title: "Help Center",
-          description: "Get all the answers you need right here",
-          icon: <Zap className="size-5 shrink-0" />,
-          url: "#",
-        },
-        {
-          title: "Contact Us",
-          description: "We are here to help you with any questions you have",
-          icon: <Sunset className="size-5 shrink-0" />,
-          url: "#",
-        },
-        {
-          title: "Status",
-          description: "Check the current status of our services and APIs",
-          icon: <Trees className="size-5 shrink-0" />,
-          url: "#",
-        },
-        {
-          title: "Terms of Service",
-          description: "Our terms and conditions for using our services",
-          icon: <Book className="size-5 shrink-0" />,
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Pricing",
-      url: "#",
-    },
-    {
-      title: "Blog",
-      url: "#",
-    },
-  ],
-  auth = {
-    login: { title: "Login", url: "/login" },
-    signup: { title: "Sign up", url: "/registration" },
-  },
-}: NavbarProps) => {
+const Navbar = ( ) =>
+{
+  const { data } = useUserDataQuery();
+  const [ logout ] = useLogoutMutation();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  console.log( data )
+  
+  const userRole = data?.data?.role || "PUBLIC";
+
+  const filterMenuByRole = ( menu, role ) =>
+    menu.filter( ( item ) => item.roles?.includes( role ) )
+      .map( ( item ) => ( {
+        ...item,
+        items: item.items
+          ? item.items.filter( ( sub ) => sub.roles?.includes( role ) )
+          : undefined,
+      } ) );
+
+  const { auth, menu, logo } = navItemLinks;
+  const roleBasedMenu = filterMenuByRole( menu, userRole );
+  // console.log(auth, menu, logo, roleBasedMenu)
+
+  const handleLogout = async() =>
+  {
+    const res = await logout(undefined);
+    console.log( "logout", res );
+    
+    dispatch( authApi.util.resetApiState() );
+    navigate("/login")
+  }
+
   return (
     <section className="p-4 w-full">
       <div className="">
@@ -145,31 +67,51 @@ const Navbar = ({
         <nav className="hidden justify-between md:flex  w-full">
           <div className="flex items-center justify-between gap-6">
             {/* Logo */}
-            <a href={logo.url} className="flex items-center gap-2">
+            <a href={navItemLinks.logo.url} className="flex items-center gap-2">
               <img
-                src={logo.src}
+                src={navItemLinks.logo.src}
                 className="max-h-8 dark:invert"
-                alt={logo.alt}
+                alt={navItemLinks.logo.alt}
               />
               <span className="text-lg font-semibold tracking-tighter">
-                {logo.title}
+                {navItemLinks.logo.title}
               </span>
             </a>
             <div className="flex items-center">
               <NavigationMenu>
                 <NavigationMenuList>
-                  {menu.map((item) => renderMenuItem(item))}
+                  {roleBasedMenu.map( ( item ) => renderMenuItem( item ) )}
                 </NavigationMenuList>
               </NavigationMenu>
             </div>
           </div>
           <div className="flex justify-between gap-2">
-            <Button asChild variant="outline" size="sm">
-              <a href={auth.login.url}>{auth.login.title}</a>
-            </Button>
-            <Button asChild size="sm" className="bg-chart-5 text-sky-900 hover:text-white">
-              <a href={auth.signup.url}>{auth.signup.title}</a>
-            </Button>
+            {
+              data?.data ? (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-sm text-muted-foreground"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </Button>
+                  <Button>
+                    {data?.data?.name} || {data?.data?.role}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button asChild variant="outline" size="sm">
+                    <Link to={roleBasedMenu.auth?.login?.url}>{auth?.login?.title}</Link>
+                  </Button>
+                  <Button asChild size="sm" className="bg-chart-5 text-sky-900 hover:text-white">
+                    <Link to={auth?.signup?.url}>{auth?.signup?.title}</Link>
+                  </Button>
+                </>
+              )
+            }
           </div>
         </nav>
 
@@ -177,13 +119,13 @@ const Navbar = ({
         <div className="block md:hidden">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <a href={logo.url} className="flex items-center gap-2">
+            <Link to={logo.url} className="flex items-center gap-2">
               <img
                 src={logo.src}
                 className="max-h-8 dark:invert"
                 alt={logo.alt}
               />
-            </a>
+            </Link>
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="outline" size="icon">
@@ -208,16 +150,36 @@ const Navbar = ({
                     collapsible
                     className="flex w-full flex-col gap-4"
                   >
-                    {menu.map((item) => renderMobileMenuItem(item))}
+                    {menu.map( ( item ) => renderMobileMenuItem( item ) )}
                   </Accordion>
 
                   <div className="flex flex-col gap-3">
-                    <Button asChild variant="outline">
-                      <a href={auth.login.url}>{auth.login.title}</a>
-                    </Button>
-                    <Button asChild>
-                      <a href={auth.signup.url}>{auth.signup.title}</a>
-                    </Button>
+                    {
+                      data?.data ? (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-sm text-muted-foreground"
+                            onClick={handleLogout}
+                          >
+                            Logout
+                          </Button>
+                          <Button>
+                            {data?.data?.name} || {data?.data?.role}
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button asChild variant="outline" size="sm">
+                            <Link to={auth?.login?.url}>{auth?.login?.title}</Link>
+                          </Button>
+                          <Button asChild size="sm" className="bg-chart-5 text-sky-900 hover:text-white">
+                            <Link to={auth?.signup?.url}>{auth?.signup?.title}</Link>
+                          </Button>
+                        </>
+                      )
+                    }
                   </div>
                 </div>
               </SheetContent>
@@ -226,79 +188,6 @@ const Navbar = ({
         </div>
       </div>
     </section>
-  );
-};
-
-const renderMenuItem = (item: MenuItem) => {
-  if (item.items) {
-      return (
-          <NavigationMenuItem key={item.title}>
-              <NavigationMenuTrigger>{item.title}</NavigationMenuTrigger>
-              <NavigationMenuContent className="text-popover-foreground">
-                  <div className="grid gap-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-                      {item.items.map( ( subItem ) => (
-                          <NavigationMenuLink asChild key={subItem.title} className="w-80">
-                              <SubMenuLink item={subItem} />
-                          </NavigationMenuLink>
-                      ) )}
-                      
-                  </div>
-              </NavigationMenuContent>
-          </NavigationMenuItem>
-      );
-  }
-
-  return (
-    <NavigationMenuItem key={item.title}>
-      <NavigationMenuLink
-        href={item.url}
-        className="bg-background hover:bg-muted hover:text-accent-foreground group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors"
-      >
-        {item.title}
-      </NavigationMenuLink>
-    </NavigationMenuItem>
-  );
-};
-
-const renderMobileMenuItem = (item: MenuItem) => {
-  if (item.items) {
-    return (
-      <AccordionItem key={item.title} value={item.title} className="border-b-0">
-        <AccordionTrigger className="text-md py-0 font-semibold hover:no-underline">
-          {item.title}
-        </AccordionTrigger>
-        <AccordionContent className="mt-2">
-          {item.items.map((subItem) => (
-            <SubMenuLink key={subItem.title} item={subItem} />
-          ))}
-        </AccordionContent>
-      </AccordionItem>
-    );
-  }
-
-  return (
-    <a key={item.title} href={item.url} className="text-md font-semibold">
-      {item.title}
-    </a>
-  );
-};
-
-const SubMenuLink = ({ item }: { item: MenuItem }) => {
-  return (
-    <a
-      className="hover:bg-muted hover:text-accent-foreground flex select-none flex-row gap-4 rounded-md p-3 leading-none no-underline outline-none transition-colors bg-chart-5 w-full"
-      href={item.url}
-    >
-      <div className="text-foreground">{item.icon}</div>
-      <div>
-        <div className="text-sm font-semibold">{item.title}</div>
-        {item.description && (
-          <p className="text-muted-foreground text-sm leading-snug">
-            {item.description}
-          </p>
-        )}
-      </div>
-    </a>
   );
 };
 

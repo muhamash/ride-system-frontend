@@ -1,3 +1,4 @@
+import { useMyToast } from "@/components/layouts/MyToast";
 import { Button } from "@/components/ui/button";
 import
     {
@@ -19,11 +20,12 @@ import
     } from "@/components/ui/select";
 import { UserRole } from "@/constants/userRole";
 import { cn } from "@/lib/utils";
+import { useRegisterMutation } from "@/redux/features/api/auth.api";
 import { registrationSchema, type RegistrationSchemaType } from "@/validations/auth.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 export default function RegistrationForm() {
     const form = useForm<RegistrationSchemaType>( {
@@ -44,7 +46,9 @@ export default function RegistrationForm() {
     } );
 
     const [ role, setRole ] = useState<UserRole>( UserRole.USER );
-
+    const [ register ] = useRegisterMutation();
+    const { showToast, updateToast } = useMyToast();
+    const navigate = useNavigate();
 
     useEffect( () =>
     {
@@ -54,10 +58,47 @@ export default function RegistrationForm() {
         }
     }, [ form.watch( "role" ) ] );
 
-    const onSubmit = ( data: RegistrationSchemaType ) =>
+    const onSubmit = async( data: RegistrationSchemaType ) =>
     {
         console.log( "SUBMIT CALLED" );
         console.log( data );
+        const toastId = showToast( {
+            message: "Trying to create a user..",
+            type: "loading",
+            autClose: false,
+        } );
+
+        try 
+        {
+            const res = await register( data );
+            console.log(res.data)
+
+            if ( res?.data?.statusCode === 201 )
+            {
+                updateToast(toastId, {
+                    message: res?.data?.message,
+                    type: "success"
+                } );
+
+                navigate("/login")
+            }
+
+            if ( res?.data?.statusCode !== 201 )
+            {
+                updateToast( toastId, {
+                    message: res?.error?.data?.message,
+                    type: "info"
+                })
+            }
+        }
+        catch ( error: unknown )
+        {
+            console.log( error );
+            updateToast(toastId, {
+                message: error?.data?.message || "Something went wrong!",
+                type: "error"
+            } );
+        }
     };
     // console.log( "Errors:", form.formState.errors );
 
@@ -149,7 +190,7 @@ export default function RegistrationForm() {
                                         <SelectValue placeholder="Select your role" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value={UserRole.USER}>User</SelectItem>
+                                        <SelectItem value={UserRole.RIDER}>Rider</SelectItem>
                                         <SelectItem value={UserRole.DRIVER}>Driver</SelectItem>
                                         <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
                                     </SelectContent>
