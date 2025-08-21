@@ -1,19 +1,18 @@
 import { motion } from 'framer-motion';
-import
-    {
-        ArrowRight,
-        Car,
-        Clock,
-        CreditCard,
-        DollarSign,
-        MapPin,
-        Play,
-        Shield,
-        Smartphone,
-        Star,
-        TrendingUp,
-        Users
-    } from 'lucide-react';
+import {
+    ArrowRight,
+    Car,
+    Clock,
+    CreditCard,
+    DollarSign,
+    MapPin,
+    Play,
+    Shield,
+    Smartphone,
+    Star,
+    TrendingUp,
+    Users
+} from 'lucide-react';
 import { Link } from 'react-router';
 
 const Home = () => {
@@ -45,14 +44,14 @@ const Home = () => {
       name: "Sarah Johnson",
       role: "Regular Commuter",
       rating: 5,
-      comment: "RideFlow has made my daily commute so much easier. The drivers are professional and the app is incredibly user-friendly.",
+      comment: "Let's Ride has made my daily commute so much easier. The drivers are professional and the app is incredibly user-friendly.",
       image: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg"
     },
     {
       name: "Mike Chen",
       role: "Business Professional",
       rating: 5,
-      comment: "Reliable service every time. I can always count on RideFlow for important business meetings.",
+      comment: "Reliable service every time. I can always count on Let's Ride for important business meetings.",
       image: "https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg"
     },
     {
@@ -224,7 +223,7 @@ const Home = () => {
               whileInView={{ opacity: 1, y: 0 }}
               className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4"
             >
-              Why Choose RideFlow?
+              Why Choose Let's Ride?
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -325,7 +324,7 @@ const Home = () => {
             transition={{ delay: 0.2 }}
             className="text-xl mb-8 text-blue-100"
           >
-            Join millions of riders who trust RideFlow for their daily transportation needs.
+            Join millions of riders who trust Let's Ride for their daily transportation needs.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}

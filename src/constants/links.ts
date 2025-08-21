@@ -1,3 +1,11 @@
+import { lazy } from "react";
+
+const RequestRidePage = lazy( () => import( "@/components/pages/requestRide/page" ) );
+const RideInfoPage = lazy( () => import( "@/components/pages/rideInfo/page" ) );
+const CheckRideRequestPage = lazy( () => import( "@/components/pages/checkRideRequest/page" ) );
+const CheckRideStatus = lazy( () => import( "@/components/pages/checkRideStatus/page" ) );
+
+
 export const navItemLinks = {
   logo: {
     url: "/",
@@ -10,19 +18,35 @@ export const navItemLinks = {
     {
       title: "Ride",
       url: "/ride",
-      roles: ["RIDER", "ADMIN"],
+      roles: ["RIDER", "ADMIN", "DRIVER"],
       items: [
         {
           title: "Go for a ride",
           description: "Request a new ride",
           url: "/ride/request-ride",
-          roles: ["RIDER"],
+          roles: [ "RIDER", "ADMIN" ],
+          Component: RequestRidePage
         },
         {
           title: "See ride info",
-          description: "Check your ride status",
+          description: "Check your ride info",
           url: "/ride/ride-info",
-          roles: ["RIDER", "DRIVER"],
+          roles: [ "RIDER", "DRIVER", "ADMIN" ],
+          Component: RideInfoPage
+        },
+        {
+          title: "Check requested ride",
+          description: "Check your requested ride status",
+          url: "/ride/check-ride-request",
+          roles: [ "DRIVER", "ADMIN" ],
+          Component: CheckRideRequestPage
+        },
+        {
+          title: "See ride status",
+          description: "Check your ride status",
+          url: "/ride/ride-status",
+          roles: [ "ADMIN" ],
+          Component: CheckRideStatus
         },
       ],
     },
@@ -35,12 +59,18 @@ export const navItemLinks = {
           title: "User info",
           description: "Profile and settings",
           url: "/user/info",
-          roles: ["RIDER"],
+          roles: ["RIDER", "ADMIN", "DRIVER"],
         },
         {
           title: "Update user",
           description: "Manage user accounts",
           url: "/user/update",
+          roles: ["ADMIN"],
+        },
+        {
+          title: "Control user",
+          description: "Manage user access",
+          url: "/user/control",
           roles: ["ADMIN"],
         },
       ],

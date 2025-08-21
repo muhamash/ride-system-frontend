@@ -25,8 +25,6 @@ import { Menu } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 import { renderMenuItem, renderMobileMenuItem } from "../ui/NavComponents";
 
-
-
 const Navbar = ( ) =>
 {
   const { data } = useUserDataQuery();
@@ -49,7 +47,7 @@ const Navbar = ( ) =>
 
   const { auth, menu, logo } = navItemLinks;
   const roleBasedMenu = filterMenuByRole( menu, userRole );
-  // console.log(auth, menu, logo, roleBasedMenu)
+  // console.log(auth?.login?.url)
 
   const handleLogout = async() =>
   {
@@ -104,7 +102,7 @@ const Navbar = ( ) =>
               ) : (
                 <>
                   <Button asChild variant="outline" size="sm">
-                    <Link to={roleBasedMenu.auth?.login?.url}>{auth?.login?.title}</Link>
+                    <Link to={auth?.login?.url}>{auth?.login?.title}</Link>
                   </Button>
                   <Button asChild size="sm" className="bg-chart-5 text-sky-900 hover:text-white">
                     <Link to={auth?.signup?.url}>{auth?.signup?.title}</Link>

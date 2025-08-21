@@ -1,3 +1,4 @@
+import AboutPage from "@/components/pages/About";
 import LoginPage from "@/components/pages/auth/login/page";
 import RegistrationPage from "@/components/pages/auth/registration/page";
 import Home from "@/components/pages/home/page";
@@ -16,7 +17,11 @@ export const appRouter = createBrowserRouter( [
         index: true,
         Component: Home,
         
-      }
+      },
+      {
+        path: '/about',
+        Component: AboutPage
+      },
     ]
   },
   {
