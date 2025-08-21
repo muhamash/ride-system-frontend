@@ -25,9 +25,13 @@ import { registrationSchema, type RegistrationSchemaType } from "@/validations/a
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 
-export default function RegistrationForm() {
+export default function RegistrationForm ()
+{
+    const location = useLocation();
+    const [ role, setRole ] = useState<UserRole>( location?.state ? "DRIVER" : UserRole.RIDER );
+
     const form = useForm<RegistrationSchemaType>( {
         resolver: zodResolver( registrationSchema ),
         defaultValues: {
@@ -35,7 +39,7 @@ export default function RegistrationForm() {
             email: "",
             password: "",
             confirmPassword: "",
-            role: UserRole.USER,
+            role: role,
             vehicleInfo: {
                 model: "",
                 license: "",
@@ -45,7 +49,7 @@ export default function RegistrationForm() {
         mode: "onSubmit"
     } );
 
-    const [ role, setRole ] = useState<UserRole>( UserRole.USER );
+    
     const [ register ] = useRegisterMutation();
     const { showToast, updateToast } = useMyToast();
     const navigate = useNavigate();

@@ -16,9 +16,10 @@ import
     TrendingUp,
     Users
   } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
-const Home = () => {
+const Home = () =>
+{
   const features = [
     {
       icon: <Shield className="h-8 w-8 text-blue-600" />,
@@ -33,7 +34,7 @@ const Home = () => {
     {
       icon: <DollarSign className="h-8 w-8 text-blue-600" />,
       title: "Affordable Rates",
-      description: "Transparent pricing with no hidden fees. Get the best value for your money."
+      description: "Transparent pricing with no  fees. Get the best value for your money."
     },
     {
       icon: <Smartphone className="h-8 w-8 text-blue-600" />,
@@ -74,8 +75,14 @@ const Home = () => {
   ];
 
   const { data } = useUserDataQuery();
+  const navigate = useNavigate();
 
-  const userRole = data?.data?.role;
+  const role = data?.data?.role || "";
+
+  const handleDriverClick = () =>
+  {
+    navigate( "/registration", { state: role } );
+  }
 
   return (
     <div className="min-h-screen">
@@ -90,7 +97,7 @@ const Home = () => {
               transition={{ duration: 0.8 }}
             >
               <h1 className="text-4xl lg:text-6xl font-bold leading-tight mb-6">
-                Your Ride, 
+                Your Ride,
                 <span className="text-yellow-400"> Your Way</span>
               </h1>
               <p className="text-xl lg:text-2xl text-blue-100 mb-8 leading-relaxed">
@@ -98,17 +105,40 @@ const Home = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
-                  to="/registration"
+                  to={role ? "/ride" : "/registration"}
                   className="bg-yellow-400 text-gray-900 px-8 py-4 rounded-full font-semibold text-lg hover:bg-yellow-300 transition-all duration-200 flex items-center justify-center group"
                 >
                   Get Started Today
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
-                <Button className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-all duration-200 flex items-center justify-center">
+                <div className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-all duration-200 flex items-center justify-center cursor-pointer">
                   <Play className="mr-2 h-5 w-5" />
                   Take a tour??
-                </Button>
+                </div>
               </div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="flex flex-col sm:flex-row gap-4 justify-center"
+              >
+                <Link
+                  to={role ? "/user" : "/registration"}
+                  className="bg-yellow-400 text-gray-900 px-8 py-4 rounded-full font-semibold text-lg hover:bg-yellow-300 transition-colors duration-200 flex items-center justify-center"
+                >
+                  <Users className="mr-2 h-5 w-5" />
+                  {
+                    role
+                  }
+                </Link>
+                <div
+                  onClick={handleDriverClick}
+                  className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-colors duration-200 flex items-center justify-center"
+                >
+                  <TrendingUp className="mr-2 h-5 w-5" />
+                  Drive & Earn
+                </div>
+              </motion.div>
             </motion.div>
             
             <motion.div
@@ -118,15 +148,14 @@ const Home = () => {
               className="relative"
             >
               <img
-                src="https://images.pexels.com/photos/1007410/pexels-photo-1007410.jpeg"
+                src="/getInCar.avif"
                 alt="Happy rider in car"
                 className="rounded-2xl shadow-2xl w-full h-80 lg:h-96 object-cover"
               />
               <div className="absolute -bottom-6 -left-6 bg-white text-gray-900 p-4 rounded-xl shadow-lg">
                 <div className="flex items-center space-x-2">
                   <Star className="h-5 w-5 text-yellow-400 fill-current" />
-                  <span className="font-bold">4.9/5</span>
-                  <span className="text-gray-600">Average Rating</span>
+                  <span className="font-bold">4.9/5.0</span>
                 </div>
               </div>
             </motion.div>
@@ -138,7 +167,7 @@ const Home = () => {
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
+            {stats.map( ( stat, index ) => (
               <motion.div
                 key={stat.label}
                 initial={{ opacity: 0, y: 20 }}
@@ -151,7 +180,7 @@ const Home = () => {
                 </div>
                 <div className="text-gray-600 font-medium">{stat.label}</div>
               </motion.div>
-            ))}
+            ) )}
           </div>
         </div>
       </section>
@@ -194,10 +223,10 @@ const Home = () => {
               {
                 step: "03",
                 icon: <CreditCard className="h-8 w-8" />,
-                title: "Pay & Go",
+                title: "NO Pay & Test Go",
                 description: "Secure payment through the app with multiple payment options available."
               }
-            ].map((item, index) => (
+            ].map( ( item, index ) => (
               <motion.div
                 key={item.step}
                 initial={{ opacity: 0, y: 30 }}
@@ -216,7 +245,7 @@ const Home = () => {
                 <h3 className="text-xl font-bold text-gray-900 mb-4">{item.title}</h3>
                 <p className="text-gray-600">{item.description}</p>
               </motion.div>
-            ))}
+            ) )}
           </div>
         </div>
       </section>
@@ -243,7 +272,7 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
+            {features.map( ( feature, index ) => (
               <motion.div
                 key={feature.title}
                 initial={{ opacity: 0, y: 20 }}
@@ -257,7 +286,7 @@ const Home = () => {
                 <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
                 <p className="text-gray-600">{feature.description}</p>
               </motion.div>
-            ))}
+            ) )}
           </div>
         </div>
       </section>
@@ -284,7 +313,7 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
+            {testimonials.map( ( testimonial, index ) => (
               <motion.div
                 key={testimonial.name}
                 initial={{ opacity: 0, y: 30 }}
@@ -293,9 +322,9 @@ const Home = () => {
                 className="bg-white p-6 rounded-xl shadow-lg"
               >
                 <div className="flex items-center mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
+                  {[ ...Array( testimonial.rating ) ].map( ( _, i ) => (
                     <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
-                  ))}
+                  ) )}
                 </div>
                 <p className="text-gray-700 mb-6 italic">"{testimonial.comment}"</p>
                 <div className="flex items-center">
@@ -310,7 +339,7 @@ const Home = () => {
                   </div>
                 </div>
               </motion.div>
-            ))}
+            ) )}
           </div>
         </div>
       </section>
@@ -323,7 +352,9 @@ const Home = () => {
             whileInView={{ opacity: 1, y: 0 }}
             className="text-3xl lg:text-4xl font-bold mb-6"
           >
-            Ready to Start Your Journey?
+            {
+              role ? "You can start the journey from here!" : "Ready to Start Your Journey?"
+            }
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -340,19 +371,21 @@ const Home = () => {
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
             <Link
-              to="/register"
+              to={role ? "/user" : "/registration"}
               className="bg-yellow-400 text-gray-900 px-8 py-4 rounded-full font-semibold text-lg hover:bg-yellow-300 transition-colors duration-200 flex items-center justify-center"
             >
               <Users className="mr-2 h-5 w-5" />
-              Become a Rider
+              {
+                role
+              }
             </Link>
-            <Link
-              to="/register"
+            <Button
+              onClick={handleDriverClick}
               className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-colors duration-200 flex items-center justify-center"
             >
               <TrendingUp className="mr-2 h-5 w-5" />
               Drive & Earn
-            </Link>
+            </Button>
           </motion.div>
         </div>
       </section>
