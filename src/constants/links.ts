@@ -1,9 +1,13 @@
 import { lazy } from "react";
 
-const RequestRidePage = lazy( () => import( "@/components/pages/requestRide/page" ) );
-const RideInfoPage = lazy( () => import( "@/components/pages/rideInfo/page" ) );
-const CheckRideRequestPage = lazy( () => import( "@/components/pages/checkRideRequest/page" ) );
-const CheckRideStatus = lazy( () => import( "@/components/pages/checkRideStatus/page" ) );
+const RequestRidePage = lazy( () => import( "@/components/pages/ride/requestRide/page" ) );
+const RideInfoPage = lazy( () => import( "@/components/pages/ride/rideInfo/page" ) );
+const CheckRideRequestPage = lazy( () => import( "@/components/pages/ride/checkRideRequest/page" ) );
+const CheckRideStatus = lazy( () => import( "@/components/pages/ride/checkRideStatus/page" ) );
+const VehicleInfoPage = lazy( () => import( "@/components/pages/user/vehicleInfo/page" ) );
+const UserInfo = lazy( () => import( "@/components/pages/user/userInfo/page" ) );
+const UpdateUserPage = lazy( () => import( "@/components/pages/user/updateUser/page" ) );
+const ControlUserPage = lazy( () => import( "@/components/pages/user/manageAccessUser/page.tsx" ) ); 
 
 
 export const navItemLinks = {
@@ -53,25 +57,36 @@ export const navItemLinks = {
     {
       title: "User panel",
       url: "/user",
-      roles: ["RIDER", "ADMIN"],
+      roles: ["RIDER", "ADMIN", "DRIVER"],
       items: [
         {
           title: "User info",
           description: "Profile and settings",
           url: "/user/info",
-          roles: ["RIDER", "ADMIN", "DRIVER"],
+          roles: [ "RIDER", "ADMIN", "DRIVER" ],
+          Component: UserInfo
+          
+        },
+        {
+          title: "Vehicle info",
+          description: "Profile and settings",
+          url: "/user/vehicle",
+          roles: [ "ADMIN", "DRIVER" ],
+          Component: VehicleInfoPage
         },
         {
           title: "Update user",
           description: "Manage user accounts",
           url: "/user/update",
-          roles: ["ADMIN"],
+          roles: [ "ADMIN" ],
+          Component: UpdateUserPage
         },
         {
           title: "Control user",
           description: "Manage user access",
-          url: "/user/control",
-          roles: ["ADMIN"],
+          url: "/user/manage-access",
+          roles: [ "ADMIN" ],
+          Component: ControlUserPage
         },
       ],
     },

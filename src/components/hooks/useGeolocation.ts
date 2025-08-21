@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import { useMyToast } from "../layouts/MyToast";
 
 interface LocationData {
   lat: number;
@@ -15,19 +14,10 @@ export const useContinuousLocation = ( userId: string ) =>
     const [ error, setError ] = useState<string | null>( null );
     const watchIdRef = useRef<number | null>( null );
     const socketRef = useRef<Socket | null>( null );
-    const { showToast } = useMyToast();
 
     // Start tracking only when userId is present
     useEffect( () =>
     {
-        if ( !userId )
-        {
-            showToast( {
-                type: "info",
-                message: "Please login and permit to track your location!!!",
-            } );
-            return; // Exit effect early, no tracking
-        }
 
         socketRef.current = io( "http://localhost:3000" );
         startTracking();

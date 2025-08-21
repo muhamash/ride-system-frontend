@@ -148,7 +148,7 @@ const Navbar = ( ) =>
                     collapsible
                     className="flex w-full flex-col gap-4"
                   >
-                    {menu.map( ( item ) => renderMobileMenuItem( item ) )}
+                    {roleBasedMenu.map( ( item ) => renderMobileMenuItem( item ) )}
                   </Accordion>
 
                   <div className="flex flex-col gap-3">

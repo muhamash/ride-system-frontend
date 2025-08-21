@@ -3,10 +3,15 @@ import LoginPage from "@/components/pages/auth/login/page";
 import RegistrationPage from "@/components/pages/auth/registration/page";
 import Home from "@/components/pages/home/page";
 import NotFoundPage from "@/components/pages/NotFound";
+import UnAuthPage from "@/components/pages/UnAuthPage";
+import { navItemLinks } from "@/constants/links";
+import { generateRoutes } from "@/utils/generateRoutes";
 import { lazy } from "react";
 import { createBrowserRouter } from "react-router";
 
 const App = lazy( () => import( "@/App" ) );
+
+const dynamicRoutes =  generateRoutes( navItemLinks );
 
 export const appRouter = createBrowserRouter( [
   {
@@ -18,6 +23,7 @@ export const appRouter = createBrowserRouter( [
         Component: Home,
         
       },
+      ...dynamicRoutes,
       {
         path: '/about',
         Component: AboutPage
@@ -35,5 +41,9 @@ export const appRouter = createBrowserRouter( [
   {
     path: "/registration",
     Component: RegistrationPage
+  },
+  {
+    path: "/unauthorized",
+    Component: UnAuthPage,
   }
 ] );
