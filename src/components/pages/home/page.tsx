@@ -1,5 +1,8 @@
+import { Button } from '@/components/ui/button';
+import { useUserDataQuery } from '@/redux/features/api/auth.api';
 import { motion } from 'framer-motion';
-import {
+import
+  {
     ArrowRight,
     Car,
     Clock,
@@ -12,7 +15,7 @@ import {
     Star,
     TrendingUp,
     Users
-} from 'lucide-react';
+  } from 'lucide-react';
 import { Link } from 'react-router';
 
 const Home = () => {
@@ -70,6 +73,10 @@ const Home = () => {
     { number: "4.9", label: "Average Rating" }
   ];
 
+  const { data } = useUserDataQuery();
+
+  const userRole = data?.data?.role;
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -91,16 +98,16 @@ const Home = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
-                  to="/register"
+                  to="/registration"
                   className="bg-yellow-400 text-gray-900 px-8 py-4 rounded-full font-semibold text-lg hover:bg-yellow-300 transition-all duration-200 flex items-center justify-center group"
                 >
                   Get Started Today
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
-                <button className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-all duration-200 flex items-center justify-center">
+                <Button className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-all duration-200 flex items-center justify-center">
                   <Play className="mr-2 h-5 w-5" />
-                  Watch Demo
-                </button>
+                  Take a tour??
+                </Button>
               </div>
             </motion.div>
             
