@@ -3,32 +3,6 @@ import { Award, Heart, Target, Users } from 'lucide-react';
 import React from 'react';
 
 const AboutPage: React.FC = () => {
-  const team = [
-    {
-      name: 'Sarah Johnson',
-      role: 'CEO & Co-Founder',
-      image: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=300',
-      bio: 'Former Uber executive with 10+ years in transportation technology.',
-    },
-    {
-      name: 'Mike Chen',
-      role: 'CTO & Co-Founder',
-      image: 'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=300',
-      bio: 'Tech veteran who led engineering teams at major ride-sharing companies.',
-    },
-    {
-      name: 'Emily Rodriguez',
-      role: 'Head of Operations',
-      image: 'https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=300',
-      bio: 'Operations expert focused on driver experience and service quality.',
-    },
-    {
-      name: 'David Kim',
-      role: 'Head of Safety',
-      image: 'https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=300',
-      bio: 'Safety specialist ensuring secure rides for all users.',
-    },
-  ];
 
   const values = [
     {
@@ -57,7 +31,7 @@ const AboutPage: React.FC = () => {
     <div className="min-h-screen bg-white">
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-emerald-600 text-white py-20">
+      <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-emerald-600 text-white py-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
@@ -74,7 +48,7 @@ const AboutPage: React.FC = () => {
       {/* Our Story */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center justify-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
                 Our Story
@@ -98,7 +72,7 @@ const AboutPage: React.FC = () => {
             </div>
             <div>
               <img 
-                src="https://images.pexels.com/photos/1595391/pexels-photo-1595391.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=400&w=600"
+                src="/unnamedxzX.webp"
                 alt="Let's Ride team working together"
                 className="rounded-2xl shadow-2xl"
               />
@@ -158,35 +132,6 @@ const AboutPage: React.FC = () => {
                 </div>
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">{value.title}</h3>
                 <p className="text-gray-600">{value.description}</p>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Team */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Meet Our Team
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Passionate professionals dedicated to revolutionizing transportation.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {team.map((member, index) => (
-              <Card key={index} variant="elevated" className="text-center">
-                <img
-                  src={member.image}
-                  alt={member.name}
-                  className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
-                />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{member.name}</h3>
-                <p className="text-blue-600 font-medium mb-3">{member.role}</p>
-                <p className="text-sm text-gray-600">{member.bio}</p>
               </Card>
             ))}
           </div>

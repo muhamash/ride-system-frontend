@@ -1,4 +1,4 @@
-import { Car, Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Twitter } from 'lucide-react';
+import { CatIcon, Facebook, GithubIcon, Instagram, Linkedin, Mail, MapPin, Phone, Twitter } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
@@ -11,8 +11,8 @@ const Footer = () => {
           {/* Brand */}
           <div className="col-span-1 lg:col-span-1">
             <Link to="/" className="flex items-center space-x-2 mb-4">
-              <Car className="h-8 w-8 text-blue-400" />
-              <span className="font-bold text-xl">Let's Ride</span>
+              <CatIcon className="h-8 w-8 text-green-600" />
+              <span className="font-bold text-xl text-yellow-400">Let's Ride</span>
             </Link>
             <p className="text-gray-400 mb-4">
               Your reliable ride-sharing partner. Safe, fast, and affordable transportation at your fingertips.
@@ -47,17 +47,27 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-400 text-sm">
-            © {currentYear} Let's Ride. All rights reserved.
+          <p className="text-gray-400 text-sm flex gap-2">
+            © {currentYear} Let's Ride. All rights reserved
+            <span><GithubIcon className='text-green-600' /></span>
+            <a
+              href="https://www.github.com/muhamash"
+              target="_blank"
+              rel="noopener noreferrer"
+              className='text-yellow-400 font-mono cursor-pointer'
+            >
+              www.github.com/muhamash
+            </a>
           </p>
+
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link  className="text-gray-400 hover:text-white text-sm transition-colors">
+            <Link className="text-gray-400 hover:text-white text-sm transition-colors">
               Privacy Policy
             </Link>
             <Link className="text-gray-400 hover:text-white text-sm transition-colors">
               Terms of Service
             </Link>
-            <Link  className="text-gray-400 hover:text-white text-sm transition-colors">
+            <Link className="text-gray-400 hover:text-white text-sm transition-colors">
               Cookie Policy
             </Link>
           </div>

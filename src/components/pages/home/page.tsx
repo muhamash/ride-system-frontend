@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button';
 import { useUserDataQuery } from '@/redux/features/api/auth.api';
 import { motion } from 'framer-motion';
 import
@@ -103,24 +102,11 @@ const Home = () =>
               <p className="text-xl lg:text-2xl text-blue-100 mb-8 leading-relaxed">
                 Experience seamless transportation with verified drivers, real-time tracking, and affordable rates.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link
-                  to={role ? "/ride" : "/registration"}
-                  className="bg-yellow-400 text-gray-900 px-8 py-4 rounded-full font-semibold text-lg hover:bg-yellow-300 transition-all duration-200 flex items-center justify-center group"
-                >
-                  Get Started Today
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-                <div className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-all duration-200 flex items-center justify-center cursor-pointer">
-                  <Play className="mr-2 h-5 w-5" />
-                  Take a tour??
-                </div>
-              </div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="flex flex-col sm:flex-row gap-4 justify-center"
+                className="flex flex-col sm:flex-row gap-4 justify-center py-5 place-self-start"
               >
                 <Link
                   to={role ? "/user" : "/registration"}
@@ -139,6 +125,20 @@ const Home = () =>
                   Drive & Earn
                 </div>
               </motion.div>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link
+                  to={role ? "/ride" : "/registration"}
+                  className="bg-yellow-400 text-gray-900 px-8 py-4 rounded-full font-semibold text-lg hover:bg-yellow-300 transition-all duration-200 flex items-center justify-center group"
+                >
+                  Get Started Today
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
+                <div className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-all duration-200 flex items-center justify-center cursor-pointer">
+                  <Play className="mr-2 h-5 w-5" />
+                  Take a tour??
+                </div>
+              </div>
+              
             </motion.div>
             
             <motion.div
@@ -379,13 +379,13 @@ const Home = () =>
                 role
               }
             </Link>
-            <Button
+            <div
               onClick={handleDriverClick}
-              className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-colors duration-200 flex items-center justify-center"
+              className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-colors duration-200 flex items-center justify-center cursor-pointer"
             >
               <TrendingUp className="mr-2 h-5 w-5" />
               Drive & Earn
-            </Button>
+            </div>
           </motion.div>
         </div>
       </section>

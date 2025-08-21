@@ -21,7 +21,7 @@ import
 import { navItemLinks } from "@/constants/links";
 import { authApi, useLogoutMutation, useUserDataQuery } from "@/redux/features/api/auth.api";
 import { useAppDispatch } from "@/redux/hooks";
-import { Menu } from "lucide-react";
+import { CarTaxiFront, Menu } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 import { renderMenuItem, renderMobileMenuItem } from "../ui/NavComponents";
 
@@ -59,22 +59,18 @@ const Navbar = ( ) =>
   }
 
   return (
-    <section className="p-4 w-full">
+    <section className="fixed top-0 left-0 w-full p-4 bg-gradient-to-r from-gray-100/90 to-gray-100/30 backdrop-blur-md border border-gray-500/20 shadow-lg z-50">
       <div className="">
         {/* Desktop Menu */}
         <nav className="hidden justify-between md:flex  w-full">
           <div className="flex items-center justify-between gap-6">
             {/* Logo */}
-            <a href={navItemLinks.logo.url} className="flex items-center gap-2">
-              <img
-                src={navItemLinks.logo.src}
-                className="max-h-8 dark:invert"
-                alt={navItemLinks.logo.alt}
-              />
+            <Link to={navItemLinks.logo.url} className="flex items-center gap-2">
+              <CarTaxiFront className="h-10 w-10 text-teal-600" />
               <span className="text-lg font-semibold tracking-tighter">
                 {navItemLinks.logo.title}
               </span>
-            </a>
+            </Link>
             <div className="flex items-center">
               <NavigationMenu>
                 <NavigationMenuList>
@@ -90,7 +86,7 @@ const Navbar = ( ) =>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-sm text-muted-foreground"
+                    className="text-sm text-yellow-600"
                     onClick={handleLogout}
                   >
                     Logout
