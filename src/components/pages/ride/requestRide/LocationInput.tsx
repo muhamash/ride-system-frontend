@@ -1,14 +1,7 @@
 import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import React from "react";
-import type { Location } from "./types";
+import type { IProps } from "./types";
 
-interface IProps {
-  value: string;
-  suggestions: Location[];
-  onChange: (value: string) => void;
-  onSelect: ( location: Location ) => void;
-  tex: string;
-}
 
 const LocationInput: React.FC<IProps> = ({ value, suggestions, onChange, onSelect, text }) => {
   const [open, setOpen] = React.useState(false);

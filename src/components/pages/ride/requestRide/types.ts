@@ -16,7 +16,7 @@ export interface RideDetails {
 
 export interface IProps
 {
-    test?: string;  
+    text?: string;  
   pickupLocation: Location;
   dropoffLocation: Location;
   pickupIcon: Icon;

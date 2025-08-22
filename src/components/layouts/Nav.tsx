@@ -32,7 +32,7 @@ const Navbar = ( ) =>
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  console.log( data )
+  // console.log( data )
   
   const userRole = data?.data?.role || "PUBLIC";
 
