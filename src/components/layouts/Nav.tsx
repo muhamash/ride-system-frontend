@@ -97,10 +97,10 @@ const Navbar = ( ) =>
                 </>
               ) : (
                 <>
-                  <Button asChild variant="outline" size="sm">
+                  <Button asChild variant="outline bg-yellow-50 text-black" size="sm">
                     <Link to={auth?.login?.url}>{auth?.login?.title}</Link>
                   </Button>
-                  <Button asChild size="sm" className="bg-chart-5 text-sky-900 hover:text-white">
+                  <Button asChild size="sm" className="bg-yellow-500 text-white">
                     <Link to={auth?.signup?.url}>{auth?.signup?.title}</Link>
                   </Button>
                 </>
@@ -165,10 +165,10 @@ const Navbar = ( ) =>
                         </>
                       ) : (
                         <>
-                          <Button asChild variant="outline" size="sm">
+                          <Button className="text-black bg-yellow-50" asChild variant="outline" size="sm">
                             <Link to={auth?.login?.url}>{auth?.login?.title}</Link>
                           </Button>
-                          <Button asChild size="sm" className="bg-chart-5 text-sky-900 hover:text-white">
+                          <Button asChild size="sm" className="text-white bg-yellow-500">
                             <Link to={auth?.signup?.url}>{auth?.signup?.title}</Link>
                           </Button>
                         </>

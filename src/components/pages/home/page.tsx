@@ -1,3 +1,5 @@
+import { useMyToast } from '@/components/layouts/MyToast';
+import { UserRole } from '@/constants/userRole';
 import { useUserDataQuery } from '@/redux/features/api/auth.api';
 import { motion } from 'framer-motion';
 import
@@ -75,12 +77,23 @@ const Home = () =>
 
   const { data } = useUserDataQuery();
   const navigate = useNavigate();
+  const { showToast } = useMyToast();
 
   const role = data?.data?.role || "";
 
   const handleDriverClick = () =>
   {
-    navigate( "/registration", { state: role } );
+    if ( role )
+    {
+      showToast( {
+        type: "info",
+        message: "Please logout your account and register as driver!"
+      } );
+
+      return;
+    }
+
+    navigate( "/registration", { state: UserRole.DRIVER } );
   }
 
   return (
@@ -109,17 +122,17 @@ const Home = () =>
                 className="flex flex-col sm:flex-row gap-4 justify-center py-5 place-self-start"
               >
                 <Link
-                  to={role ? "/user" : "/registration"}
+                  to={role ? "/user" : "/login"}
                   className="bg-yellow-400 text-gray-900 px-8 py-4 rounded-full font-semibold text-lg hover:bg-yellow-300 transition-colors duration-200 flex items-center justify-center"
                 >
                   <Users className="mr-2 h-5 w-5" />
                   {
-                    role
+                    role ? role : "Login"
                   }
                 </Link>
                 <div
                   onClick={handleDriverClick}
-                  className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-colors duration-200 flex items-center justify-center"
+                  className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-colors duration-200 flex items-center justify-center cursor-pointer"
                 >
                   <TrendingUp className="mr-2 h-5 w-5" />
                   Drive & Earn
@@ -376,8 +389,8 @@ const Home = () =>
             >
               <Users className="mr-2 h-5 w-5" />
               {
-                role
-              }
+                    role ? role : "Register"
+                  }
             </Link>
             <div
               onClick={handleDriverClick}

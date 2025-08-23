@@ -147,7 +147,7 @@ const FeaturesPage: React.FC = () => {
     <div className="min-h-screen bg-white">
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-emerald-600 text-white py-20">
+      <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-emerald-600 text-white py-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
@@ -300,6 +300,7 @@ const FeaturesPage: React.FC = () => {
             </div>
           </div>
         </div>
+        <hr  className='bg-green-500 p-[0.1px] mt-10 w-[80%] mx-auto'/>
       </section>
 
     </div>

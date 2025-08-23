@@ -30,7 +30,7 @@ import { Link, useLocation, useNavigate } from "react-router";
 export default function RegistrationForm ()
 {
     const location = useLocation();
-    const [ role, setRole ] = useState<UserRole>( location?.state ? "DRIVER" : UserRole.RIDER );
+    const [ role, setRole ] = useState<UserRole>( location?.state ?? UserRole.RIDER );
 
     const form = useForm<RegistrationSchemaType>( {
         resolver: zodResolver( registrationSchema ),
