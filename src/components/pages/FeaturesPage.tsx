@@ -1,19 +1,18 @@
 import { Card } from '@/components/ui/card';
-import
-    {
-        BarChart3,
-        Bell,
-        Clock,
-        CreditCard,
-        HeadphonesIcon,
-        Lock,
-        MapPin,
-        Shield,
-        Smartphone,
-        Star,
-        Users,
-        Zap
-    } from 'lucide-react';
+import {
+    BarChart3,
+    Bell,
+    Clock,
+    CreditCard,
+    HeadphonesIcon,
+    Lock,
+    MapPin,
+    Shield,
+    Smartphone,
+    Star,
+    Users,
+    Zap
+} from 'lucide-react';
 import React from 'react';
 
 const FeaturesPage: React.FC = () => {
@@ -154,7 +153,7 @@ const FeaturesPage: React.FC = () => {
               Powerful Features
             </h1>
             <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              Discover the comprehensive features that make RideFlow the best choice for 
+              Discover the comprehensive features that make Let's Ride the best choice for 
               riders, drivers, and administrators.
             </p>
           </div>

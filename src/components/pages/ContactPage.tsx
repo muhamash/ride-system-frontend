@@ -63,7 +63,7 @@ export default function ContactPage() {
               Powerful Contact info
             </h1>
             <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              Discover the comprehensive contact that make RideFlow the best choice for nothing but a project
+              Discover the comprehensive contact that make Let's Ride the best choice for nothing but a project
             </p>
           </div>
         </div>

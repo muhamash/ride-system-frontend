@@ -19,16 +19,16 @@ const FAQPage: React.FC = () => {
             title: 'General Questions',
             questions: [
                 {
-                    question: 'What is RideFlow?',
-                    answer: 'RideFlow is a modern ride-sharing platform that connects riders with professional drivers. We provide safe, reliable, and affordable transportation services across multiple cities.',
+                    question: 'What is Lets Ride?',
+                    answer: 'Lets Ride is a modern ride-sharing platform that connects riders with professional drivers. We provide safe, reliable, and affordable transportation services across multiple cities.',
                 },
                 {
-                    question: 'How does RideFlow work?',
+                    question: 'How does Lets Ride work?',
                     answer: 'Simply download our app, enter your pickup and destination locations, choose your ride type, and get matched with a nearby driver. You can track your ride in real-time and pay seamlessly through the app.',
                 },
                 {
-                    question: 'Is RideFlow available in my city?',
-                    answer: 'RideFlow is currently available in 25+ cities and expanding rapidly. Check our website or app to see if we\'re available in your area. We\'re constantly adding new cities based on demand.',
+                    question: 'Is Lets Ride available in my city?',
+                    answer: 'Lets Ride is currently available in 25+ cities and expanding rapidly. Check our website or app to see if we\'re available in your area. We\'re constantly adding new cities based on demand.',
                 },
             ],
         },
@@ -37,7 +37,7 @@ const FAQPage: React.FC = () => {
             questions: [
                 {
                     question: 'How do I book a ride?',
-                    answer: 'Open the RideFlow app, enter your pickup location and destination, select your preferred ride type, choose your payment method, and tap "Book Ride". You\'ll be matched with a nearby driver instantly.',
+                    answer: 'Open the Lets Ride app, enter your pickup location and destination, select your preferred ride type, choose your payment method, and tap "Book Ride". You\'ll be matched with a nearby driver instantly.',
                 },
                 {
                     question: 'What payment methods do you accept?',
@@ -57,7 +57,7 @@ const FAQPage: React.FC = () => {
             title: 'For Drivers',
             questions: [
                 {
-                    question: 'How do I become a RideFlow driver?',
+                    question: 'How do I become a Lets Ride driver?',
                     answer: 'To become a driver, you need to meet our requirements: be at least 21 years old, have a valid driver\'s license, pass a background check, and have an eligible vehicle. Apply through our website or app.',
                 },
                 {
@@ -70,7 +70,7 @@ const FAQPage: React.FC = () => {
                 },
                 {
                     question: 'Can I drive part-time?',
-                    answer: 'Absolutely! RideFlow offers complete flexibility. You can drive whenever you want - full-time, part-time, weekends only, or just a few hours a day. You\'re in complete control of your schedule.',
+                    answer: 'Absolutely! Lets Ride offers complete flexibility. You can drive whenever you want - full-time, part-time, weekends only, or just a few hours a day. You\'re in complete control of your schedule.',
                 },
             ],
         },
@@ -138,7 +138,7 @@ const FAQPage: React.FC = () => {
                         Frequently Asked Questions
                     </h1>
                     <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8">
-                        Find answers to common questions about RideFlow. Can't find what you're looking for? Contact our support team.
+                        Find answers to common questions about Lets Ride. Can't find what you're looking for? Contact our support team.
                     </p>
                     <div className="max-w-lg mx-auto">
                         <div className="relative">
