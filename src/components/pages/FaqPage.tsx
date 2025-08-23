@@ -6,10 +6,10 @@ import
         AccordionItem,
         AccordionTrigger,
     } from '@/components/ui/accordion';
+import { Card } from '@/components/ui/card';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Search } from 'lucide-react';
 import React, { useState } from 'react';
-import { Card } from '../ui/Card';
   
 const FAQPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
