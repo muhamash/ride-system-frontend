@@ -287,7 +287,7 @@ const FeaturesPage: React.FC = () => {
               <div className="text-gray-400">Frontend Framework</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-emerald-400 mb-2">Node.js</div>
+              <div className="text-2xl font-bold text-emerald-400 mb-2">Express.js</div>
               <div className="text-gray-400">Backend Runtime</div>
             </div>
             <div>
@@ -295,8 +295,8 @@ const FeaturesPage: React.FC = () => {
               <div className="text-gray-400">Database</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-orange-400 mb-2">AWS</div>
-              <div className="text-gray-400">Cloud Platform</div>
+              <div className="text-2xl font-bold text-orange-400 mb-2">Vercel</div>
+              <div className="text-gray-400">Host Platform</div>
             </div>
           </div>
         </div>
