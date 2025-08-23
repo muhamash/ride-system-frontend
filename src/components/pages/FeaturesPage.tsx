@@ -1,3 +1,4 @@
+import { Card } from '@/components/ui/card';
 import
     {
         BarChart3,
@@ -14,7 +15,6 @@ import
         Zap
     } from 'lucide-react';
 import React from 'react';
-import { Card } from '../ui/Card';
 
 const FeaturesPage: React.FC = () => {
   const riderFeatures = [
