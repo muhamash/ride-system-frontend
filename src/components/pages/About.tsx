@@ -1,4 +1,4 @@
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui/card';
 import { Award, Heart, Target, Users } from 'lucide-react';
 import React from 'react';
 
