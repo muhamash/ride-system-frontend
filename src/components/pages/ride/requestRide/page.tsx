@@ -1,8 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useContinuousLocation } from "@/components/hooks/useGeolocation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { useUserDataQuery } from "@/redux/features/api/auth.api";
+import { useGetDirectionMutation } from "@/redux/features/api/locationService.api";
 import { LatLng } from 'leaflet';
 import { Car, CreditCard, MapPin, Navigation, User } from "lucide-react";
 import { useEffect, useRef, useState } from 'react';
@@ -11,20 +15,9 @@ import RideMap from "./RideMap";
 import RideSummary from "./RideSummery";
 import RideTypeCard from "./RideTypeCard";
 
-// Sample locations for demonstration
-const sampleLocations = [
-  { id: 1, name: "Times Square", address: "Manhattan, NY", coords: new LatLng(40.7580, -73.9855) },
-  { id: 2, name: "Central Park", address: "Manhattan, NY", coords: new LatLng(40.7812, -73.9665) },
-  { id: 3, name: "Empire State Building", address: "350 5th Ave, NY", coords: new LatLng(40.7484, -73.9857) },
-  { id: 4, name: "Brooklyn Bridge", address: "Brooklyn, NY", coords: new LatLng(40.7061, -73.9969) },
-  { id: 5, name: "Statue of Liberty", address: "Liberty Island, NY", coords: new LatLng(40.6892, -74.0445) },
-  { id: 6, name: "Grand Central Terminal", address: "89 E 42nd St, NY", coords: new LatLng(40.7527, -73.9772) },
-];
-
 const rideOptions = [
   { id: "standard", name: "Standard", price: "$12-15", eta: "5 min", icon: <Car className="h-5 w-5" /> },
   { id: "premium", name: "Premium", price: "$18-22", eta: "7 min", icon: <User className="h-5 w-5" /> },
-  { id: "shared", name: "Shared", price: "$8-10", eta: "3 min", icon: <User className="h-5 w-5" /> },
 ];
 
 export default function RequestRide() {
@@ -32,14 +25,54 @@ export default function RequestRide() {
   const [destination, setDestination] = useState("");
   const [rideType, setRideType] = useState("standard");
   const [paymentMethod, setPaymentMethod] = useState("card");
+  const [useCurrentLocation, setUseCurrentLocation] = useState(true);
+
+  const { data } = useUserDataQuery();
+  const userId = data?.data?._id || "";
+  const { coords, error: locationError, retry } = useContinuousLocation(userId);
+
   const [pickupCoords, setPickupCoords] = useState<LatLng | null>(null);
   const [destinationCoords, setDestinationCoords] = useState<LatLng | null>(null);
-  
+
   const mapRef = useRef<any>(null);
   const pickupInputRef = useRef<HTMLInputElement>(null);
   const destinationInputRef = useRef<HTMLInputElement>(null);
 
-  const handleLocationSelect = (location: typeof sampleLocations[0], isPickup: boolean) => {
+  const [getDirection, { data: routeData, isLoading, error }] = useGetDirectionMutation();
+
+  // Auto-update pickup if using current location
+  useEffect(() => {
+    if (useCurrentLocation && coords) {
+      setPickupLocation(coords.address);
+      setPickupCoords({ lat: coords.lat, lng: coords.lng } as LatLng);
+    }
+  }, [useCurrentLocation, coords]);
+
+  // Fetch route whenever pickup or destination coordinates change
+  useEffect(() => {
+    const fetchRoute = async () => {
+      if (!pickupCoords || !destinationCoords) return;
+
+      const coordinates = `${pickupCoords.lng},${pickupCoords.lat};${destinationCoords.lng},${destinationCoords.lat}`;
+
+      try {
+        const response = await getDirection({
+          profile: "driving",
+          coordinates,
+          steps: true,
+          overview: "full",
+        }).unwrap();
+
+        console.log("Route data:", response);
+      } catch (err) {
+        console.error("Error fetching route:", err);
+      }
+    };
+
+    fetchRoute();
+  }, [pickupCoords, destinationCoords, getDirection]);
+
+  const handleLocationSelect = (location: any, isPickup: boolean) => {
     if (isPickup) {
       setPickupLocation(location.name);
       setPickupCoords(location.coords);
@@ -52,10 +85,10 @@ export default function RequestRide() {
   const handleSwapLocations = () => {
     const tempLocation = pickupLocation;
     const tempCoords = pickupCoords;
-    
+
     setPickupLocation(destination);
     setPickupCoords(destinationCoords);
-    
+
     setDestination(tempLocation);
     setDestinationCoords(tempCoords);
   };
@@ -66,7 +99,9 @@ export default function RequestRide() {
       alert("Please select valid pickup and destination locations");
       return;
     }
-    alert(`Ride requested from ${pickupLocation} to ${destination}`);
+
+    console.log("Pickup:", pickupCoords, pickupLocation);
+    console.log("Destination:", destinationCoords, destination);
   };
 
   // Update map view when coordinates change
@@ -88,7 +123,7 @@ export default function RequestRide() {
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Book Your Ride</h1>
           <p className="text-gray-600">Enter your details and we'll find you the perfect ride</p>
         </div>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Form Section */}
           <Card className="p-6 shadow-lg">
@@ -97,9 +132,34 @@ export default function RequestRide() {
                 <Navigation className="h-6 w-6 text-blue-600" />
                 Ride Details
               </CardTitle>
+              <p className="text-pink-500 font-mono">
+                Note: Please search your nearby or Dhaka nearby location only! Search results are provided from Pathao API.
+              </p>
             </CardHeader>
             <CardContent className="p-0">
               <form onSubmit={handleRequestRide} className="space-y-6">
+
+                {/* Pickup Location Mode */}
+                <div className="flex items-center justify-between mb-4">
+                  <Label className="text-lg">Pickup Location Mode:</Label>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      type="button"
+                      variant={useCurrentLocation ? "default" : "outline"}
+                      onClick={() => setUseCurrentLocation(true)}
+                    >
+                      Use Current Location
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={!useCurrentLocation ? "default" : "outline"}
+                      onClick={() => setUseCurrentLocation(false)}
+                    >
+                      Search Manually
+                    </Button>
+                  </div>
+                </div>
+
                 <div className="space-y-4">
                   <LocationInput
                     id="pickup"
@@ -107,15 +167,16 @@ export default function RequestRide() {
                     value={pickupLocation}
                     onChange={setPickupLocation}
                     onLocationSelect={(location) => handleLocationSelect(location, true)}
-                    locations={sampleLocations}
+                    locations={[]}
                     icon={<MapPin className="h-4 w-4 text-blue-600" />}
                     inputRef={pickupInputRef}
+                    disabled={useCurrentLocation} // disable input if using current location
                   />
-                  
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    size="icon" 
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
                     className="mx-auto flex rounded-full"
                     onClick={handleSwapLocations}
                   >
@@ -123,19 +184,20 @@ export default function RequestRide() {
                       <path fillRule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </Button>
-                  
+
                   <LocationInput
                     id="destination"
                     label="Destination"
                     value={destination}
                     onChange={setDestination}
                     onLocationSelect={(location) => handleLocationSelect(location, false)}
-                    locations={sampleLocations}
+                    locations={[]}
                     icon={<MapPin className="h-4 w-4 text-red-600" />}
                     inputRef={destinationInputRef}
                   />
                 </div>
-                
+
+                {/* Ride Type Selection */}
                 <div className="space-y-4">
                   <Label className="text-lg">Choose Ride Type</Label>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -149,7 +211,8 @@ export default function RequestRide() {
                     ))}
                   </div>
                 </div>
-                
+
+                {/* Payment Method */}
                 <div className="space-y-4">
                   <Label className="text-lg flex items-center gap-2">
                     <CreditCard className="h-5 w-5" />
@@ -166,10 +229,10 @@ export default function RequestRide() {
                     </Label>
                   </div>
                 </div>
-                
-                <Button 
-                  type="submit" 
-                  className="w-full" 
+
+                <Button
+                  type="submit"
+                  className="w-full"
                   size="lg"
                   disabled={!pickupCoords || !destinationCoords}
                 >
@@ -178,7 +241,7 @@ export default function RequestRide() {
               </form>
             </CardContent>
           </Card>
-          
+
           {/* Map Section */}
           <div className="space-y-6">
             <RideMap
@@ -187,8 +250,9 @@ export default function RequestRide() {
               pickupCoords={pickupCoords}
               destinationCoords={destinationCoords}
               mapRef={mapRef}
+              routeData={routeData}
             />
-            
+
             <RideSummary
               pickupLocation={pickupLocation}
               destination={destination}

@@ -40,7 +40,7 @@ export const useContinuousLocation = ( userId: string ) =>
         if ( now - lastCallTimeRef.current < 2000 )
         {
             // Skip if less than 2 sec
-            return coords?.address || "Fetching...";
+            return coords?.address || "Default location!";
         }
         lastCallTimeRef.current = now;
 
@@ -50,7 +50,7 @@ export const useContinuousLocation = ( userId: string ) =>
             const res = await axios.get(
                 `https://us1.locationiq.com/v1/reverse?key=pk.ec2814e98c3e1916390f6dd2a3dda00d&lat=${ lat }&lon=${ lng }&format=json&_gl=1*1jxiud2*_ga*MTkxNDUwNTc4Ny4xNzU1OTY2MjIx*_ga_TRV5GF9KFC*czE3NTU5NjYyMjEkbzEkZzEkdDE3NTU5NjY4MTMkajYwJGwwJGgw`,
             );
-            console.log( res.data )
+            // console.log( res.data )
             return res.data.display_name || "Address not found";
         } catch ( err )
         {
@@ -98,6 +98,8 @@ export const useContinuousLocation = ( userId: string ) =>
             { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 }
         );
     };
+
+    console.log(coords)
 
     return { coords, error, retry: startTracking };
 };

@@ -8,7 +8,7 @@ import { useUserDataQuery } from './redux/features/api/auth.api';
 function App() {
   const { data } = useUserDataQuery();
   const userId = data?.data?._id || ""; 
-  console.log( data );
+  // console.log( data );
   const { coords, error, retry } = useContinuousLocation(userId);
 
   return (

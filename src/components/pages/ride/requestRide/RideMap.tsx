@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import polyline from "@mapbox/polyline";
 import "leaflet/dist/leaflet.css";
 import { MapPin } from "lucide-react";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { MapContainer, Marker, Polyline, Popup, TileLayer } from "react-leaflet";
 
 // Fix for default markers in react-leaflet
-import { Icon } from 'leaflet';
+import { Icon, LatLngExpression } from 'leaflet';
 delete (Icon.Default.prototype as any)._getIconUrl;
 Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -19,6 +20,7 @@ interface RideMapProps {
   pickupCoords: any;
   destinationCoords: any;
   mapRef: React.RefObject<any>;
+  routeData: any;
 }
 
 export default function RideMap({
@@ -26,22 +28,30 @@ export default function RideMap({
   destination,
   pickupCoords,
   destinationCoords,
-  mapRef
+  mapRef,
+  routeData,
 }: RideMapProps) {
-  const DEFAULT_CENTER: [number, number] = [40.7128, -74.0060];
+  const DEFAULT_CENTER: LatLngExpression = [40.7128, -74.0060];
+
+  // Decode polyline
+  let routePositions: LatLngExpression[] = [];
+  if (routeData?.data?.routes?.length) {
+    const encoded = routeData.data.routes[0].geometry;
+    routePositions = polyline.decode(encoded).map(([lat, lng]) => [lat, lng] as LatLngExpression);
+  }
 
   return (
     <Card className="shadow-lg">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2">
-          <MapPin className="h-5 w-5 text-blue-600" />
+          <MapPin className="h-5 w-5 text-pink-600" />
           Your Route
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
         <div className="h-96 rounded-b-lg overflow-hidden">
           <MapContainer
-            center={DEFAULT_CENTER}
+            center={pickupCoords || DEFAULT_CENTER}
             zoom={13}
             style={{ height: '100%', width: '100%' }}
             ref={mapRef}
@@ -50,17 +60,21 @@ export default function RideMap({
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            
+
             {pickupCoords && (
               <Marker position={pickupCoords}>
                 <Popup>Pickup: {pickupLocation}</Popup>
               </Marker>
             )}
-            
+
             {destinationCoords && (
               <Marker position={destinationCoords}>
                 <Popup>Destination: {destination}</Popup>
               </Marker>
+            )}
+
+            {routePositions.length > 0 && (
+              <Polyline positions={routePositions} color="red" weight={4} />
             )}
           </MapContainer>
         </div>

@@ -29,7 +29,7 @@ export const axiosBaseQuery =
                     headers,
                 } );
                 
-                console.log(result)
+                // console.log(result)
                 return { data: result.data }
             }
             catch ( axiosError )

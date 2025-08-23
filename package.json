@@ -12,7 +12,6 @@
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
     "@mapbox/polyline": "^1.2.1",
-    "@maptiler/sdk": "^3.7.0",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-label": "^2.1.7",
@@ -31,7 +30,6 @@
     "framer-motion": "^12.23.12",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.540.0",
-    "mapbox-gl": "^3.14.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-hook-form": "^7.62.0",
@@ -44,7 +42,6 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.12",
-    "yup": "^1.7.0",
     "zod": "^4.0.17"
   },
   "devDependencies": {
@@ -52,6 +49,7 @@
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.0",
+    "depcheck": "^1.4.7",
     "eslint": "^9.33.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
