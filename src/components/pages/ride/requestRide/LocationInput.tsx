@@ -1,49 +1,99 @@
-import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import React from "react";
-import type { IProps } from "./types";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { X } from "lucide-react";
+import { useEffect, useState } from "react";
 
+interface Location {
+  id: number;
+  name: string;
+  address: string;
+  coords: any;
+}
 
-const LocationInput: React.FC<IProps> = ({ value, suggestions, onChange, onSelect, text }) => {
-  const [open, setOpen] = React.useState(false);
+interface LocationInputProps {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  onLocationSelect: (location: Location) => void;
+  locations: Location[];
+  icon: React.ReactNode;
+  inputRef: React.RefObject<HTMLInputElement>;
+}
+
+export default function LocationInput({
+  id,
+  label,
+  value,
+  onChange,
+  onLocationSelect,
+  locations,
+  icon,
+  inputRef
+}: LocationInputProps) {
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [filteredSuggestions, setFilteredSuggestions] = useState(locations);
+
+  useEffect(() => {
+    if (value) {
+      const filtered = locations.filter(
+        (location) =>
+          location.name.toLowerCase().includes(value.toLowerCase()) ||
+          location.address.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredSuggestions(filtered);
+    } else {
+      setFilteredSuggestions(locations);
+    }
+  }, [value, locations]);
 
   return (
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">
-        {text}
-      </label>
-      <Command className="border rounded-lg shadow-sm">
-        <CommandInput
-          placeholder="Search dropoff location..."
+    <div className="space-y-2 relative">
+      <Label htmlFor={id} className="flex items-center gap-2">
+        {icon}
+        {label}
+      </Label>
+      <div className="relative" ref={inputRef}>
+        <Input
+          id={id}
+          placeholder={`Enter ${label.toLowerCase()}`}
           value={value}
-          onValueChange={(val) => {
-            onChange(val);
-            setOpen(val.length > 0);
-          }}
+          onChange={(e) => onChange(e.target.value)}
+          onFocus={() => setShowSuggestions(true)}
+          className="pr-8"
         />
-        {open && (
-          <CommandList>
-            <CommandGroup>
-              {suggestions.length > 0 ? (
-                suggestions.map((location, index) => (
-                  <CommandItem
-                    key={index}
-                    onSelect={() => {
-                      onSelect(location);
-                      setOpen(false); // closes dropdown after selection
-                    }}
-                  >
-                    {location.name}
-                  </CommandItem>
-                ))
-              ) : (
-                <CommandItem disabled>No results found.</CommandItem>
-              )}
-            </CommandGroup>
-          </CommandList>
+        {value && (
+          <button
+            type="button"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            onClick={() => onChange("")}
+          >
+            <X className="h-4 w-4" />
+          </button>
         )}
-      </Command>
+        {showSuggestions && (
+          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+            {filteredSuggestions.length > 0 ? (
+              filteredSuggestions.map((location) => (
+                <div
+                  key={location.id}
+                  className="px-4 py-3 hover:bg-gray-100 cursor-pointer border-b border-gray-100 last:border-b-0"
+                  onClick={() => {
+                    onLocationSelect(location);
+                    setShowSuggestions(false);
+                  }}
+                >
+                  <div className="font-medium">{location.name}</div>
+                  <div className="text-sm text-gray-600">{location.address}</div>
+                </div>
+              ))
+            ) : (
+              <div className="px-4 py-3 text-gray-500">No locations found</div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
-};
-
-export default LocationInput;
+}

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { envString } from "@/lib/envString";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
@@ -8,41 +10,52 @@ interface LocationData {
   address?: string;
 }
 
+const API_KEY = envString.locationIQToken;
+
 export const useContinuousLocation = ( userId: string ) =>
 {
     const [ coords, setCoords ] = useState<LocationData | null>( null );
     const [ error, setError ] = useState<string | null>( null );
     const watchIdRef = useRef<number | null>( null );
     const socketRef = useRef<Socket | null>( null );
+    const lastCallTimeRef = useRef<number>( 0 );
 
-    // Start tracking only when userId is present
     useEffect( () =>
     {
+        if ( !userId ) return;
 
         socketRef.current = io( "http://localhost:3000" );
         startTracking();
 
         return () =>
         {
-            if ( watchIdRef.current !== null )
-                navigator.geolocation.clearWatch( watchIdRef.current );
+            if ( watchIdRef.current !== null ) navigator.geolocation.clearWatch( watchIdRef.current );
             socketRef.current?.disconnect();
         };
     }, [ userId ] );
 
     const fetchAddress = async ( lat: number, lng: number ) =>
     {
+        const now = Date.now();
+        if ( now - lastCallTimeRef.current < 2000 )
+        {
+            // Skip if less than 2 sec
+            return coords?.address || "Fetching...";
+        }
+        lastCallTimeRef.current = now;
+
         try
         {
+            // console.log( API_KEY )
             const res = await axios.get(
-                "https://nominatim.openstreetmap.org/reverse",
-                { params: { format: "json", lat, lon: lng } }
+                `https://us1.locationiq.com/v1/reverse?key=pk.ec2814e98c3e1916390f6dd2a3dda00d&lat=${ lat }&lon=${ lng }&format=json&_gl=1*1jxiud2*_ga*MTkxNDUwNTc4Ny4xNzU1OTY2MjIx*_ga_TRV5GF9KFC*czE3NTU5NjYyMjEkbzEkZzEkdDE3NTU5NjY4MTMkajYwJGwwJGgw`,
             );
-            return res.data.display_name;
+            console.log( res.data )
+            return res.data.display_name || "Address not found";
         } catch ( err )
         {
             console.error( "Reverse geocode error:", err );
-            return "";
+            return "Unknown location";
         }
     };
 
@@ -67,7 +80,7 @@ export const useContinuousLocation = ( userId: string ) =>
                 socketRef.current?.emit( "update-location", {
                     userId,
                     coordinates: [ lng, lat ],
-                    address,
+                    address: address.length ? address : "Default address",
                 } );
             },
             ( err ) =>
@@ -86,6 +99,5 @@ export const useContinuousLocation = ( userId: string ) =>
         );
     };
 
-    console.log(coords, error)
     return { coords, error, retry: startTracking };
 };

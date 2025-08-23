@@ -29,6 +29,7 @@ export const axiosBaseQuery =
                     headers,
                 } );
                 
+                console.log(result)
                 return { data: result.data }
             }
             catch ( axiosError )

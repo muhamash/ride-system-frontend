@@ -18,7 +18,6 @@ export const navItemLinks = {
     title: "Let's Ride",
   },
   menu: [
-    { title: "Home", url: "/", roles: ["PUBLIC", "RIDER", "DRIVER", "ADMIN"] },
     {
       title: "Ride",
       url: "/ride",
