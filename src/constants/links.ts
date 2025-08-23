@@ -95,6 +95,21 @@ export const navItemLinks = {
       url: "/about",
       roles: ["PUBLIC", "RIDER", "DRIVER", "ADMIN"],
     },
+    {
+      title: "FAQ",
+      url: "/faq",
+      roles: [ "PUBLIC", "RIDER", "DRIVER", "ADMIN" ],
+    },
+    {
+      title: "Features",
+      url: "/test-features",
+      roles: [ "PUBLIC", "RIDER", "DRIVER", "ADMIN" ],
+    },
+    {
+      title: "Contact",
+      url: "/wrong-contact-information",
+      roles: [ "PUBLIC", "RIDER", "DRIVER", "ADMIN" ],
+    },
   ],
   auth: {
     login: { title: "Login", url: "/login" },

@@ -1,6 +1,9 @@
 import AboutPage from "@/components/pages/About";
 import LoginPage from "@/components/pages/auth/login/page";
 import RegistrationPage from "@/components/pages/auth/registration/page";
+import ContactPage from "@/components/pages/ContactPage";
+import FAQPage from "@/components/pages/FaqPage";
+import FeaturesPage from "@/components/pages/FeaturesPage";
 import Home from "@/components/pages/home/page";
 import NotFoundPage from "@/components/pages/NotFound";
 import UnAuthPage from "@/components/pages/UnAuthPage";
@@ -27,6 +30,18 @@ export const appRouter = createBrowserRouter( [
       {
         path: '/about',
         Component: AboutPage
+      },
+      {
+        path: '/faq',
+        Component: FAQPage
+      },
+      {
+        path: '/test-features',
+        Component: FeaturesPage
+      },
+      {
+        path: '/wrong-contact-information',
+        Component: ContactPage
       },
     ]
   },
