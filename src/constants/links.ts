@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { lazy } from "react";
 
 const RequestRidePage = lazy( () => import( "@/components/pages/ride/requestRide/page" ) );
@@ -73,13 +74,13 @@ export const navItemLinks = {
           roles: [ "ADMIN", "DRIVER" ],
           Component: VehicleInfoPage
         },
-        {
-          title: "Update user",
-          description: "Manage user accounts",
-          url: "/user/update",
-          roles: [ "ADMIN" ],
-          Component: UpdateUserPage
-        },
+        // {
+        //   title: "Update user",
+        //   description: "Manage user accounts",
+        //   url: "/user/update",
+        //   roles: [ "ADMIN" ],
+        //   Component: UpdateUserPage
+        // },
         {
           title: "Control user",
           description: "Manage user access",

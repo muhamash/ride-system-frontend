@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useUserDataQuery } from "@/redux/features/api/auth.api";
-import { useGetDirectionMutation } from "@/redux/features/api/locationService.api";
+import { useGetDirectionMutation, useGetOnlineDriversQuery } from "@/redux/features/api/locationService.api";
+import { calculateFare } from "@/utils/ride.util";
 import { LatLng } from 'leaflet';
 import { Car, CreditCard, MapPin, Navigation, User } from "lucide-react";
 import { useEffect, useRef, useState } from 'react';
@@ -16,8 +17,8 @@ import RideSummary from "./RideSummery";
 import RideTypeCard from "./RideTypeCard";
 
 const rideOptions = [
-  { id: "standard", name: "Standard", price: "$12-15", eta: "5 min", icon: <Car className="h-5 w-5" /> },
-  { id: "premium", name: "Premium", price: "$18-22", eta: "7 min", icon: <User className="h-5 w-5" /> },
+  { id: "standard", name: "standard", price: "12-15 tk", eta: "5 min", icon: <Car className="h-5 w-5" /> },
+  { id: "premium", name: "premium", price: "18-22 tk", eta: "8 min", icon: <User className="h-5 w-5" /> },
 ];
 
 export default function RequestRide() {
@@ -32,45 +33,65 @@ export default function RequestRide() {
   const { coords, error: locationError, retry } = useContinuousLocation(userId);
 
   const [pickupCoords, setPickupCoords] = useState<LatLng | null>(null);
-  const [destinationCoords, setDestinationCoords] = useState<LatLng | null>(null);
+  const [ destinationCoords, setDestinationCoords ] = useState<LatLng | null>( null );
 
   const mapRef = useRef<any>(null);
   const pickupInputRef = useRef<HTMLInputElement>(null);
-  const destinationInputRef = useRef<HTMLInputElement>(null);
+  const destinationInputRef = useRef<HTMLInputElement>( null );
+  const [ routeDataState, setRouteDataState ] = useState<any>( null );
 
-  const [getDirection, { data: routeData, isLoading, error }] = useGetDirectionMutation();
+  const [ getDirection, { data: routeData, isLoading, error } ] = useGetDirectionMutation();
+  const { data: onlineDrivers } = useGetOnlineDriversQuery();
+  console.log( onlineDrivers?.data )
+  
+  const rideTypesDataRef = useRef(null);
 
   // Auto-update pickup if using current location
-  useEffect(() => {
-    if (useCurrentLocation && coords) {
-      setPickupLocation(coords.address);
-      setPickupCoords({ lat: coords.lat, lng: coords.lng } as LatLng);
+  useEffect( () =>
+  {
+    if ( useCurrentLocation && coords )
+    {
+      setPickupLocation( coords.address );
+      setPickupCoords( { lat: coords.lat, lng: coords.lng } as LatLng );
     }
-  }, [useCurrentLocation, coords]);
+  }, [ useCurrentLocation, coords ] );
 
   // Fetch route whenever pickup or destination coordinates change
-  useEffect(() => {
-    const fetchRoute = async () => {
-      if (!pickupCoords || !destinationCoords) return;
+  useEffect( () =>
+  {
+    const fetchRoute = async () =>
+    {
+      if ( !pickupCoords || !destinationCoords ) return;
 
-      const coordinates = `${pickupCoords.lng},${pickupCoords.lat};${destinationCoords.lng},${destinationCoords.lat}`;
+      const coordinates = `${ pickupCoords.lng },${ pickupCoords.lat };${ destinationCoords.lng },${ destinationCoords.lat }`;
 
-      try {
-        const response = await getDirection({
+      try
+      {
+        const response = await getDirection( {
           profile: "driving",
           coordinates,
           steps: true,
           overview: "full",
-        }).unwrap();
+        } ).unwrap();
 
-        console.log("Route data:", response);
-      } catch (err) {
-        console.error("Error fetching route:", err);
+        console.log( "Route data:", response.data.routes );
+        rideTypesDataRef.current = {
+          distance: response.data.routes[ 0 ].distance,
+          duration: response.data.routes[ 0 ].duration,
+          fare: {
+            standard: calculateFare( response.data.routes[ 0 ].distance, "standard" ),
+            premium: calculateFare( response.data.routes[ 0 ].distance, "premium" ),
+          }
+        };
+        setRouteDataState(response)
+      } catch ( err )
+      {
+        console.error( "Error fetching route:", err );
       }
     };
 
     fetchRoute();
-  }, [pickupCoords, destinationCoords, getDirection]);
+  }, [ pickupCoords, destinationCoords, getDirection ] );
 
   const handleLocationSelect = (location: any, isPickup: boolean) => {
     if (isPickup) {
@@ -100,7 +121,7 @@ export default function RequestRide() {
       return;
     }
 
-    console.log("Pickup:", pickupCoords, pickupLocation);
+    console.log("Pickup:", pickupCoords, pickupLocation, rideTypesDataRef.current.fare[rideType].toFixed(2));
     console.log("Destination:", destinationCoords, destination);
   };
 
@@ -141,8 +162,8 @@ export default function RequestRide() {
 
                 {/* Pickup Location Mode */}
                 <div className="flex items-center justify-between mb-4">
-                  <Label className="text-lg">Pickup Location Mode:</Label>
-                  <div className="flex items-center space-x-2">
+                  <Label className="text-lg">Pickup Mode:</Label>
+                  <div className="flex flex-wrap items-center space-x-2">
                     <Button
                       type="button"
                       variant={useCurrentLocation ? "default" : "outline"}
@@ -170,7 +191,6 @@ export default function RequestRide() {
                     locations={[]}
                     icon={<MapPin className="h-4 w-4 text-blue-600" />}
                     inputRef={pickupInputRef}
-                    disabled={useCurrentLocation} // disable input if using current location
                   />
 
                   <Button
@@ -207,6 +227,7 @@ export default function RequestRide() {
                         option={option}
                         isSelected={rideType === option.id}
                         onSelect={setRideType}
+                        rideTypesData={rideTypesDataRef.current}
                       />
                     ))}
                   </div>
@@ -250,7 +271,8 @@ export default function RequestRide() {
               pickupCoords={pickupCoords}
               destinationCoords={destinationCoords}
               mapRef={mapRef}
-              routeData={routeData}
+              routeData={routeDataState}
+              onlineDrivers={onlineDrivers?.data}
             />
 
             <RideSummary
@@ -259,6 +281,7 @@ export default function RequestRide() {
               rideType={rideType}
               paymentMethod={paymentMethod}
               rideOptions={rideOptions}
+              rideData={rideTypesDataRef.current}
             />
           </div>
         </div>

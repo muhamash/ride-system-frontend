@@ -16,7 +16,14 @@ export const locationService = baseApi.injectEndpoints( {
                 data: payload
             } )
         } ),
+
+        getOnlineDrivers: builder.query( {
+            query: ( ) => ( {
+                url: "/ride/get-active-drivers",
+                method: "GET",
+            } )
+        } ),
     } )
 } );
 
-export const { useSearchLocationMutation, useGetDirectionMutation } = locationService;
+export const { useSearchLocationMutation, useGetDirectionMutation, useGetOnlineDriversQuery } = locationService;

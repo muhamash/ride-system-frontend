@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, CardContent } from "@/components/ui/card";
 
 interface RideOption {
@@ -11,18 +12,20 @@ interface RideOption {
 interface RideTypeCardProps {
   option: RideOption;
   isSelected: boolean;
-  onSelect: (id: string) => void;
+  onSelect: ( id: string ) => void;
+  rideTypesData: any;
 }
 
-export default function RideTypeCard({ option, isSelected, onSelect }: RideTypeCardProps) {
+export default function RideTypeCard ( { option, isSelected, rideTypesData, onSelect }: RideTypeCardProps )
+{
+  // console.log(rideTypesData)
   return (
     <Card
-      className={`cursor-pointer transition-all ${
-        isSelected
-          ? "border-blue-500 bg-blue-50"
-          : "border-gray-200 hover:border-gray-300"
-      }`}
-      onClick={() => onSelect(option.id)}
+      className={`cursor-pointer transition-all ${ isSelected
+        ? "border-blue-500 bg-blue-50"
+        : "border-gray-200 hover:border-gray-300"
+        }`}
+      onClick={() => onSelect( option.id )}
     >
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-2">
@@ -35,9 +38,25 @@ export default function RideTypeCard({ option, isSelected, onSelect }: RideTypeC
           )}
         </div>
         <div className="text-sm text-gray-600 mt-2">
-          <div>{option.price}</div>
-          <div>ETA: {option.eta}</div>
+          <div>
+            {rideTypesData?.fare
+              ? `Fare: ৳${ rideTypesData.fare[ option.id ].toFixed( 2 ) }`
+              : option.price}
+          </div>
+          <div>
+            ETA: {rideTypesData?.duration
+              ? ( () =>
+              {
+                const totalSeconds = Math.round( rideTypesData.duration );
+                const minutes = Math.floor( totalSeconds / 60 );
+                const seconds = totalSeconds % 60;
+                return `${ minutes } min ${ seconds } sec`;
+              } )()
+              : option.eta}
+          </div>
+
         </div>
+
       </CardContent>
     </Card>
   );

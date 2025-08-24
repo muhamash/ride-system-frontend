@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface RideOption {
@@ -12,6 +13,7 @@ interface RideSummaryProps {
   rideType: string;
   paymentMethod: string;
   rideOptions: RideOption[];
+  rideData?: any;
 }
 
 export default function RideSummary({
@@ -19,8 +21,11 @@ export default function RideSummary({
   destination,
   rideType,
   paymentMethod,
+  rideData,
   rideOptions
-}: RideSummaryProps) {
+}: RideSummaryProps )
+{
+  console.log(rideData?.fare[rideType], rideType)
   return (
     <Card className="shadow-lg">
       <CardHeader className="pb-3">
@@ -39,7 +44,7 @@ export default function RideSummary({
           <div className="flex justify-between">
             <span className="text-gray-600">Ride Type:</span>
             <span className="font-medium">
-              {rideOptions.find(o => o.id === rideType)?.name}
+              {rideOptions.find( o => o.id === rideType )?.name}
             </span>
           </div>
           <div className="flex justify-between">
@@ -50,9 +55,22 @@ export default function RideSummary({
             <div className="flex justify-between text-lg font-bold">
               <span>Estimated Price:</span>
               <span className="text-blue-600">
-                {rideOptions.find(o => o.id === rideType)?.price}
+                {
+                  ( () =>
+                  {
+                    if ( rideData?.fare )
+                    {
+                      return rideData?.fare[rideType].toFixed(2)
+                    }
+                    return rideOptions.find( o => o.id === rideType )?.price;
+                  } )()
+                }
+                {" "}Tk
+
+
               </span>
             </div>
+            <p className="text-purple-600 font-mono">Disclaimer: This price is just a show off! it has not any value! i am calculating mock pricing range!</p>
           </div>
         </div>
       </CardContent>

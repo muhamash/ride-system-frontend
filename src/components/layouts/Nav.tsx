@@ -59,7 +59,7 @@ const Navbar = ( ) =>
   }
 
   return (
-    <section className="fixed top-0 left-0 w-full p-4 bg-gradient-to-r from-gray-100/90 to-gray-100/30 backdrop-blur-md border border-gray-500/20 shadow-lg z-50">
+    <section className="fixed top-0 left-0 w-full p-4 bg-gradient-to-r from-gray-100/90 to-gray-100/30 backdrop-blur-md border border-gray-500/20 shadow-lg z-9999">
       <div className="">
         {/* Desktop Menu */}
         <nav className="hidden justify-between md:flex  w-full">

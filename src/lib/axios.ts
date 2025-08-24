@@ -12,7 +12,7 @@ export const axiosInstance = axios.create( {
 axiosInstance.interceptors.request.use( function ( config )
 {
     // Do something before request is sent
-    // console.log(config)
+    console.log(config)
     return config;
 }, function ( error )
 {
