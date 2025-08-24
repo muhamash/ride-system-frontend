@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { UserViewDialog } from '@/components/dialogs/UsrViewDialaog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from "@/components/ui/button";
 import
@@ -42,6 +44,7 @@ import
   } from "lucide-react";
 import { useState } from 'react';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+
 
 export default function ManageAccessUser() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -131,8 +134,13 @@ export default function ManageAccessUser() {
     return pages;
   };
 
+  const handleUserClick = ( id: string ) =>
+  {
+    console.log( "Clicked ID:", id ); 
+  };
+
   return (
-    <div className="container mx-auto space-y-6 py-30">
+    <div className="container mx-auto space-y-6 py-30 px-4">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">User Management</h1>
         <div className="text-sm text-gray-500">
@@ -162,7 +170,7 @@ export default function ManageAccessUser() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {users.filter(user => user.isOnline).length}
+              {users.filter( user => user.isOnline ).length}
             </div>
             <p className="text-xs text-muted-foreground">
               Currently active
@@ -177,7 +185,7 @@ export default function ManageAccessUser() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {users.filter(user => user.isBlocked).length}
+              {users.filter( user => user.isBlocked ).length}
             </div>
             <p className="text-xs text-muted-foreground">
               Restricted access
@@ -197,11 +205,12 @@ export default function ManageAccessUser() {
             </div>
             <div className="flex items-center space-x-2">
               <span className="text-sm text-muted-foreground">Show</span>
-              <select 
+              <select
                 value={itemsPerPage}
-                onChange={(e) => {
-                  setItemsPerPage(Number(e.target.value));
-                  setCurrentPage(1);
+                onChange={( e ) =>
+                {
+                  setItemsPerPage( Number( e.target.value ) );
+                  setCurrentPage( 1 );
                 }}
                 className="h-8 w-16 rounded-md border border-input bg-background px-2 py-1 text-sm"
               >
@@ -225,52 +234,60 @@ export default function ManageAccessUser() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {users.map((user) => (
+                {users.map( ( user ) => (
                   <TableRow key={user._id}>
-                    <TableCell>
-                      <div className="flex flex-col">
+                    <TableCell >
+                      <div className='flex flex-col gap-3'>
+                        <div className="flex flex-col">
                         <div className="font-medium">{user.name}</div>
                         <div className="text-sm text-muted-foreground">{user.email}</div>
+                        
+                      </div>
+                        <UserViewDialog userId={ user?._id } />
                       </div>
                     </TableCell>
                     <TableCell>
                       <Badge
-                        variant="outline" 
-                        className={`flex items-center gap-1 ${
-                          user.role === 'ADMIN' 
-                            ? 'bg-red-50 text-red-700 border-red-200' 
+                        variant="outline"
+                        className={`flex items-center gap-1 ${ user.role === 'ADMIN'
+                            ? 'bg-red-50 text-red-700 border-red-200'
                             : user.role === 'DRIVER'
-                            ? 'bg-green-50 text-green-700 border-green-200'
-                            : 'bg-blue-50 text-blue-700 border-blue-200'
-                        }`}
+                              ? 'bg-green-50 text-green-700 border-green-200'
+                              : 'bg-blue-50 text-blue-700 border-blue-200'
+                          }`}
                       >
-                        {getRoleIcon(user.role)}
+                        {getRoleIcon( user.role )}
                         {user.role}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col">
-                        <Badge 
-                          variant={user.isBlocked ? "destructive" : "outline"} 
-                          className={`w-fit ${!user.isBlocked && user.isOnline ? 'bg-green-50 text-green-700 border-green-200' : ''}`}
+                        <Badge
+                          variant={user.isBlocked ? "destructive" : "outline"}
+                          className={`w-fit ${ !user.isBlocked && user.isOnline ? 'bg-green-50 text-green-700 border-green-200' : '' }`}
                         >
                           {user.isBlocked ? 'Blocked' : user.isOnline ? 'Online' : 'Offline'}
                         </Badge>
                         {user.lastOnlineAt && (
                           <div className="text-xs text-muted-foreground mt-1">
-                            Last online: {formatDate(user.lastOnlineAt)}
+                            Last online: {formatDate( user.lastOnlineAt )}
                           </div>
                         )}
                       </div>
                     </TableCell>
-                    <TableCell>{formatDate(user.createdAt)}</TableCell>
+                    <TableCell>{formatDate( user.createdAt )}</TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
+                          <Button
+                            
+                            variant="ghost"
+                            className="h-8 w-8 p-0"
+                          >
                             <span className="sr-only">Open menu</span>
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
+
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem>
@@ -298,20 +315,20 @@ export default function ManageAccessUser() {
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                ))}
+                ) )}
               </TableBody>
             </Table>
 
             {/* Pagination Controls */}
-            <div className="flex items-center justify-between mt-4">
+            <div className="flex flex-wrap items-center justify-center gap-3 md:justify-between mt-4">
               <div className="text-sm text-muted-foreground">
-                Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, meta.totalDocuments)} of {meta.totalDocuments} users
+                Showing {( ( currentPage - 1 ) * itemsPerPage ) + 1} to {Math.min( currentPage * itemsPerPage, meta.totalDocuments )} of {meta.totalDocuments} users
               </div>
               <div className="flex items-center space-x-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => goToPage(1)}
+                  onClick={() => goToPage( 1 )}
                   disabled={currentPage === 1}
                 >
                   <ChevronsLeft className="h-4 w-4" />
@@ -319,27 +336,27 @@ export default function ManageAccessUser() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => goToPage(currentPage - 1)}
+                  onClick={() => goToPage( currentPage - 1 )}
                   disabled={currentPage === 1}
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
                 
-                {getPageNumbers().map(page => (
+                {getPageNumbers().map( page => (
                   <Button
                     key={page}
                     variant={currentPage === page ? "default" : "outline"}
                     size="sm"
-                    onClick={() => goToPage(page)}
+                    onClick={() => goToPage( page )}
                   >
                     {page}
                   </Button>
-                ))}
+                ) )}
                 
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => goToPage(currentPage + 1)}
+                  onClick={() => goToPage( currentPage + 1 )}
                   disabled={currentPage === totalPages}
                 >
                   <ChevronRight className="h-4 w-4" />
@@ -347,7 +364,7 @@ export default function ManageAccessUser() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => goToPage(totalPages)}
+                  onClick={() => goToPage( totalPages )}
                   disabled={currentPage === totalPages}
                 >
                   <ChevronsRight className="h-4 w-4" />
@@ -376,11 +393,11 @@ export default function ManageAccessUser() {
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    label={( { name, percent } ) => `${ name }: ${ ( percent * 100 ).toFixed( 0 ) }%`}
                   >
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
+                    {chartData.map( ( entry, index ) => (
+                      <Cell key={`cell-${ index }`} fill={COLORS[ index % COLORS.length ]} />
+                    ) )}
                   </Pie>
                   <Tooltip />
                   <Legend />
@@ -389,18 +406,18 @@ export default function ManageAccessUser() {
             </div>
             
             <div className="mt-4 space-y-2">
-              {chartData.map((item, index) => (
+              {chartData.map( ( item, index ) => (
                 <div key={item.name} className="flex items-center justify-between">
                   <div className="flex items-center">
-                    <div 
-                      className="w-3 h-3 rounded-full mr-2" 
-                      style={{ backgroundColor: COLORS[index] }}
+                    <div
+                      className="w-3 h-3 rounded-full mr-2"
+                      style={{ backgroundColor: COLORS[ index ] }}
                     ></div>
                     <span className="text-sm">{item.name}</span>
                   </div>
                   <span className="text-sm font-medium">{item.value}</span>
                 </div>
-              ))}
+              ) )}
             </div>
           </CardContent>
         </Card>

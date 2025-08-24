@@ -42,8 +42,57 @@ export const adminApi = baseApi.injectEndpoints( {
                         
             } ),
             providesTags: [ "RIDES" ]
-        } )
+        } ),
+        getUserById:builder.query( {
+            query: (id: string) =>
+            ( {
+                url: `/admin/user/${id}`,
+                method: "GET",
+                        
+            } ),
+            providesTags: [ "USER" ]
+        } ),
+
+        deleteBlockedUserById :builder.mutation( {
+            query: (id: string) =>
+            ( {
+                url: `/delete-blocked-user/${id}`,
+                method: "DELETE",
+                        
+            } ),
+            revalidateTags: [ "USER" ]
+        } ),
+
+        blockUserById :builder.mutation( {
+            query: (id: string, blockParam: string) =>
+            ( {
+                url: `/block-user/${id}/${blockParam}`,
+                method: "PATCH",
+                        
+            } ),
+            revalidateTags: [ "USER" ]
+        } ),
+
+        suspendDriverById :builder.mutation( {
+            query: (id: string, suspendParam: string) =>
+            ( {
+                url: `/suspend-driver/${id}/${suspendParam}`,
+                method: "PATCH",
+                        
+            } ),
+            revalidateTags: [ "USER" ]
+        } ),
+
+        approveDriverById :builder.mutation( {
+            query: (id: string, approveParam: string) =>
+            ( {
+                url: `/approve-driver/${id}/${approveParam}`,
+                method: "PATCH",
+                        
+            } ),
+            revalidateTags: [ "USER" ]
+        } ),
     } )
 } );
 
-export const { useAllDriverDataQuery, useAllRideDataQuery, useAllUserDataQuery} = adminApi;
+export const { useAllDriverDataQuery, useAllRideDataQuery, useAllUserDataQuery, useLazyGetUserByIdQuery} = adminApi;
