@@ -1,55 +1,9 @@
+import UpdateProfileModal from "@/components/dialogs/UpdateProfile";
 import { useUserDataQuery } from "@/redux/features/api/auth.api";
-import { useState } from 'react';
 
 export default function UserInfo() {
   const { data } = useUserDataQuery();
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({});
-  const [isSaving, setIsSaving] = useState(false);
-  
-  // Initialize form data when data is available
-  if (data && data.data && Object.keys(formData).length === 0) {
-    setFormData(data.data);
-  }
-  
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
-  
-  const handleSave = () => {
-    setIsSaving(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsSaving(false);
-      setIsEditing(false);
-      // Here you would typically make an API call to save the changes
-      console.log('Saving data:', formData);
-    }, 1500);
-  };
-  
-  const handleCancel = () => {
-    setFormData(data.data);
-    setIsEditing(false);
-  };
-  
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
 
-  const handleLocationChange = (e) => {
-    const { value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      location: {
-        ...prev.location,
-        address: value
-      }
-    }));
-  };
 
   if (!data || !data.data) {
     return (
@@ -75,51 +29,9 @@ export default function UserInfo() {
                 <h1 className="text-2xl font-bold">User Profile</h1>
                 <p className="text-blue-100 mt-1">Manage your account information</p>
               </div>
-              {!isEditing ? (
-                <button 
-                  onClick={handleEdit}
-                  className="mt-4 sm:mt-0 bg-white text-blue-600 hover:bg-blue-50 font-medium py-2 px-4 rounded-lg transition duration-200 flex items-center"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                  </svg>
-                  Edit Profile
-                </button>
-              ) : (
-                <div className="flex space-x-2 mt-4 sm:mt-0">
-                  <button 
-                    onClick={handleSave}
-                    disabled={isSaving}
-                    className="bg-emerald-500 text-white hover:bg-emerald-600 font-medium py-2 px-4 rounded-lg transition duration-200 flex items-center disabled:opacity-75"
-                  >
-                    {isSaving ? (
-                      <>
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Saving...
-                      </>
-                    ) : (
-                      <>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                        Save Changes
-                      </>
-                    )}
-                  </button>
-                  <button 
-                    onClick={handleCancel}
-                    className="bg-gray-500 text-white hover:bg-gray-600 font-medium py-2 px-4 rounded-lg transition duration-200 flex items-center"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                    Cancel
-                  </button>
-                </div>
-              )}
+              <div>
+                <UpdateProfileModal user={user}/>
+              </div>
             </div>
           </div>
 
@@ -138,47 +50,17 @@ export default function UserInfo() {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-600 mb-1">Full Name</label>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        name="name"
-                        value={formData.name || ''}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
-                      />
-                    ) : (
-                      <p className="text-gray-800">{user.name}</p>
-                    )}
+                    <p className="text-gray-800">{user.name}</p>
                   </div>
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-600 mb-1">Email Address</label>
-                    {isEditing ? (
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email || ''}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
-                      />
-                    ) : (
-                      <p className="text-gray-800">{user.email}</p>
-                    )}
+                    <p className="text-gray-800">{user.email}</p>
                   </div>
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-600 mb-1">Username</label>
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        name="username"
-                        value={formData.username || ''}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
-                      />
-                    ) : (
-                      <p className="text-gray-800">{user.username}</p>
-                    )}
+                    <p className="text-gray-800">{user.username}</p>
                   </div>
                   
                   <div>
@@ -235,16 +117,7 @@ export default function UserInfo() {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-600 mb-1">Address</label>
-                  {isEditing ? (
-                    <textarea
-                      value={formData.location?.address || ''}
-                      onChange={handleLocationChange}
-                      rows="3"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
-                    />
-                  ) : (
-                    <p className="text-gray-800">{user.location?.address || 'No address provided'}</p>
-                  )}
+                  <p className="text-gray-800">{user.location?.address || 'No address provided'}</p>
                 </div>
               </div>
 
