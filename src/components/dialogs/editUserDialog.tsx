@@ -142,9 +142,15 @@ export default function EditUserDialog({ user }: IEditUserDialog) {
   return (
     <Dialog className="p-3">
       <DialogTrigger asChild>
-        <p>Edit</p>
+        <Button variant={"ghost"} size={"icon"}>Edit</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" onKeyDown={( e ) =>
+      {
+        if ( e.code === "Space" )
+        {
+          e.stopPropagation();
+        }
+      }} onInteractOutside={( e ) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Edit User</DialogTitle>
           <DialogDescription>
@@ -198,7 +204,7 @@ export default function EditUserDialog({ user }: IEditUserDialog) {
                 onChange={() =>
                 {
                   setEditVehicle( !editVehicle );
-                  if ( !editVehicle ) setEditName( false ); 
+                  if ( !editVehicle ) setEditName( false );
                 }}
               />
             </label>

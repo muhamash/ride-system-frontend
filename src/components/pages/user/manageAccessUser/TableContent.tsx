@@ -106,8 +106,8 @@ export default function TableContent ( { users }: ITableContent )
                                 }
                                 {
                                     user?.driver && (
-                                        <Badge className={`${user?.driver?.isApproved ? "bg-green-800" : "bg-rose-800"}`}>
-                                        {user?.driver?.isApproved ? "Approved" : "NotApproved"}
+                                        <Badge className={`${ user?.driver?.isApproved ? "bg-green-800" : "bg-rose-800" }`}>
+                                            {user?.driver?.isApproved ? "Approved" : "NotApproved"}
                                         </Badge>
                                     )
                                 }
@@ -130,16 +130,16 @@ export default function TableContent ( { users }: ITableContent )
                         </TableCell>
                         <TableCell>{formatDate( user.createdAt )}</TableCell>
 
-                        {user.role !== UserRole.ADMIN ? (
-                            <DropDownMenu user={user}/>
-                        ) : (
-                            <div className='text-center flex justify-center items-center'>
-                                <Badge className='bg-yellow-200 text-black'>Admin</Badge>
-                            </div>
-                        )}
+                        
 
                         <TableCell className="text-right">
-                            
+                            {user.role !== UserRole.ADMIN ? (
+                                <DropDownMenu user={user} />
+                            ) : (
+                                <div className='text-center flex justify-center items-center'>
+                                    <Badge className='bg-yellow-200 text-black'>Admin</Badge>
+                                </div>
+                            )}
                         </TableCell>
                     </TableRow>
                 ) )}

@@ -3,11 +3,11 @@
 
 import EditUserDialog from '@/components/dialogs/editUserDialog';
 import { useMyToast } from '@/components/layouts/MyToast';
-import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { adminApi, useApproveDriverByIdMutation, useBlockUserByIdMutation, useDeleteBlockedUserByIdMutation, useSuspendDriverByIdMutation } from '@/redux/features/api/admin.api';
 import { useAppDispatch } from '@/redux/hooks';
-import { BanIcon, Car, CarTaxiFront, CheckCircle, Edit, MoreHorizontal, Trash2 } from "lucide-react";
+import { AxeIcon, BanIcon, Car, CarTaxiFront, CheckCircle, Edit, Trash2 } from "lucide-react";
 import type { approvalParam, blockParam, suspendParam } from './type';
 
 interface IDropDownMenu
@@ -152,10 +152,11 @@ export default function DropDownMenu ( { user }: IDropDownMenu )
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                    <span className="sr-only">Open menu</span>
-                    <MoreHorizontal className="h-4 w-4" />
-                </Button>
+                <Badge variant="danger" className="h-8 bg-orange-100 w-16 p-0 cursor-pointer">
+                    <span className="sr-only">Action</span>
+                    <p>Action</p>
+                    <AxeIcon className="h-4 w-4 text-violet-600" />
+                </Badge>
             </DropdownMenuTrigger>
     
             <DropdownMenuContent align="end">
