@@ -1,9 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import type { approvalParam, blockParam, suspendParam } from "@/components/pages/user/manageAccessUser/type";
 import { baseApi } from "@/redux/baseApi";
+
+interface ApiResponse<T> {
+  message: string;
+  statusCode: number;
+  data: T;
+}
 
 export const adminApi = baseApi.injectEndpoints( {
     endpoints: ( builder ) => ( {
-        allUserData: builder.query( {
+        allUserData: builder.query<ApiResponse<User[]>, { page?: string; limit?: string }>( {
             query: ( params ) =>
             {
                 const urlParams = new URLSearchParams();
@@ -20,7 +27,14 @@ export const adminApi = baseApi.injectEndpoints( {
                     method: "GET",
                 };
             },
-            providesTags: [ "USER" ],
+            providesTags: (result) =>
+  result?.data.data
+    ? [
+        ...result.data.data.map(({ _id }) => ({ type: 'USER' as const, id: _id })),
+        { type: 'USER', id: 'LIST' },
+      ]
+    : [{ type: 'USER', id: 'LIST' }],
+
             serializeQueryArgs: ({ endpointName, queryArgs }) => {
                 return `${endpointName}-${queryArgs.page}-${queryArgs.limit}`;
             },
@@ -51,13 +65,13 @@ export const adminApi = baseApi.injectEndpoints( {
                 method: "GET",
                         
             } ),
-            providesTags: [ "USER" ]
+            providesTags: (result, error, id) => [{ type: 'USER', id }],
         } ),
 
         deleteBlockedUserById :builder.mutation( {
             query: (id: string) =>
             ( {
-                url: `/delete-blocked-user/${id}`,
+                url: `/admin/delete-blocked-user/${id}`,
                 method: "DELETE",
                         
             } ),
@@ -65,9 +79,10 @@ export const adminApi = baseApi.injectEndpoints( {
         } ),
 
         blockUserById :builder.mutation( {
-            query: (id: string, blockParam: string) =>
+            query: ({ id, blockParam }: { id: string; blockParam: blockParam }) =>
             ( {
-                url: `/block-user/${id}/${blockParam}`,
+                
+                url: `/admin/block-user/${id}/${blockParam}`,
                 method: "PATCH",
                         
             } ),
@@ -75,9 +90,9 @@ export const adminApi = baseApi.injectEndpoints( {
         } ),
 
         suspendDriverById :builder.mutation( {
-            query: (id: string, suspendParam: string) =>
+            query: ({ id, suspendParam }: { id: string; suspendParam: suspendParam }) =>
             ( {
-                url: `/suspend-driver/${id}/${suspendParam}`,
+                url: `admin/suspend-driver/${id}/${suspendParam}`,
                 method: "PATCH",
                         
             } ),
@@ -85,9 +100,9 @@ export const adminApi = baseApi.injectEndpoints( {
         } ),
 
         approveDriverById :builder.mutation( {
-            query: (id: string, approveParam: string) =>
+            query: ({ id, approveParam }: { id: string; approveParam: approvalParam }) =>
             ( {
-                url: `/approve-driver/${id}/${approveParam}`,
+                url: `admin/approve-driver/${id}/${approveParam}`,
                 method: "PATCH",
                         
             } ),
@@ -118,4 +133,4 @@ export const adminApi = baseApi.injectEndpoints( {
     } )
 } );
 
-export const { useAllDriverDataQuery, useAllRideDataQuery, useAllUserDataQuery, useLazyGetUserByIdQuery, useEditDriverByIdMutation, useEditUserByIdMutation,} = adminApi;
+export const { useAllDriverDataQuery, useAllRideDataQuery, useAllUserDataQuery, useLazyGetUserByIdQuery, useEditDriverByIdMutation, useEditUserByIdMutation, useBlockUserByIdMutation, useSuspendDriverByIdMutation, useApproveDriverByIdMutation, useDeleteBlockedUserByIdMutation} = adminApi;

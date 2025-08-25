@@ -47,8 +47,13 @@ export default function TableContent ( { users }: ITableContent )
         } );
     };
 
-    const { data: userData } = useUserDataQuery();
-    const dataOwn = userData?.data
+    const { data: userData, isLoading } = useUserDataQuery();
+    const dataOwn = userData?.data;
+
+    if ( isLoading )
+    {
+        return <p>Loading..</p>
+    }
 
     // console.log(users)
     
