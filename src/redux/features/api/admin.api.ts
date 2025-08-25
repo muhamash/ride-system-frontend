@@ -116,9 +116,9 @@ export const adminApi = baseApi.injectEndpoints( {
         } ),
         
         editUserById: builder.mutation( {
-            query: ( id: string, payload: any ) =>
+            query: ( { id, payload }: { id: string, payload: any } ) =>
             ( {
-                url: `/update-user/${ id }`,
+                url: `/user/update-user/${ id }`,
                 method: "PATCH",
                 data: payload
                         

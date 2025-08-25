@@ -11,6 +11,7 @@ import
         TableHeader,
         TableRow,
     } from "@/components/ui/table";
+import { UserRole } from '@/constants/userRole';
 import { useUserDataQuery } from '@/redux/features/api/auth.api';
 import
     {
@@ -129,11 +130,11 @@ export default function TableContent ( { users }: ITableContent )
                         </TableCell>
                         <TableCell>{formatDate( user.createdAt )}</TableCell>
 
-                        {user._id !== dataOwn._id ? (
+                        {user.role !== UserRole.ADMIN ? (
                             <DropDownMenu user={user}/>
                         ) : (
                             <div className='text-center flex justify-center items-center'>
-                                <Badge>You!</Badge>
+                                <Badge className='bg-yellow-200 text-black'>Admin</Badge>
                             </div>
                         )}
 
