@@ -27,7 +27,7 @@ import
     FormMessage,
   } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useEditUserByIdMutation } from "@/redux/features/api/admin.api";
+import { useEditDriverByIdMutation, useEditUserByIdMutation } from "@/redux/features/api/admin.api";
 import { authApi } from "@/redux/features/api/auth.api";
 import { useAppDispatch } from "@/redux/hooks";
 
@@ -76,6 +76,7 @@ export default function EditUserDialog({ user }: IEditUserDialog) {
   const [editName, setEditName] = React.useState(false);
   const [ editVehicle, setEditVehicle ] = React.useState( false );
   const [ editUser ] = useEditUserByIdMutation();
+  const [ editVehicleInfo ] = useEditDriverByIdMutation();
   const dispatch = useAppDispatch();
 
   const onSubmit = async ( data: z.infer<typeof schema> ) =>
@@ -96,7 +97,7 @@ export default function EditUserDialog({ user }: IEditUserDialog) {
     {
       if ( editName )
       {
-        console.log(user)
+        // console.log(user)
         await editUser( {
           id: user?._id,
           payload: updates
@@ -107,13 +108,17 @@ export default function EditUserDialog({ user }: IEditUserDialog) {
           type: "success",
         } );
 
-        dispatch( authApi.util.resetApiState() );
-
         setEditName( false );
       }
       
       if ( editVehicle )
       {
+        // console.log()
+        await editVehicleInfo( {
+          id: user?.driver?._id,
+          payload: updates?.vehicleInfo
+        } ).unwrap();
+
         showToast( {
           message: `Vehicle  updated successfully!`,
           type: "success",
@@ -127,6 +132,10 @@ export default function EditUserDialog({ user }: IEditUserDialog) {
         message: error?.message || error?.data?.message,
         type: "error",
       } );
+    }
+    finally
+    {
+      dispatch( authApi.util.resetApiState() );
     }
   };
 

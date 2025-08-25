@@ -105,9 +105,9 @@ export const adminApi = baseApi.injectEndpoints( {
 
         // update
         editDriverById: builder.mutation( {
-            query: ( id: string, payload: any ) =>
+            query: ( {id, payload}: {id: string, payload: any} ) =>
             ( {
-                url: `/update-driver/${ id }`,
+                url: `/driver/driver-update-vehicle/${ id }`,
                 method: "PATCH",
                 data: payload
                         
