@@ -44,6 +44,7 @@ export function LoginForm({
         {
             const result = await loginUser( data ).unwrap();
             console.log( result, { isLoading, error } );
+            
 
             showToast( {
                 message: result?.message || "Welcome bro",
@@ -59,7 +60,12 @@ export function LoginForm({
                 type: "error",
             } );
 
-            console.log( error )
+            if ( error?.data?.flag )
+            {
+                navigate( `/account-status-page/${error?.data?.userId}`, { state: error?.data?.flag } );
+            }
+
+            console.log( error?.data?.userId )
         }
     };
 

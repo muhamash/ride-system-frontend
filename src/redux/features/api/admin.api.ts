@@ -32,7 +32,6 @@ export const adminApi = baseApi.injectEndpoints( {
             }
         ),
 
-
         allDriverData: builder.query( {
             query: () =>
             ( {
@@ -42,6 +41,7 @@ export const adminApi = baseApi.injectEndpoints( {
             } ),
             providesTags: [ "DRIVER" ]
         } ),
+              
         allRideData: builder.query( {
             query: () =>
             ( {
@@ -51,6 +51,7 @@ export const adminApi = baseApi.injectEndpoints( {
             } ),
             providesTags: [ "RIDES" ]
         } ),
+
         getUserById: builder.query( {
             query: ( id: string ) =>
             ( {
@@ -58,7 +59,7 @@ export const adminApi = baseApi.injectEndpoints( {
                 method: "GET",
                         
             } ),
-            providesTags: ( result, error, id ) => [ { type: 'USER', id } ],
+            revalidateTags: [ "USER" ]
         } ),
 
         deleteBlockedUserById: builder.mutation( {
@@ -127,4 +128,4 @@ export const adminApi = baseApi.injectEndpoints( {
     } )
 } );
 
-export const { useAllDriverDataQuery, useAllRideDataQuery, useAllUserDataQuery, useLazyGetUserByIdQuery, useEditDriverByIdMutation, useEditUserByIdMutation, useBlockUserByIdMutation, useSuspendDriverByIdMutation, useApproveDriverByIdMutation, useDeleteBlockedUserByIdMutation} = adminApi;
+export const { useAllDriverDataQuery, useAllRideDataQuery, useAllUserDataQuery, useLazyGetUserByIdQuery, useEditDriverByIdMutation, useEditUserByIdMutation, useBlockUserByIdMutation, useSuspendDriverByIdMutation, useApproveDriverByIdMutation, useDeleteBlockedUserByIdMutation, useGetUserByIdQuery} = adminApi;

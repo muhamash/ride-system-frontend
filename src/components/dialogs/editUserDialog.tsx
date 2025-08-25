@@ -80,9 +80,9 @@ export default function EditUserDialog({ user }: IEditUserDialog) {
   };
 
   return (
-    <Dialog>
+    <Dialog className="p-3">
       <DialogTrigger asChild>
-        <Button variant="outline">Edit</Button>
+        <p>Edit</p>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>

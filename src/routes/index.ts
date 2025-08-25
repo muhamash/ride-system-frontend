@@ -1,4 +1,5 @@
 import AboutPage from "@/components/pages/About";
+import AccountStatusPage from "@/components/pages/AcoountStatPage";
 import LoginPage from "@/components/pages/auth/login/page";
 import RegistrationPage from "@/components/pages/auth/registration/page";
 import ContactPage from "@/components/pages/ContactPage";
@@ -56,6 +57,10 @@ export const appRouter = createBrowserRouter( [
   {
     path: "/registration",
     Component: RegistrationPage
+  },
+  {
+    path: "/account-status-page/:id",
+    Component: AccountStatusPage
   },
   {
     path: "/unauthorized",
