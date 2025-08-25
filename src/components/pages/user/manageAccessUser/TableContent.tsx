@@ -2,14 +2,6 @@
  
 import { UserViewDialog } from '@/components/dialogs/UsrViewDialaog';
 import { Badge } from '@/components/ui/badge';
-import { Button } from "@/components/ui/button";
-import
-    {
-        DropdownMenu,
-        DropdownMenuContent,
-        DropdownMenuItem,
-        DropdownMenuTrigger,
-    } from "@/components/ui/dropdown-menu";
 import
     {
         Table,
@@ -22,16 +14,11 @@ import
 import { useUserDataQuery } from '@/redux/features/api/auth.api';
 import
     {
-        BanIcon,
         Bike,
-        Car,
-        CheckCircle,
-        Edit,
-        MoreHorizontal,
         Shield,
-        Trash2,
         User
     } from "lucide-react";
+import DropDownMenu from './DropDownMenu';
     
 interface ITableContent
 {
@@ -63,7 +50,7 @@ export default function TableContent ( { users }: ITableContent )
     const { data: userData } = useUserDataQuery();
     const dataOwn = userData?.data
 
-    console.log(users)
+    // console.log(users)
     
     return (
         <Table>
@@ -106,7 +93,7 @@ export default function TableContent ( { users }: ITableContent )
                                 </Badge>
                                 {
                                     user?.driver && (
-                                        <Badge>
+                                        <Badge className='mt-2'>
                                             {user?.driver?.driverStatus}
                                         </Badge>
                                     )
@@ -129,69 +116,9 @@ export default function TableContent ( { users }: ITableContent )
                             </div>
                         </TableCell>
                         <TableCell>{formatDate( user.createdAt )}</TableCell>
+
                         {user._id !== dataOwn._id ? (
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="h-8 w-8 p-0">
-                                        <span className="sr-only">Open menu</span>
-                                        <MoreHorizontal className="h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-
-                                <DropdownMenuContent align="end">
-                                    {/* Edit */}
-                                    <DropdownMenuItem>
-                                        <div className='flex items-center gap-2'>
-                                            <Edit className="h-4 w-4" />
-                                            <p>Edit</p>
-                                        </div>
-                                    </DropdownMenuItem>
-
-                                    {/* Block / Unblock */}
-                                    <DropdownMenuItem>
-                                        <div className='flex items-center gap-2'>
-                                            {user.isBlocked ? (
-                                                <>
-                                                    <CheckCircle className="h-4 w-4 text-green-600" />
-                                                    <p>Unblock</p>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <BanIcon className="h-4 w-4 text-rose-600" />
-                                                    <p>Block</p>
-                                                </>
-                                            )}
-                                        </div>
-                                    </DropdownMenuItem>
-
-                                    {/* Suspend / Unsuspend */}
-                                    {
-                                        user?.driver && (
-                                            <DropdownMenuItem>
-                                                <div className='flex items-center gap-2'>
-                                                    {user?.driver?.driverStatus === "SUSPENDED" ? (
-                                                        <>
-                                                            <Car className='h-4 w-4 text-cyan-600' />
-                                                            <p>Un-Suspend</p>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <Car className='h-4 w-4 text-rose-600' />
-                                                            <p>Suspend</p>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            </DropdownMenuItem>
-                                        )
-                                    }
-
-                                    {/* Delete */}
-                                    <DropdownMenuItem className="text-red-600">
-                                        <Trash2 className=" h-4 w-4" />
-                                        Delete User
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                            <DropDownMenu user={user}/>
                         ) : (
                             <div className='text-center flex justify-center items-center'>
                                 <Badge>You!</Badge>
@@ -200,7 +127,6 @@ export default function TableContent ( { users }: ITableContent )
 
                         <TableCell className="text-right">
                             
-                      
                         </TableCell>
                     </TableRow>
                 ) )}

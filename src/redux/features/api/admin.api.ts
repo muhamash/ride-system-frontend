@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { baseApi } from "@/redux/baseApi";
 
 export const adminApi = baseApi.injectEndpoints( {
@@ -92,7 +93,29 @@ export const adminApi = baseApi.injectEndpoints( {
             } ),
             revalidateTags: [ "USER" ]
         } ),
+
+        // update
+        editDriverById :builder.mutation( {
+            query: (id: string, payload: any) =>
+            ( {
+                url: `/update-driver/${id}`,
+                method: "PATCH",
+                data: payload
+                        
+            } ),
+            revalidateTags: [ "USER", "DRIVER" ]
+        } ),
+        editUserById :builder.mutation( {
+            query: (id: string, payload: any) =>
+            ( {
+                url: `/update-user/${id}`,
+                method: "PATCH",
+                data: payload
+                        
+            } ),
+            revalidateTags: [ "USER" ]
+        } ),
     } )
 } );
 
-export const { useAllDriverDataQuery, useAllRideDataQuery, useAllUserDataQuery, useLazyGetUserByIdQuery} = adminApi;
+export const { useAllDriverDataQuery, useAllRideDataQuery, useAllUserDataQuery, useLazyGetUserByIdQuery, useEditDriverByIdMutation, useEditUserByIdMutation,} = adminApi;

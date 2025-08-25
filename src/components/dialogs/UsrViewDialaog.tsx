@@ -27,19 +27,17 @@ interface UserViewDialogProps {
 export function UserViewDialog ( { userId }: UserViewDialogProps )
 {
   
-  const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const [triggerGetUser, { data, isFetching }] = useLazyGetUserByIdQuery();
 
   // Trigger fetch only when dialog opens
   useEffect(() => {
-    if (open) {
+    if (editOpen) {
       triggerGetUser(userId);
     }
-  }, [open, userId, triggerGetUser]);
+  }, [editOpen, userId, triggerGetUser]);
 
   const user = data?.data;
-  
-
   
 
   // Mock map component
@@ -101,7 +99,7 @@ export function UserViewDialog ( { userId }: UserViewDialogProps )
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={editOpen} onOpenChange={setEditOpen}>
       <DialogTrigger asChild>
         <Button size="sm" className="bg-teal-100 cursor-pointer" variant="outline">
           View user
