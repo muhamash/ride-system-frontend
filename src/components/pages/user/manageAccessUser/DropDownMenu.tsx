@@ -5,10 +5,10 @@ import EditUserDialog from '@/components/dialogs/editUserDialog';
 import { useMyToast } from '@/components/layouts/MyToast';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { adminApi, useBlockUserByIdMutation, useDeleteBlockedUserByIdMutation, useSuspendDriverByIdMutation } from '@/redux/features/api/admin.api';
+import { adminApi, useApproveDriverByIdMutation, useBlockUserByIdMutation, useDeleteBlockedUserByIdMutation, useSuspendDriverByIdMutation } from '@/redux/features/api/admin.api';
 import { useAppDispatch } from '@/redux/hooks';
-import { BanIcon, Car, CheckCircle, Edit, MoreHorizontal, Trash2 } from "lucide-react";
-import type { blockParam, suspendParam } from './type';
+import { BanIcon, Car, CarTaxiFront, CheckCircle, Edit, MoreHorizontal, Trash2 } from "lucide-react";
+import type { approvalParam, blockParam, suspendParam } from './type';
 
 interface IDropDownMenu
 {
@@ -17,10 +17,12 @@ interface IDropDownMenu
 
 export default function DropDownMenu ( { user }: IDropDownMenu )
 {
+    // console.log(user)
 
     const [ blockUserById ] = useBlockUserByIdMutation();
     const [ suspendUserById ] = useSuspendDriverByIdMutation();
     const [ deleteBlockUserById ] = useDeleteBlockedUserByIdMutation();
+    const [ approveDriverById ] = useApproveDriverByIdMutation();
 
     const { showToast, updateToast } = useMyToast();
     
@@ -117,6 +119,36 @@ export default function DropDownMenu ( { user }: IDropDownMenu )
         }
     };
 
+    const handleApproveDriver = async () =>
+    {
+        const toastId = showToast( {
+            message: "Trying to action[Approve]..",
+            type: "loading",
+            autClose: false,
+        } );
+
+        const action: approvalParam = user?.driver?.isApproved ? "notApproved" : "approved";
+        
+        // "approved" | "notApproved";
+
+        try
+        {
+            const res = await approveDriverById( { id: user?._id, approveParam: action } ).unwrap();
+            updateToast(toastId, {
+                    message: res?.message,
+                    type: "success"
+            } );
+            dispatch( adminApi.util.resetApiState() );
+        } catch ( error )
+        {
+            updateToast( toastId, {
+                message: error?.message || error?.data?.message,
+                type: "error"
+            } );
+        }
+    }
+
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -171,6 +203,17 @@ export default function DropDownMenu ( { user }: IDropDownMenu )
                                     </>
                                 )}
                             </div>
+                        </DropdownMenuItem>
+                    )
+                }
+
+                {
+                   user?.driver && (
+                        <DropdownMenuItem onClick={handleApproveDriver}>
+                            <CarTaxiFront className='h-4 w-4 text-green-600' />
+                            {
+                                !user?.driver?.isApproved ? "Approve" : "Red list"
+                            }
                         </DropdownMenuItem>
                     )
                 }

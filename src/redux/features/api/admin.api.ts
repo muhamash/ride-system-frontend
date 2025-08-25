@@ -120,6 +120,7 @@ export const adminApi = baseApi.injectEndpoints( {
             } ),
             revalidateTags: [ "USER", "DRIVER" ]
         } ),
+        
         editUserById :builder.mutation( {
             query: (id: string, payload: any) =>
             ( {

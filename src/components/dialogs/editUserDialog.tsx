@@ -5,60 +5,71 @@ import z from "zod";
 
 import { Button } from "@/components/ui/button";
 import
-    {
-        Dialog,
-        DialogContent,
-        DialogDescription,
-        DialogFooter,
-        DialogHeader,
-        DialogTitle,
-        DialogTrigger,
-    } from "@/components/ui/dialog";
+  {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+  } from "@/components/ui/dialog";
 
 import { useMyToast } from "@/components/layouts/MyToast";
 import
-    {
-        Form,
-        FormControl,
-        FormField,
-        FormItem,
-        FormLabel,
-        FormMessage,
-    } from "@/components/ui/form";
+  {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+  } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-const editUserSchema = z
-  .object({
-    name: z.string().min(3, { message: "Name must be at least 3 characters long" }),
-    oldPassword: z.string().min(6, { message: "Old password must be at least 6 characters" }),
-    newPassword: z.string().min(6, { message: "New password must be at least 6 characters" }),
-    confirmPassword: z.string().min(6, { message: "Confirm password must be at least 6 characters" }),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    path: ["confirmPassword"],
-    message: "Passwords do not match",
-  });
+// Base schema for common fields
+const baseSchema = z.object({
+  name: z.string().min(3, { message: "Name must be at least 3 characters long" }),
+});
 
-interface IEditUserDialog
-{
-    user: any;
+// Schema for DRIVER (name + vehicleInfo)
+const driverSchema = baseSchema.extend({
+  vehicleInfo: z.object({
+    license: z.string().min(3, { message: "License must be at least 3 characters" }),
+    model: z.string().min(2, { message: "Model must be at least 2 characters" }),
+    plateNumber: z.string().min(2, { message: "Plate number must be at least 2 characters" }),
+  }),
+});
+
+// Schema for RIDER (name only)
+const riderSchema = baseSchema;
+
+interface IEditUserDialog {
+  user: any;
 }
 
-export default function EditUserDialog ( { user }: IEditUserDialog) {
+export default function EditUserDialog({ user }: IEditUserDialog) {
   const { showToast } = useMyToast();
-  const form = useForm<z.infer<typeof editUserSchema>>({
-    resolver: zodResolver(editUserSchema),
+
+  // Dynamic schema selection
+  const schema = user?.role === "DRIVER" ? driverSchema : riderSchema;
+
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
     defaultValues: {
       name: user?.name || "",
-      oldPassword: "",
-      newPassword: "",
-      confirmPassword: "",
+      vehicleInfo:
+        user?.role === "DRIVER"
+          ? {
+              license: user?.vehicleInfo?.license || "",
+              model: user?.vehicleInfo?.model || "",
+              plateNumber: user?.vehicleInfo?.plateNumber || "",
+            }
+          : undefined,
     },
   });
 
-
-    console.log(user)
-  const onSubmit = (data: z.infer<typeof editUserSchema>) => {
+  const onSubmit = (data: z.infer<typeof schema>) => {
     console.log("User Data:", data);
     setTimeout(() => {
       showToast({
@@ -77,12 +88,15 @@ export default function EditUserDialog ( { user }: IEditUserDialog) {
         <DialogHeader>
           <DialogTitle>Edit User</DialogTitle>
           <DialogDescription>
-            Update user's name and password. Click save when you're done.
+            {user?.role === "DRIVER"
+              ? "Update driver's name and vehicle information."
+              : "Update rider's name."}
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Name field */}
             <FormField
               control={form.control}
               name="name"
@@ -97,47 +111,50 @@ export default function EditUserDialog ( { user }: IEditUserDialog) {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="oldPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Old Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="Enter old password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="newPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>New Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="Enter new password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirm Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="Confirm new password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Vehicle Info - Only for DRIVER */}
+            {user?.role === "DRIVER" && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="vehicleInfo.license"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>License</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter license" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="vehicleInfo.model"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Model</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter model" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="vehicleInfo.plateNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Plate Number</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter plate number" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
 
             <DialogFooter>
               <Button type="submit">Save changes</Button>

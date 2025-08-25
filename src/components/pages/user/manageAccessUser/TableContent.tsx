@@ -82,7 +82,7 @@ export default function TableContent ( { users }: ITableContent )
                             </div>
                         </TableCell>
                         <TableCell >
-                            <div className='flex-col items-center justify-center gp-2'>
+                            <div className='grid grid-cols-1 gap-2'>
                                 <Badge
                                     variant="outline"
                                     className={`flex items-center gap-1 ${ user.role === 'ADMIN'
@@ -100,6 +100,13 @@ export default function TableContent ( { users }: ITableContent )
                                     user?.driver && (
                                         <Badge className='mt-2'>
                                             {user?.driver?.driverStatus}
+                                        </Badge>
+                                    )
+                                }
+                                {
+                                    user?.driver && (
+                                        <Badge className={`${user?.driver?.isApproved ? "bg-green-800" : "bg-rose-800"}`}>
+                                        {user?.driver?.isApproved ? "Approved" : "NotApproved"}
                                         </Badge>
                                     )
                                 }
