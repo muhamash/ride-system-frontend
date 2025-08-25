@@ -221,7 +221,7 @@ export function UserViewDialog ( { userId }: UserViewDialogProps )
                       </div>
                     </div>
 
-                    {/* Ratings Section */}
+                     
                     {user?.driver?.rating && (
                       <>
                         <Separator />

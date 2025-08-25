@@ -26,11 +26,12 @@ export default function RequestRide() {
   const [destination, setDestination] = useState("");
   const [rideType, setRideType] = useState("standard");
   const [paymentMethod, setPaymentMethod] = useState("card");
-  const [useCurrentLocation, setUseCurrentLocation] = useState(true);
+  
 
   const { data } = useUserDataQuery();
   const userId = data?.data?._id || "";
-  const { coords, error: locationError, retry } = useContinuousLocation(userId);
+  const { coords, error: locationError, retry } = useContinuousLocation( userId );
+  const [useCurrentLocation, setUseCurrentLocation] = useState(true);
 
   const [pickupCoords, setPickupCoords] = useState<LatLng | null>(null);
   const [ destinationCoords, setDestinationCoords ] = useState<LatLng | null>( null );
