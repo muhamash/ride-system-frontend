@@ -10,35 +10,28 @@ interface ApiResponse<T> {
 
 export const adminApi = baseApi.injectEndpoints( {
     endpoints: ( builder ) => ( {
-        allUserData: builder.query<ApiResponse<User[]>, { page?: string; limit?: string }>( {
-            query: ( params ) =>
+        allUserData: builder.query<ApiResponse<User[]>, { page?: number; limit?: number; search?: string; sort?: string }>(
             {
-                const urlParams = new URLSearchParams();
+                query: ( params ) =>
+                {
+                    const urlParams = new URLSearchParams();
+                    if ( params.page ) urlParams.append( "page", params.page.toString() );
+                    if ( params.limit ) urlParams.append( "limit", params.limit.toString() );
+                    if ( params.search ) urlParams.append( "search", params.search );
+                    if ( params.sort ) urlParams.append( "sort", params.sort );
 
-    
-                if ( params.page ) urlParams.append( "page", params.page );
-                if ( params.limit ) urlParams.append( "limit", params.limit );
+                    return {
+                        url: `/admin/user/all?${ urlParams.toString() }`,
+                        method: "GET",
+                    };
+                },
+                serializeQueryArgs: ( { endpointName, queryArgs } ) =>
+                {
+                    return `${ endpointName }-${ queryArgs.page }-${ queryArgs.limit }-${ queryArgs.search }-${ queryArgs.sort }`;
+                },
+            }
+        ),
 
-                // console.log( params, `/admin/user/all?${ urlParams.toString() }` );
-
-                // return `/admin/user/all?${ urlParams.toString() }`;
-                return {
-                    url: `/admin/user/all?${ urlParams.toString() }`,
-                    method: "GET",
-                };
-            },
-            providesTags: (result) =>
-  result?.data.data
-    ? [
-        ...result.data.data.map(({ _id }) => ({ type: 'USER' as const, id: _id })),
-        { type: 'USER', id: 'LIST' },
-      ]
-    : [{ type: 'USER', id: 'LIST' }],
-
-            serializeQueryArgs: ({ endpointName, queryArgs }) => {
-                return `${endpointName}-${queryArgs.page}-${queryArgs.limit}`;
-            },
-        } ),
 
         allDriverData: builder.query( {
             query: () =>
@@ -58,51 +51,51 @@ export const adminApi = baseApi.injectEndpoints( {
             } ),
             providesTags: [ "RIDES" ]
         } ),
-        getUserById:builder.query( {
-            query: (id: string) =>
+        getUserById: builder.query( {
+            query: ( id: string ) =>
             ( {
-                url: `/admin/user/${id}`,
+                url: `/admin/user/${ id }`,
                 method: "GET",
                         
             } ),
-            providesTags: (result, error, id) => [{ type: 'USER', id }],
+            providesTags: ( result, error, id ) => [ { type: 'USER', id } ],
         } ),
 
-        deleteBlockedUserById :builder.mutation( {
-            query: (id: string) =>
+        deleteBlockedUserById: builder.mutation( {
+            query: ( id: string ) =>
             ( {
-                url: `/admin/delete-blocked-user/${id}`,
+                url: `/admin/delete-blocked-user/${ id }`,
                 method: "DELETE",
                         
             } ),
             revalidateTags: [ "USER" ]
         } ),
 
-        blockUserById :builder.mutation( {
-            query: ({ id, blockParam }: { id: string; blockParam: blockParam }) =>
+        blockUserById: builder.mutation( {
+            query: ( { id, blockParam }: { id: string; blockParam: blockParam } ) =>
             ( {
                 
-                url: `/admin/block-user/${id}/${blockParam}`,
+                url: `/admin/block-user/${ id }/${ blockParam }`,
                 method: "PATCH",
                         
             } ),
             revalidateTags: [ "USER" ]
         } ),
 
-        suspendDriverById :builder.mutation( {
-            query: ({ id, suspendParam }: { id: string; suspendParam: suspendParam }) =>
+        suspendDriverById: builder.mutation( {
+            query: ( { id, suspendParam }: { id: string; suspendParam: suspendParam } ) =>
             ( {
-                url: `admin/suspend-driver/${id}/${suspendParam}`,
+                url: `admin/suspend-driver/${ id }/${ suspendParam }`,
                 method: "PATCH",
                         
             } ),
             revalidateTags: [ "USER" ]
         } ),
 
-        approveDriverById :builder.mutation( {
-            query: ({ id, approveParam }: { id: string; approveParam: approvalParam }) =>
+        approveDriverById: builder.mutation( {
+            query: ( { id, approveParam }: { id: string; approveParam: approvalParam } ) =>
             ( {
-                url: `admin/approve-driver/${id}/${approveParam}`,
+                url: `admin/approve-driver/${ id }/${ approveParam }`,
                 method: "PATCH",
                         
             } ),
@@ -110,10 +103,10 @@ export const adminApi = baseApi.injectEndpoints( {
         } ),
 
         // update
-        editDriverById :builder.mutation( {
-            query: (id: string, payload: any) =>
+        editDriverById: builder.mutation( {
+            query: ( id: string, payload: any ) =>
             ( {
-                url: `/update-driver/${id}`,
+                url: `/update-driver/${ id }`,
                 method: "PATCH",
                 data: payload
                         
@@ -121,10 +114,10 @@ export const adminApi = baseApi.injectEndpoints( {
             revalidateTags: [ "USER", "DRIVER" ]
         } ),
         
-        editUserById :builder.mutation( {
-            query: (id: string, payload: any) =>
+        editUserById: builder.mutation( {
+            query: ( id: string, payload: any ) =>
             ( {
-                url: `/update-user/${id}`,
+                url: `/update-user/${ id }`,
                 method: "PATCH",
                 data: payload
                         

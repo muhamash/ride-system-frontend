@@ -11,15 +11,27 @@ import ChartShow from './Chart';
 import StatCards from './StatCards';
 import TableContent from './TableContent';
 import UserShowSelector from './UserShowSelector';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 
 export default function ManageAccessUser() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [ itemsPerPage, setItemsPerPage ] = useState( 10 );
+  const [search, setSearch] = useState("");
+  const [ sort, setSort ] = useState( "name" );
   
   const { data: allUser, isLoading, error } = useAllUserDataQuery( {
     page: currentPage,
-    limit: itemsPerPage
+    limit: itemsPerPage,
+    search,
+    sort,
   }, {
     refetchOnMountOrArgChange: true,
   } );
@@ -73,20 +85,47 @@ export default function ManageAccessUser() {
       </div>
       
       {/* Stats Cards */}
-     <StatCards users={users} meta={meta}/>
+      <StatCards users={users} meta={meta} />
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2">
-          <UserShowSelector itemsPerPage={itemsPerPage} setItemsPerPage={setItemsPerPage} setCurrentPage={setCurrentPage}/>
+          <UserShowSelector itemsPerPage={itemsPerPage} setItemsPerPage={setItemsPerPage} setCurrentPage={setCurrentPage} />
           <CardContent>
+            <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
+              {/* Search Field */}
+              <Input
+                placeholder="Search users..."
+                value={search}
+                onChange={( e ) =>
+                {
+                  setSearch( e.target.value );
+                  setCurrentPage( 1 );
+                }}
+                className="max-w-sm"
+              />
+
+              {/* Sort Dropdown */}
+              <Select onValueChange={( value ) => setSort( value )} value={sort}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="name">Name</SelectItem>
+                  <SelectItem value="email">Email</SelectItem>
+                  <SelectItem value="role">Role</SelectItem>
+                  <SelectItem value="-createdAt">Newest</SelectItem>
+                  <SelectItem value="createdAt">Oldest</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <TableContent users={users} />
 
             {/* Pagination Controls */}
-           <Pagination currentPage={currentPage} itemsPerPage={itemsPerPage} totalPages={totalPages} meta={meta} setCurrentPage={setCurrentPage}/>
+            <Pagination currentPage={currentPage} itemsPerPage={itemsPerPage} totalPages={totalPages} meta={meta} setCurrentPage={setCurrentPage} />
           </CardContent>
         </Card>
         
-        <ChartShow chartData={chartData}/>
+        <ChartShow chartData={chartData} />
       </div>
     </div>
   );
