@@ -107,7 +107,11 @@ export default function LocationInput({
                     <button
                         type="button"
                         className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                        onClick={() => onChange("")}
+                        onClick={() =>
+                        {
+                            onChange( "" );
+                            // onLocationSelect( { id: 0, name: "", address: "", coords: { lat: 0, lng: 0 } } );
+                        }}
                     >
                         <X className="h-4 w-4" />
                     </button>

@@ -28,9 +28,15 @@ interface RideMapProps {
   pickupCoords: any;
   destinationCoords: any;
   mapRef: React.RefObject<any>;
-  routeData: any[];
+  routeData: any;
   onlineDrivers?: any;
-  acceptDriverCords?: any[];
+}
+
+interface OnlineDrivers
+{
+  id: string,
+  lat: number,
+  lng: number
 }
 
 export default function RideMap({
@@ -39,26 +45,26 @@ export default function RideMap({
   destination,
   pickupCoords,
   destinationCoords,
-  acceptDriverCords,
   mapRef,
-  routeData = [],
+  routeData,
 }: RideMapProps) {
   const DEFAULT_CENTER: LatLngExpression = [22.7643863, 90.34924975706107];
-  console.log(routeData, onlineDrivers)
 
-  const routePositions: LatLngExpression[] = routeData.flatMap(segment => {
-    if (!segment?.routes?.length) return [];
-    const encoded = segment.routes[0].geometry;
-    return polyline.decode(encoded).map(([lat, lng]) => [lat, lng] as LatLngExpression);
-  });
+  // Decode polyline
+  let routePositions: LatLngExpression[] = [];
+  if (routeData?.data?.routes?.length) {
+    const encoded = routeData.data.routes[0].geometry;
+    routePositions = polyline.decode(encoded).map(([lat, lng]) => [lat, lng] as LatLngExpression);
+  }
 
-  const onlineDriverData = onlineDrivers
-    ? onlineDrivers.map(driver => ({
-        id: driver.email,
-        lat: driver.location.coordinates[1],
-        lng: driver.location.coordinates[0],
-      }))
+  const onlineDriverData: OnlineDrivers[] = onlineDrivers
+    ? onlineDrivers.map( driver => ( {
+      id: driver.email,
+      lat: driver.location.coordinates[ 1 ], 
+      lng: driver.location.coordinates[ 0 ],
+    } ) )
     : [];
+
 
   return (
     <Card className="shadow-lg z-1">
@@ -69,11 +75,11 @@ export default function RideMap({
             <p>Your Route</p>
           </div>
 
-          {onlineDrivers && (
-            <span className="flex items-center">
-              Online <Car className="text-purple-500 text-sm ml-1 mr-2" />: {onlineDrivers?.length}
-            </span>
-          )}
+          {
+            onlineDrivers && (
+               <span className="flex items-center ">Online <Car className="text-purple-500 text-sm ml-1 mr-2" /> : {onlineDrivers?.length}</span>
+            )
+         }
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
@@ -81,30 +87,39 @@ export default function RideMap({
           <MapContainer
             center={pickupCoords || DEFAULT_CENTER}
             zoom={13}
-            style={{ height: '100%', width: '100%' }}
+            style={{ height: '100%', width: '100%' , zIndex: "10"}}
             ref={mapRef}
           >
             <TileLayer
-              attribution='&copy; OpenStreetMap contributors'
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url={`https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`}
             />
 
-            {pickupCoords && <Marker position={pickupCoords}><Popup>Pickup: {pickupLocation}</Popup></Marker>}
-            {destinationCoords && <Marker position={destinationCoords}><Popup>Destination: {destination}</Popup></Marker>}
-
-            {onlineDriverData?.map( driver => (
-              <Marker key={driver.id} position={[ driver.lat, driver.lng ]} icon={bicycleIcon}>
-                <Popup>Driver ID: {driver.id}</Popup>
-              </Marker>
-            ) )}
-            
-            {acceptDriverCords && (
-              <Marker position={[ acceptDriverCords[ 0 ], acceptDriverCords[ 1 ] ]} icon={bicycleIcon}>
-                <Popup>Driver:{ acceptDriverCords[2] }</Popup>
+            {pickupCoords && (
+              <Marker position={pickupCoords}>
+                <Popup>Pickup: {pickupLocation}</Popup>
               </Marker>
             )}
 
-            {routePositions.length > 0 && <Polyline positions={routePositions} color="red" weight={4} />}
+            {destinationCoords && (
+              <Marker position={destinationCoords}>
+                <Popup>Destination: {destination}</Popup>
+              </Marker>
+            )}
+
+            {onlineDriverData || onlineDrivers && onlineDriverData?.map( ( driver: any ) => (
+              <Marker
+                key={driver.id}
+                position={[ driver.lat, driver.lng ]}
+                icon={bicycleIcon}
+              >
+                <Popup>Driver ID: {driver.id}</Popup>
+              </Marker>
+            ) )}
+
+            {routePositions.length > 0 && (
+              <Polyline positions={routePositions} color="red" weight={4} />
+            )}
           </MapContainer>
         </div>
       </CardContent>

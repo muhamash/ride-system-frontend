@@ -40,7 +40,7 @@ export default function RequestRide() {
   const mapRef = useRef<any>(null);
   const pickupInputRef = useRef<HTMLInputElement>(null);
   const destinationInputRef = useRef<HTMLInputElement>( null );
-  const [ routeDataState, setRouteDataState ] = useState<any>( null );
+  const [ routeDataState, setRouteDataState ] = useState<any>( );
 
   const [ getDirection, { data: routeData, isLoading, error } ] = useGetDirectionMutation();
   const { data: onlineDrivers } = useGetOnlineDriversQuery();
@@ -118,7 +118,7 @@ export default function RequestRide() {
 
   const handleRequestRide = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!pickupCoords || !destinationCoords) {
+    if (!destinationCoords) {
       alert("Please select valid pickup and destination locations");
       return;
     }
@@ -137,7 +137,8 @@ export default function RequestRide() {
     } else if (destinationCoords && mapRef.current) {
       mapRef.current.setView(destinationCoords, 13);
     }
-  }, [pickupCoords, destinationCoords]);
+  }, [ pickupCoords, destinationCoords ] );
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-30 px-4">
@@ -277,7 +278,7 @@ export default function RequestRide() {
                   type="submit"
                   className="w-full"
                   size="lg"
-                  disabled={!pickupCoords || !destinationCoords}
+                  disabled={!destinationCoords}
                 >
                   <Car className="mr-2 h-5 w-5" /> Request Ride Now
                 </Button>
@@ -287,13 +288,18 @@ export default function RequestRide() {
 
           {/* Map Section */}
           <div className="space-y-6">
+            {
+              isLoading && (
+                <p>Loading...</p>
+              )
+            }
             <RideMap
               pickupLocation={pickupLocation}
               destination={destination}
               pickupCoords={pickupCoords}
               destinationCoords={destinationCoords}
               mapRef={mapRef}
-              routeData={routeDataState}
+              routeData={[ routeDataState?.data ]}
               onlineDrivers={onlineDrivers?.data}
             />
 

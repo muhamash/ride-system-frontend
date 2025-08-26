@@ -1,3 +1,4 @@
+ 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { useUserDataQuery } from "@/redux/features/api/auth.api";
 import { rideApi, useGetRideByIdQuery } from "@/redux/features/api/ride.api";
 import { useAppDispatch } from "@/redux/hooks";
 import { useParams } from "react-router";
+import RouteFetcher from "./RouteFetcher.tsx";
 
 export default function RideInfoPage() {
   const { data: userData, isLoading: driverLoading } = useUserDataQuery();
@@ -17,6 +19,8 @@ export default function RideInfoPage() {
   const role = userData?.data?.role;
   const userId = role === UserRole.DRIVER ? userData?.data?.driver?._id : userData?.data?._id;
   const dispatch = useAppDispatch();
+
+  
 
   const handleRefresh = () =>
   {
@@ -110,6 +114,14 @@ export default function RideInfoPage() {
               <p className="text-sm text-gray-600">{new Date(ride.acceptedAt).toLocaleString()}</p>
             </div>
           )}
+
+          <Separator />
+          
+          {
+            ride && (
+              <RouteFetcher ride={ride}/>
+            )
+          }
         </CardContent>
       </Card>
     </div>
