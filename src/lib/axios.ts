@@ -2,7 +2,7 @@ import axios from "axios";
 import { envString } from "./envString";
 
 export const axiosInstance = axios.create( {
-    baseURL: envString.baseUrl || "http://localhost:3000/api",
+    baseURL: envString.baseUrl,
     timeout: 10000,
     headers: { "X-Custom-Header": "test" , "Authorization": "eikhane token er kono kaj nai!!"},
     withCredentials: true
@@ -12,7 +12,7 @@ export const axiosInstance = axios.create( {
 axiosInstance.interceptors.request.use( function ( config )
 {
     // Do something before request is sent
-    console.log(config)
+    // console.log(config)
     return config;
 }, function ( error )
 {
