@@ -20,7 +20,6 @@ export default function RideInfoPage() {
   const userId = role === UserRole.DRIVER ? userData?.data?.driver?._id : userData?.data?._id;
   const dispatch = useAppDispatch();
 
-  
 
   const handleRefresh = () =>
   {

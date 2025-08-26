@@ -9,7 +9,7 @@ import { useUserDataQuery } from "@/redux/features/api/auth.api";
 import { rideApi, useAcceptRideMutation, useCheckRideRequestMutation, useToggleDriverStatusMutation } from "@/redux/features/api/ride.api";
 import { useAppDispatch } from "@/redux/hooks";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 interface RideRequest {
   id: string;
@@ -56,6 +56,10 @@ export default function CheckRideRequestPage() {
         setErrorMessage(null);
         const response = await checkRideRequest().unwrap();
 
+        // console.log( response, driverData, rideRequests );
+
+        
+
         if (response?.data?.rides) {
           const formattedRides: RideRequest[] = response.data.rides.map((ride: any) => ({
             id: ride.id,
@@ -68,6 +72,14 @@ export default function CheckRideRequestPage() {
           }));
           setRideRequests(formattedRides.filter((r) => r.status === "REQUESTED"));
         }
+
+        if ( response?.data )
+        {
+          console.log(response?.data)
+          setRideRequests(response?.data)
+        }
+
+
       } catch (error: any) {
         if (error?.status === 403) {
           setDriverStatus(DRIVER_STATUS.RIDING);
@@ -82,9 +94,7 @@ export default function CheckRideRequestPage() {
       }
     };
 
-    if (driverStatus === DRIVER_STATUS.AVAILABLE) {
-      fetchRideRequests();
-    }
+    fetchRideRequests();
   }, [driverStatus, checkRideRequest]);
 
   // Toggle driver availability
@@ -125,6 +135,8 @@ export default function CheckRideRequestPage() {
     await new Promise((resolve) => setTimeout(resolve, 300));
     setRideRequests((prev) => prev.filter((r) => r.id !== id));
   };
+
+  console.log(rideRequests)
 
   return (
     <div className="container mx-auto p-6 py-30">
@@ -200,10 +212,13 @@ export default function CheckRideRequestPage() {
 
           {
             driverStatus === DRIVER_STATUS.RIDING && (
-              <p className="text-red-500">You are already riding!!</p>
+              <>
+                 <p className="text-red-500">You are already riding!!</p>
+                <Link className="bg-pink-200 px-4 py-3 rounded-md" to={`/ride/ride-info/${rideRequests?._id}`}>View on going ride</Link>
+              </>
             )
           }
-          {driverStatus === DRIVER_STATUS.UNAVAILABLE || !errorMessage && (
+          {driverStatus === DRIVER_STATUS.UNAVAILABLE && !errorMessage && (
             <p className="text-red-500">
               You are currently unavailable. Toggle to Available to see ride requests.
             </p>
