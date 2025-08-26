@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useUserDataQuery } from "@/redux/features/api/auth.api";
-import { rideApi, useCheckRideRequestQuery, useToggleDriverStatusMutation } from "@/redux/features/api/ride.api";
+import { rideApi, useAcceptRideMutation, useCheckRideRequestQuery, useToggleDriverStatusMutation } from "@/redux/features/api/ride.api";
 import { useAppDispatch } from "@/redux/hooks";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -35,9 +35,13 @@ export default function CheckRideRequestPage() {
     refetch: refetchRideRequests,
   } = useCheckRideRequestQuery();
   const [ toggleDriverStatus, { isLoading: toggleDriverStatusLoading } ] = useToggleDriverStatusMutation();
+  const [ acceptRideRequest ] = useAcceptRideMutation();
 
 
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  console.log(driverData)
 
   const [driverStatus, setDriverStatus] = useState(DRIVER_STATUS.UNAVAILABLE);
   const [ rideRequests, setRideRequests ] = useState<RideRequest[]>( [] );
@@ -80,7 +84,6 @@ export default function CheckRideRequestPage() {
     {
       const res = await toggleDriverStatus().unwrap();
 
-      console.log(res, driverData)
       showToast( {
         message: `Driver updated successfully!`,
         type: "success",
@@ -103,13 +106,35 @@ export default function CheckRideRequestPage() {
   };
 
   // Accept a ride
-  const handleAcceptRide = async (id: string) => {
-    await new Promise(resolve => setTimeout(resolve, 300));
+  const handleAcceptRide = async ( id: string ) =>
+  {
+    console.log( id )
+    
+    try 
+    {
+      const res = await acceptRideRequest( { id } );
+      console.log( res );
+
+      showToast( {
+        type: "success",
+        message: res?.data?.data?.message || "Ride accepted successfully!!"
+      } )
+      
+      setDriverStatus(DRIVER_STATUS.RIDING);
+      navigate( "/ride/ride-info" );
+    }
+    catch ( error: unknown )
+    {
+      showToast( {
+        type: "error",
+        message: error?.message || error?.data?.message
+      })
+    }
+    
     setRideRequests(prev =>
       prev.map(r => (r.id === id ? { ...r, status: "ACCEPTED" } : r))
     );
-    setDriverStatus(DRIVER_STATUS.RIDING);
-    navigate("/ride/ride-info");
+    
   };
 
   // Cancel a ride
@@ -117,9 +142,7 @@ export default function CheckRideRequestPage() {
     await new Promise(resolve => setTimeout(resolve, 300));
     setRideRequests(prev => prev.filter(r => r.id !== id));
   };
-
   
-  const dispatch = useAppDispatch();
   const handleRefresh = async () => {
     await refetchRideRequests();
     dispatch( rideApi.util.resetApiState() );

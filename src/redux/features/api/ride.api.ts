@@ -8,24 +8,42 @@ import { baseApi } from "@/redux/baseApi";
 // }
 
 export const rideApi = baseApi.injectEndpoints( {
-    endpoints: ( builder ) => ( {      
+    endpoints: ( builder ) => ( {
         checkRideRequest: builder.query( {
-            query: ( ) =>
+            query: () =>
             ( {
                 url: `/driver/check-ride-request`,
-                method: "POST",  
+                method: "POST",
             } ),
             providesTags: [ "RIDES" ]
         } ),
         toggleDriverStatus: builder.mutation( {
-            query: ( ) =>
+            query: () =>
             ( {
                 url: `/driver/change-driving-status`,
-                method: "PATCH",  
+                method: "PATCH",
+            } ),
+            providesTags: [ "RIDES" ]
+        } ),
+
+        acceptRide: builder.mutation( {
+            query: ( { id }: { id: string } ) =>
+            ( {
+                url: `/driver/accept-ride-request/${ id }`,
+                method: "POST",
+            } ),
+            providesTags: [ "RIDES" ]
+        } ),
+
+        cancelRide: builder.mutation( {
+            query: ( id: string ) =>
+            ( {
+                url: `/driver/cancel-ride-request/${ id }`,
+                method: "POST",
             } ),
             providesTags: [ "RIDES" ]
         } ),
     } )
 } );
 
-export const { useCheckRideRequestQuery, useToggleDriverStatusMutation } = rideApi;
+export const { useCheckRideRequestQuery, useToggleDriverStatusMutation, useAcceptRideMutation } = rideApi;
