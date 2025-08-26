@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
  
 import { baseApi } from "@/redux/baseApi";
 
@@ -36,7 +37,7 @@ export const rideApi = baseApi.injectEndpoints( {
         } ),
 
         cancelRide: builder.mutation( {
-            query: ( id: string ) =>
+            query: ( {id}:{id: string} ) =>
             ( {
                 url: `/driver/cancel-ride-request/${ id }`,
                 method: "POST",
@@ -52,7 +53,41 @@ export const rideApi = baseApi.injectEndpoints( {
             providesTags: [ "RIDES" ]
         } ),
 
+        pickUpRide: builder.mutation( {
+            query: ( { id }: { id: string } ) =>
+            ( {
+                url: `driver/pick-up/${ id }`,
+                method: "PATCH",
+            } ),
+            revalidateTags: [ "RIDES" ]
+        } ),
+        inTransitRide: builder.mutation( {
+            query: ( { id }: { id: string } ) =>
+            ( {
+                url: `/driver/in-transit/${ id }`,
+                method: "PATCH",
+            } ),
+            revalidateTags: [ "RIDES" ]
+        } ),
+        completeRide: builder.mutation( {
+            query: ( { id }: { id: string } ) =>
+            ( {
+                url: `/driver/complete-ride/${ id }`,
+                method: "PATCH",
+            } ),
+            revalidateTags: [ "RIDES" ]
+        } ),
+        requestRide: builder.mutation( {
+            query: ( { payload }: { payload: any } ) =>
+            ( {
+                url: `/ride/request`,
+                method: "POST",
+                data: payload
+            } ),
+            revalidateTags: [ "RIDES" ]
+        } ),
+
     } )
 } );
 
-export const { useCheckRideRequestMutation, useToggleDriverStatusMutation, useAcceptRideMutation, useGetRideByIdQuery } = rideApi;
+export const { useCheckRideRequestMutation, useToggleDriverStatusMutation, useAcceptRideMutation, useGetRideByIdQuery, useCancelRideMutation, useCompleteRideMutation, useInTransitRideMutation, usePickUpRideMutation, useRequestRideMutation } = rideApi;

@@ -16,7 +16,6 @@ export const registrationSchema = z.discriminatedUnion("role", [
     email: z.string().email(),
     password: z.string().min(6),
     confirmPassword: z.string().min(6),
-    vehicleInfo: z.any().optional(), 
   }),
   z.object({
     role: z.literal(UserRole.DRIVER),
@@ -32,7 +31,6 @@ export const registrationSchema = z.discriminatedUnion("role", [
     email: z.string().email(),
     password: z.string().min(6),
     confirmPassword: z.string().min(6),
-    vehicleInfo: z.any().optional(), 
   }),
 ]).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",

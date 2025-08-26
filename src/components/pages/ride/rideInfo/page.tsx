@@ -6,17 +6,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { UserRole } from "@/constants/userRole";
 import { useUserDataQuery } from "@/redux/features/api/auth.api";
+import { locationService } from "@/redux/features/api/locationService.api.ts";
 import { rideApi, useGetRideByIdQuery } from "@/redux/features/api/ride.api";
 import { useAppDispatch } from "@/redux/hooks";
 import { useParams } from "react-router";
 import FloatEmergencyContact from "./FloatEmergenctContact.tsx";
-import RideActions from "./RideActions.tsx";
+import RideActionsWrapper from "./RideActions.tsx";
 import RouteFetcher from "./RouteFetcher.tsx";
 
 export default function RideInfoPage() {
   const { data: userData, isLoading: driverLoading } = useUserDataQuery();
   const { id } = useParams();
-  const { data: rideData, isLoading: rideDataLoading } = useGetRideByIdQuery({ id });
+  const { data: rideData, isLoading: rideDataLoading, refetch: refetchRide } = useGetRideByIdQuery({ id });
 
   const role = userData?.data?.role;
   const userId = role === UserRole.DRIVER ? userData?.data?.driver?._id : userData?.data?._id;
@@ -26,6 +27,8 @@ export default function RideInfoPage() {
   const handleRefresh = () =>
   {
     dispatch( rideApi.util.resetApiState() );
+    dispatch( locationService.util.resetApiState() );
+    window.location.reload();
   }
 
   const ride = rideData?.data;
@@ -60,7 +63,7 @@ export default function RideInfoPage() {
               {ride.status}
             </Badge>
           </CardTitle>
-          <Button onClick={() => handleRefresh} variant={"secondary"} size={"sm"} className="w-[100px] bg-purple-200">Refresh</Button>
+          <Button onClick={() => window.location.reload()} variant={"secondary"} size={"sm"} className="w-[100px] bg-purple-200">Refresh</Button>
         </CardHeader>
         <CardContent className="space-y-4">
           <FloatEmergencyContact />
@@ -118,7 +121,7 @@ export default function RideInfoPage() {
 
           {
             role === UserRole.DRIVER && (
-              <RideActions />
+              <RideActionsWrapper ride={ride} onRideUpdate={refetchRide} />
             )
           }
           

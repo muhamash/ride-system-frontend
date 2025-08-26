@@ -39,6 +39,13 @@ export const navItemLinks = {
           Component: RideInfoPage
         },
         {
+          title: "See rides",
+          description: "Check your ride info",
+          url: "/ride/ride-info",
+          roles: [ "RIDER", "DRIVER", "ADMIN" ],
+          Component: RideInfoPage
+        },
+        {
           title: "Check requested ride",
           description: "Check your requested ride status",
           url: "/ride/check-ride-request",

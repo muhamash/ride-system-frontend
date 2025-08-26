@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useContinuousLocation } from "@/components/hooks/useGeolocation";
+import { useMyToast } from "@/components/layouts/MyToast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useUserDataQuery } from "@/redux/features/api/auth.api";
 import { useGetDirectionMutation, useGetOnlineDriversQuery } from "@/redux/features/api/locationService.api";
+import { useRequestRideMutation } from "@/redux/features/api/ride.api";
+import { useAppDispatch } from "@/redux/hooks";
 import { calculateFare } from "@/utils/ride.util";
 import { LatLng } from 'leaflet';
 import { Car, CreditCard, MapPin, Navigation, User } from "lucide-react";
@@ -16,6 +19,7 @@ import LocationInput from "./LocationInput";
 import RideMap from "./RideMap";
 import RideSummary from "./RideSummery";
 import RideTypeCard from "./RideTypeCard";
+import { useNavigate } from "react-router";
 
 const rideOptions = [
   { id: "standard", name: "standard", price: "12-15 tk", eta: "5 min", icon: <Car className="h-5 w-5" /> },
@@ -28,7 +32,6 @@ export default function RequestRide() {
   const [rideType, setRideType] = useState("standard");
   const [paymentMethod, setPaymentMethod] = useState("card");
   
-
   const { data } = useUserDataQuery();
   const userId = data?.data?._id || "";
   const { coords, error: locationError, retry } = useContinuousLocation( userId );
@@ -37,13 +40,16 @@ export default function RequestRide() {
   const [pickupCoords, setPickupCoords] = useState<LatLng | null>(null);
   const [ destinationCoords, setDestinationCoords ] = useState<LatLng | null>( null );
 
+
   const mapRef = useRef<any>(null);
   const pickupInputRef = useRef<HTMLInputElement>(null);
   const destinationInputRef = useRef<HTMLInputElement>( null );
   const [ routeDataState, setRouteDataState ] = useState<any>( );
-
+  const dispatch = useAppDispatch();
   const [ getDirection, { data: routeData, isLoading, error } ] = useGetDirectionMutation();
+  const { showToast, updateToast } = useMyToast();
   const { data: onlineDrivers } = useGetOnlineDriversQuery();
+  const [ requestRide ] = useRequestRideMutation();
   console.log( onlineDrivers?.data )
   
   const rideTypesDataRef = useRef(null);
@@ -103,6 +109,9 @@ export default function RequestRide() {
       setDestination(location.name);
       setDestinationCoords(location.coords);
     }
+
+    // dispatch( locationService.util.resetApiState() );
+    // dispatch( rideApi.util.resetApiState() );
   };
 
   const handleSwapLocations = () => {
@@ -113,18 +122,50 @@ export default function RequestRide() {
     setPickupCoords(destinationCoords);
 
     setDestination(tempLocation);
-    setDestinationCoords(tempCoords);
+    setDestinationCoords( tempCoords );
+    
   };
 
-  const handleRequestRide = (e: React.FormEvent) => {
+  const navigate = useNavigate();
+  const handleRequestRide = async(e: React.FormEvent) => {
     e.preventDefault();
     if (!destinationCoords) {
       alert("Please select valid pickup and destination locations");
       return;
     }
 
-    console.log("Pickup:", pickupCoords, pickupLocation, rideTypesDataRef.current.fare[rideType].toFixed(2));
-    console.log("Destination:", destinationCoords, destination);
+    // console.log("Pickup:", pickupCoords, pickupLocation, rideTypesDataRef.current.fare[rideType].toFixed(2));
+    // console.log( "Destination:", destinationCoords, destination );
+    
+    const payload = {
+      fare: rideTypesDataRef.current.fare[rideType].toFixed(2),
+      lat: destinationCoords.lat,
+      lng: destinationCoords.lng,
+      picLat: pickupCoords?.lat,
+      picLng: pickupCoords.lng
+    }
+
+    const toastId = showToast( { type: "loading", message: "Requesting a ride!" } );
+
+    try 
+    {
+      const res = await requestRide( { payload } ).unwrap()
+      console.log( res )
+      updateToast( toastId, {
+        type: "success",
+        message: res?.message
+      } )
+      
+      navigate(`/ride/ride-info/${res?.data?.ride?._id}`)
+    }
+    catch ( error: unknown )
+    {
+      updateToast( toastId, {
+        type: "error",
+        message: error?.message || error?.data?.message
+      })
+    }
+    console.log(payload)
   };
 
   // Update map view when coordinates change
@@ -156,9 +197,7 @@ export default function RequestRide() {
                 <Navigation className="h-6 w-6 text-blue-600" />
                 Ride Details
               </CardTitle>
-              <p className="text-pink-500 font-mono">
-                Note: Please search your nearby or Dhaka nearby location only! Search results are provided from Pathao API.
-              </p>
+             
             </CardHeader>
             <CardContent className="p-0">
               <form onSubmit={handleRequestRide} className="space-y-6">
@@ -278,7 +317,7 @@ export default function RequestRide() {
                   type="submit"
                   className="w-full"
                   size="lg"
-                  disabled={!destinationCoords}
+                  disabled={!destinationCoords || !pickupCoords}
                 >
                   <Car className="mr-2 h-5 w-5" /> Request Ride Now
                 </Button>
