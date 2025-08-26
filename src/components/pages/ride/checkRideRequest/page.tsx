@@ -1,11 +1,12 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { useMyToast } from "@/components/layouts/MyToast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useUserDataQuery } from "@/redux/features/api/auth.api";
-import { rideApi, useAcceptRideMutation, useCheckRideRequestQuery, useToggleDriverStatusMutation } from "@/redux/features/api/ride.api";
+import { rideApi, useAcceptRideMutation, useCheckRideRequestMutation, useToggleDriverStatusMutation } from "@/redux/features/api/ride.api";
 import { useAppDispatch } from "@/redux/hooks";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -16,7 +17,7 @@ interface RideRequest {
   pickup: string;
   dropoff: string;
   fare: number;
-  status: "REQUESTED" | "ACCEPTED" | "CANCEL";
+  status: "REQUESTED" | "ACCEPTED" | "RIDING";
   distance?: number;
 }
 
@@ -29,123 +30,100 @@ const DRIVER_STATUS = {
 
 export default function CheckRideRequestPage() {
   const { data: driverData } = useUserDataQuery();
-  const {
-    data: rideRequestData,
-    isLoading: checkRequestLoading,
-    refetch: refetchRideRequests,
-  } = useCheckRideRequestQuery();
-  const [ toggleDriverStatus, { isLoading: toggleDriverStatusLoading } ] = useToggleDriverStatusMutation();
-  const [ acceptRideRequest ] = useAcceptRideMutation();
-
+  const [checkRideRequest] = useCheckRideRequestMutation();
+  const [toggleDriverStatus] = useToggleDriverStatusMutation();
+  const [acceptRideRequest] = useAcceptRideMutation();
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  console.log(driverData)
-
   const [driverStatus, setDriverStatus] = useState(DRIVER_STATUS.UNAVAILABLE);
-  const [ rideRequests, setRideRequests ] = useState<RideRequest[]>( [] );
+  const [rideRequests, setRideRequests] = useState<RideRequest[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { showToast } = useMyToast();
 
-  // Update driver status from API
+  // Sync driver status from userData
   useEffect(() => {
     if (driverData?.data?.driver?.driverStatus) {
       setDriverStatus(driverData.data.driver.driverStatus);
     }
-  }, [ driverData ] );
-  
-  
+  }, [driverData]);
 
-  // Populate ride requests dynamically
+  // Fetch ride requests when driver is available
   useEffect(() => {
-    if (driverStatus === DRIVER_STATUS.AVAILABLE && rideRequestData?.data?.rides) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const formattedRides: RideRequest[] = rideRequestData.data.rides.map((ride: any) => ({
-        id: ride.id,
-        passengerName: ride.riderUserName,
-        pickup: ride.pickUpLocation.address,
-        dropoff: ride.dropOffLocation.address,
-        fare: ride.fare,
-        status: ride.status,
-        distance: ride.distanceInKm,
-      }));
-      setRideRequests(formattedRides.filter(r => r.status === "REQUESTED"));
-    } else {
-      setRideRequests([]);
+    const fetchRideRequests = async () => {
+      try {
+        setErrorMessage(null);
+        const response = await checkRideRequest().unwrap();
+
+        if (response?.data?.rides) {
+          const formattedRides: RideRequest[] = response.data.rides.map((ride: any) => ({
+            id: ride.id,
+            passengerName: ride.riderUserName,
+            pickup: ride.pickUpLocation.address,
+            dropoff: ride.dropOffLocation.address,
+            fare: ride.fare,
+            status: ride.status,
+            distance: ride.distanceInKm,
+          }));
+          setRideRequests(formattedRides.filter((r) => r.status === "REQUESTED"));
+        }
+      } catch (error: any) {
+        if (error?.status === 403) {
+          setDriverStatus(DRIVER_STATUS.RIDING);
+          setErrorMessage(
+            error?.data?.message ||
+              "You are currently on an ongoing ride. Complete it before accepting new requests."
+          );
+          setRideRequests([]);
+        } else {
+          setErrorMessage(error?.data?.message || "Failed to fetch ride requests.");
+        }
+      }
+    };
+
+    if (driverStatus === DRIVER_STATUS.AVAILABLE) {
+      fetchRideRequests();
     }
-  }, [driverStatus, rideRequestData]);
+  }, [driverStatus, checkRideRequest]);
 
   // Toggle driver availability
-  const toggleAvailability = async () =>
-  {
-    if ( driverStatus === DRIVER_STATUS.NOT_APPROVED || driverStatus === DRIVER_STATUS.RIDING ) return;
-    
-    try
-    {
-      const res = await toggleDriverStatus().unwrap();
+  const toggleAvailability = async () => {
+    if (driverStatus === DRIVER_STATUS.NOT_APPROVED || driverStatus === DRIVER_STATUS.RIDING) return;
 
-      showToast( {
-        message: `Driver updated successfully!`,
-        type: "success",
-      } );
-
-      setDriverStatus( prev =>
+    try {
+      await toggleDriverStatus().unwrap();
+      showToast({ message: `Driver updated successfully!`, type: "success" });
+      setDriverStatus((prev) =>
         prev === DRIVER_STATUS.AVAILABLE ? DRIVER_STATUS.UNAVAILABLE : DRIVER_STATUS.AVAILABLE
       );
-    }
-    catch ( error )
-    {
-      showToast( {
-        message: error?.message || error?.data?.message,
-        type: "error",
-      } );
-    } finally
-    {
-      dispatch( rideApi.util.resetApiState() );
+    } catch (error: any) {
+      showToast({ message: error?.data?.message || error.message, type: "error" });
+    } finally {
+      dispatch(rideApi.util.resetApiState());
     }
   };
 
-  // Accept a ride
-  const handleAcceptRide = async ( id: string ) =>
-  {
-    console.log( id )
-    
-    try 
-    {
-      const res = await acceptRideRequest( { id } );
-      console.log( res );
-
-      showToast( {
+  // Accept ride
+  const handleAcceptRide = async (id: string) => {
+    try {
+      const res = await acceptRideRequest({ id });
+      showToast({
         type: "success",
-        message: res?.data?.data?.message || "Ride accepted successfully!!"
-      } )
-      
+        message: res?.data?.data?.message || "Ride accepted successfully!!",
+      });
       setDriverStatus(DRIVER_STATUS.RIDING);
-      navigate( "/ride/ride-info" );
+      navigate(`/ride/ride-info/${res?.data?.data?.acceptedRide?._id}`);
+    } catch (error: any) {
+      showToast({ type: "error", message: error?.data?.message || error.message });
     }
-    catch ( error: unknown )
-    {
-      showToast( {
-        type: "error",
-        message: error?.message || error?.data?.message
-      })
-    }
-    
-    setRideRequests(prev =>
-      prev.map(r => (r.id === id ? { ...r, status: "ACCEPTED" } : r))
-    );
-    
+    setRideRequests((prev) => prev.map((r) => (r.id === id ? { ...r, status: "ACCEPTED" } : r)));
   };
 
-  // Cancel a ride
+  // Cancel ride request
   const handleCancelRide = async (id: string) => {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    setRideRequests(prev => prev.filter(r => r.id !== id));
-  };
-  
-  const handleRefresh = async () => {
-    await refetchRideRequests();
-    dispatch( rideApi.util.resetApiState() );
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    setRideRequests((prev) => prev.filter((r) => r.id !== id));
   };
 
   return (
@@ -153,7 +131,7 @@ export default function CheckRideRequestPage() {
       <Card className="shadow-md rounded-2xl">
         <CardHeader className="flex justify-between items-center">
           <CardTitle className="text-2xl font-bold">Driver Dashboard</CardTitle>
-          <Button onClick={handleRefresh} variant="outline" size="sm">
+          <Button onClick={() => window.location.reload()} variant="outline" size="sm">
             Refresh
           </Button>
         </CardHeader>
@@ -173,7 +151,8 @@ export default function CheckRideRequestPage() {
                   onClick={toggleAvailability}
                   disabled={
                     driverStatus === DRIVER_STATUS.NOT_APPROVED ||
-                    driverStatus === DRIVER_STATUS.RIDING
+                    driverStatus === DRIVER_STATUS.RIDING ||
+                    !!errorMessage
                   }
                 >
                   {driverStatus === DRIVER_STATUS.AVAILABLE ? "Available" : "Unavailable"}
@@ -184,22 +163,17 @@ export default function CheckRideRequestPage() {
 
           <Separator />
 
-          {driverStatus === DRIVER_STATUS.NOT_APPROVED && (
-            <p className="text-red-500">Your account is under review. You cannot toggle availability.</p>
-          )}
+          {errorMessage && <p className="text-red-500">{errorMessage}</p>}
 
-          {driverStatus === DRIVER_STATUS.RIDING && (
-            <p className="text-yellow-500">You are currently on a ride.</p>
-          )}
-
-          {driverStatus === DRIVER_STATUS.AVAILABLE && rideRequests.length === 0 && (
+          {driverStatus === DRIVER_STATUS.AVAILABLE && !errorMessage && rideRequests.length === 0 && (
             <p className="text-gray-500">
               You are online and available. Please wait until a rider sends a request...
             </p>
           )}
 
           {driverStatus === DRIVER_STATUS.AVAILABLE &&
-            rideRequests.map(ride => (
+            !errorMessage &&
+            rideRequests.map((ride) => (
               <div
                 key={ride.id}
                 className="flex justify-between items-center p-4 border rounded-lg shadow-sm bg-white"
@@ -224,8 +198,15 @@ export default function CheckRideRequestPage() {
               </div>
             ))}
 
-          {driverStatus === DRIVER_STATUS.UNAVAILABLE && (
-            <p className="text-red-500">You are currently unavailable. Toggle to Available to see ride requests.</p>
+          {
+            driverStatus === DRIVER_STATUS.RIDING && (
+              <p className="text-red-500">You are already riding!!</p>
+            )
+          }
+          {driverStatus === DRIVER_STATUS.UNAVAILABLE || !errorMessage && (
+            <p className="text-red-500">
+              You are currently unavailable. Toggle to Available to see ride requests.
+            </p>
           )}
         </CardContent>
       </Card>

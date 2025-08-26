@@ -9,7 +9,7 @@ import { baseApi } from "@/redux/baseApi";
 
 export const rideApi = baseApi.injectEndpoints( {
     endpoints: ( builder ) => ( {
-        checkRideRequest: builder.query( {
+        checkRideRequest: builder.mutation( {
             query: () =>
             ( {
                 url: `/driver/check-ride-request`,
@@ -23,7 +23,7 @@ export const rideApi = baseApi.injectEndpoints( {
                 url: `/driver/change-driving-status`,
                 method: "PATCH",
             } ),
-            providesTags: [ "RIDES" ]
+            revalidateTags: [ "USER" ]
         } ),
 
         acceptRide: builder.mutation( {
@@ -32,7 +32,7 @@ export const rideApi = baseApi.injectEndpoints( {
                 url: `/driver/accept-ride-request/${ id }`,
                 method: "POST",
             } ),
-            providesTags: [ "RIDES" ]
+            revalidateTags: [ "RIDES" ]
         } ),
 
         cancelRide: builder.mutation( {
@@ -43,7 +43,16 @@ export const rideApi = baseApi.injectEndpoints( {
             } ),
             providesTags: [ "RIDES" ]
         } ),
+        getRideById: builder.query( {
+            query: (  { id }: { id: string } ) =>
+            ( {
+                url: `/admin/ride/${ id }`,
+                method: "GET",
+            } ),
+            providesTags: [ "RIDES" ]
+        } ),
+
     } )
 } );
 
-export const { useCheckRideRequestQuery, useToggleDriverStatusMutation, useAcceptRideMutation } = rideApi;
+export const { useCheckRideRequestMutation, useToggleDriverStatusMutation, useAcceptRideMutation, useGetRideByIdQuery } = rideApi;
