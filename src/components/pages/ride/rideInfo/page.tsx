@@ -10,6 +10,7 @@ import { rideApi, useGetRideByIdQuery } from "@/redux/features/api/ride.api";
 import { useAppDispatch } from "@/redux/hooks";
 import { useParams } from "react-router";
 import FloatEmergencyContact from "./FloatEmergenctContact.tsx";
+import RideActions from "./RideActions.tsx";
 import RouteFetcher from "./RouteFetcher.tsx";
 
 export default function RideInfoPage() {
@@ -117,12 +118,17 @@ export default function RideInfoPage() {
           )}
 
           <Separator />
+
+          <RideActions/>
           
+          <Separator />
           {
             ride && (
               <RouteFetcher ride={ride}/>
             )
           }
+
+          
         </CardContent>
       </Card>
     </div>
