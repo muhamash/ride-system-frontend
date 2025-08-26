@@ -11,7 +11,7 @@ interface RideRequest {
   pickup: string;
   dropoff: string;
   fare: number;
-  status: "PENDING" | "ACCEPTED" | "COMPLETED";
+  status: "REQUESTED" | "ACCEPTED" | "CANCEL";
 }
 
 const DRIVER_STATUS = {
@@ -23,28 +23,26 @@ const DRIVER_STATUS = {
 
 export default function CheckRideRequestPage() {
   const demoData: RideRequest[] = [
-    { id: "1", passengerName: "John Doe", pickup: "Banani", dropoff: "Gulshan", fare: 250, status: "PENDING" },
-    { id: "2", passengerName: "Sara Ali", pickup: "Dhanmondi", dropoff: "Bashundhara", fare: 400, status: "PENDING" },
-    { id: "3", passengerName: "Rafiq Ahmed", pickup: "Uttara", dropoff: "Mirpur", fare: 300, status: "PENDING" },
+    { id: "1", passengerName: "John Doe", pickup: "Banani", dropoff: "Gulshan", fare: 250, status: "REQUESTED" },
+    { id: "2", passengerName: "Sara Ali", pickup: "Dhanmondi", dropoff: "Bashundhara", fare: 400, status: "REQUESTED" },
+    { id: "3", passengerName: "Rafiq Ahmed", pickup: "Uttara", dropoff: "Mirpur", fare: 300, status: "REQUESTED" },
   ];
 
   const { data: driverData } = useUserDataQuery();
   const [driverStatus, setDriverStatus] = useState(DRIVER_STATUS.UNAVAILABLE);
   const [rideRequests, setRideRequests] = useState<RideRequest[]>([]);
 
-  // Initialize driver status from API data
   useEffect(() => {
     if (driverData?.data?.driver?.driverStatus) {
       setDriverStatus(driverData.data.driver.driverStatus);
     }
   }, [driverData]);
 
-  // Fetch rides only if driver is AVAILABLE
   useEffect(() => {
     if (driverStatus === DRIVER_STATUS.AVAILABLE) {
       const fetchDemoRides = async () => {
         await new Promise(resolve => setTimeout(resolve, 500));
-        setRideRequests(demoData);
+        setRideRequests(demoData.filter(r => r.status === "REQUESTED")); // only show REQUESTED
       };
       fetchDemoRides();
     } else {
@@ -52,29 +50,29 @@ export default function CheckRideRequestPage() {
     }
   }, [driverStatus]);
 
-  // Toggle availability
   const toggleAvailability = async () => {
-    // cannot toggle if NOT_APPROVED or RIDING
     if (driverStatus === DRIVER_STATUS.NOT_APPROVED || driverStatus === DRIVER_STATUS.RIDING) return;
-
     await new Promise(resolve => setTimeout(resolve, 300));
     setDriverStatus(prev =>
       prev === DRIVER_STATUS.AVAILABLE ? DRIVER_STATUS.UNAVAILABLE : DRIVER_STATUS.AVAILABLE
     );
   };
 
-  // Accept ride
   const handleAcceptRide = async (id: string) => {
     await new Promise(resolve => setTimeout(resolve, 300));
     setRideRequests(prev =>
       prev.map(r => (r.id === id ? { ...r, status: "ACCEPTED" } : r))
     );
-    // Set driver to RIDING
     setDriverStatus(DRIVER_STATUS.RIDING);
   };
 
+  const handleCancelRide = async (id: string) => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    setRideRequests(prev => prev.filter(r => r.id !== id)); // remove canceled ride
+  };
+
   return (
-    <div className="container mx-auto p-6 py-10">
+    <div className="container mx-auto p-6 py-30">
       <Card className="shadow-md rounded-2xl">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Driver Dashboard</CardTitle>
@@ -88,7 +86,6 @@ export default function CheckRideRequestPage() {
               <p>Driver Status: {driverStatus}</p>
               <p>User Status: {driverData?.data?.isOnline ? "ONLINE" : "OFFLINE"}</p>
 
-              {/* Availability toggle */}
               <div className="flex items-center gap-3 mt-2">
                 <span>Status: </span>
                 <Button
@@ -107,7 +104,6 @@ export default function CheckRideRequestPage() {
 
           <Separator />
 
-          {/* Messages & Ride Requests */}
           {driverStatus === DRIVER_STATUS.NOT_APPROVED && (
             <p className="text-red-500">Your account is under review. You cannot toggle availability.</p>
           )}
@@ -136,20 +132,11 @@ export default function CheckRideRequestPage() {
                   <p className="text-sm">Fare: ৳{ride.fare}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Badge
-                    variant={
-                      ride.status === "PENDING"
-                        ? "secondary"
-                        : ride.status === "ACCEPTED"
-                        ? "default"
-                        : "outline"
-                    }
-                  >
-                    {ride.status}
-                  </Badge>
-                  {ride.status === "PENDING" && (
-                    <Button onClick={() => handleAcceptRide(ride.id)}>Accept</Button>
-                  )}
+                  <Badge variant="secondary">{ride.status}</Badge>
+                  <Button onClick={() => handleAcceptRide(ride.id)}>Accept</Button>
+                  <Button variant="destructive" onClick={() => handleCancelRide(ride.id)}>
+                    Cancel
+                  </Button>
                 </div>
               </div>
             ))}
