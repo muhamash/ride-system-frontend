@@ -9,6 +9,7 @@ import { useUserDataQuery } from "@/redux/features/api/auth.api";
 import { rideApi, useGetRideByIdQuery } from "@/redux/features/api/ride.api";
 import { useAppDispatch } from "@/redux/hooks";
 import { useParams } from "react-router";
+import FloatEmergencyContact from "./FloatEmergenctContact.tsx";
 import RouteFetcher from "./RouteFetcher.tsx";
 
 export default function RideInfoPage() {
@@ -64,6 +65,7 @@ export default function RideInfoPage() {
           <Button onClick={()=> handleRefresh} variant={"secondary"} size={"sm"} className="w-[100px] bg-purple-200">Refresh</Button>
         </CardHeader>
         <CardContent className="space-y-4">
+          <FloatEmergencyContact/>
           {/* Rider & Driver Info */}
           <div>
             <p className="text-lg font-semibold">Rider</p>
