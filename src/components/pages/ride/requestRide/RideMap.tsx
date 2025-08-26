@@ -61,7 +61,7 @@ export default function RideMap({
     : [];
 
   return (
-    <Card className="shadow-lg z-1">
+    <Card className="shadow-lg -z-100">
       <CardHeader className="pb-3">
         <CardTitle className="flex gap-2 justify-between items-center">
           <div className="flex items-end gap-2">
@@ -77,7 +77,7 @@ export default function RideMap({
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
-        <div className="h-96 rounded-b-lg overflow-hidden z-10">
+        <div className="h-96 rounded-b-lg overflow-hidden -z-100">
           <MapContainer
             center={pickupCoords || DEFAULT_CENTER}
             zoom={13}

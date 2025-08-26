@@ -30,8 +30,6 @@ export default function RideInfoPage() {
 
   const ride = rideData?.data;
 
-
-
   if (driverLoading || rideDataLoading) {
     return <p className="py-3 text-center">Loading...</p>;
   }
@@ -52,21 +50,20 @@ export default function RideInfoPage() {
           <CardTitle className="text-2xl font-bold">
             Ride Details
             <Badge
-              className={`ml-3 ${
-                ride.status === "ACCEPTED"
+              className={`ml-3 ${ ride.status === "ACCEPTED"
                   ? "bg-green-500"
                   : ride.status === "PENDING"
-                  ? "bg-yellow-500"
-                  : "bg-gray-500"
-              }`}
+                    ? "bg-yellow-500"
+                    : "bg-gray-500"
+                }`}
             >
               {ride.status}
             </Badge>
           </CardTitle>
-          <Button onClick={()=> handleRefresh} variant={"secondary"} size={"sm"} className="w-[100px] bg-purple-200">Refresh</Button>
+          <Button onClick={() => handleRefresh} variant={"secondary"} size={"sm"} className="w-[100px] bg-purple-200">Refresh</Button>
         </CardHeader>
         <CardContent className="space-y-4">
-          <FloatEmergencyContact/>
+          <FloatEmergencyContact />
           {/* Rider & Driver Info */}
           <div>
             <p className="text-lg font-semibold">Rider</p>
@@ -108,23 +105,27 @@ export default function RideInfoPage() {
           <Separator />
           <div>
             <p className="text-lg font-semibold">Requested At</p>
-            <p className="text-sm text-gray-600">{new Date(ride.requestedAt).toLocaleString()}</p>
+            <p className="text-sm text-gray-600">{new Date( ride.requestedAt ).toLocaleString()}</p>
           </div>
           {ride.acceptedAt && (
             <div>
               <p className="text-lg font-semibold">Accepted At</p>
-              <p className="text-sm text-gray-600">{new Date(ride.acceptedAt).toLocaleString()}</p>
+              <p className="text-sm text-gray-600">{new Date( ride.acceptedAt ).toLocaleString()}</p>
             </div>
           )}
 
           <Separator />
 
-          <RideActions/>
+          {
+            role === UserRole.DRIVER && (
+              <RideActions />
+            )
+          }
           
           <Separator />
           {
             ride && (
-              <RouteFetcher ride={ride}/>
+              <RouteFetcher ride={ride} />
             )
           }
 

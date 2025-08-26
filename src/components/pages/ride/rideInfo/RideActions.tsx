@@ -1,13 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Button } from "@/components/ui/button";
-import
-    {
-        Dialog,
-        DialogContent,
-        DialogDescription,
-        DialogHeader,
-        DialogTitle,
-    } from "@/components/ui/dialog";
 import { CheckCircleIcon, FlagIcon, TruckIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -26,7 +18,6 @@ interface RideActionsProps {
 
 export default function RideActionsWrapper({ rideId }: RideActionsProps) {
   const [currentStep, setCurrentStep] = useState(1);
-  const [showCompletionModal, setShowCompletionModal] = useState(false);
 
   const simulateApiCall = (stepLabel: string) => {
     return new Promise<void>((resolve) => {
@@ -43,7 +34,6 @@ export default function RideActionsWrapper({ rideId }: RideActionsProps) {
       // Final step - complete the ride
       await simulateApiCall(steps[currentStep].label);
       setCurrentStep(currentStep + 1);
-      setShowCompletionModal(true);
     }
   };
 
@@ -58,12 +48,6 @@ export default function RideActionsWrapper({ rideId }: RideActionsProps) {
       <h2 className="text-xl font-bold mb-6 text-center">Ride Progress</h2>
 
       <div className="flex justify-between items-center mb-8 relative">
-        {/* Progress line */}
-        <div className="absolute top-4 left-0 right-0 h-1 bg-gray-200 -z-10"></div>
-        <div 
-          className="absolute top-4 left-0 h-1 bg-green-500 -z-10 transition-all duration-500"
-          style={{ width: `${(currentStep / (steps.length - 1)) * 100}%` }}
-        ></div>
 
         {steps.map((step, index) => {
           const status = getStepStatus(index);
@@ -124,7 +108,7 @@ export default function RideActionsWrapper({ rideId }: RideActionsProps) {
         </Button>
       )}
 
-      {currentStep === steps.length && !showCompletionModal && (
+      {currentStep === steps.length && (
         <div className="text-center py-4">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-100 mb-3">
             <CheckCircleIcon className="w-8 h-8 text-green-600" />
@@ -133,38 +117,14 @@ export default function RideActionsWrapper({ rideId }: RideActionsProps) {
           <Button 
             variant="outline" 
             className="mt-4"
-            onClick={() => setShowCompletionModal(true)}
+            
           >
             View Details
           </Button>
         </div>
       )}
 
-      {/* Completion Modal */}
-      <Dialog open={showCompletionModal} onOpenChange={setShowCompletionModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-center text-2xl">Ride Completed!</DialogTitle>
-            <DialogDescription className="text-center">
-              Your ride has been successfully completed.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="flex items-center justify-center my-4">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100">
-              <CheckCircleIcon className="w-10 h-10 text-green-600" />
-            </div>
-          </div>
-
-          
-          <div className="flex flex-col gap-2 mt-4">
-            <Button className="w-full">Rate Your Ride</Button>
-            <Button variant="outline" className="w-full">
-              Book Again
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      
     </div>
   );
 }
