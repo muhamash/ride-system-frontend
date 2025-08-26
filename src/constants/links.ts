@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import SeeRidesPage from "@/components/pages/ride/SeeRidesPage";
 import { lazy } from "react";
 
 const RequestRidePage = lazy( () => import( "@/components/pages/ride/requestRide/page" ) );
@@ -43,7 +44,7 @@ export const navItemLinks = {
           description: "Check your ride info",
           url: "/ride/ride-info",
           roles: [ "RIDER", "DRIVER", "ADMIN" ],
-          Component: RideInfoPage
+          Component: SeeRidesPage
         },
         {
           title: "Check requested ride",

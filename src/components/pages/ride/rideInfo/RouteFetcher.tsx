@@ -8,7 +8,7 @@ export default function RouteFetcher({ ride }) {
   const [location, setLocation] = useState({ driveToPickUp: null, drivePickUpToDrop: null });
   const mapRef = useRef<any>( null );
   
-  // console.log(location)
+  console.log(location)
 
   useEffect(() => {
     const fetchRoute = async () => {
@@ -28,7 +28,7 @@ export default function RouteFetcher({ ride }) {
 
       try {
         const routeToPickup = await getDirection( payloadTemplate( driverCoords, pickupCoords ) ).unwrap();
-        // console.log( routeToPickup.data );
+        console.log( routeToPickup );
 
         const routeToDropoff = await getDirection( payloadTemplate( pickupCoords, [dropOffCoords[1], dropOffCoords[0]] ) ).unwrap();
         // console.log(routeToDropoff.data)

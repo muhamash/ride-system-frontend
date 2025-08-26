@@ -33,6 +33,8 @@ export default function RideInfoPage() {
 
   const ride = rideData?.data;
 
+  console.log(ride, userData)
+
   if (driverLoading || rideDataLoading) {
     return <p className="py-3 text-center">Loading...</p>;
   }
