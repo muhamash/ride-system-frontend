@@ -83,17 +83,23 @@ const Home = () =>
 
   const handleDriverClick = () =>
   {
-    if ( role )
+    if ( !role === UserRole.DRIVER )
     {
       showToast( {
         type: "info",
         message: "Please logout your account and register as driver!"
       } );
 
+      navigate( "/registration", { state: UserRole.DRIVER } );
       return;
     }
 
-    navigate( "/registration", { state: UserRole.DRIVER } );
+    if ( role === UserRole.DRIVER )
+    {
+      navigate( "/ride/check-ride-request");
+      return;
+    }
+    
   }
 
   return (
@@ -135,7 +141,7 @@ const Home = () =>
                   className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-colors duration-200 flex items-center justify-center cursor-pointer"
                 >
                   <TrendingUp className="mr-2 h-5 w-5" />
-                  Drive & Earn
+                  {role === UserRole.DRIVER ? "Go for drive!" : "Drive & Earn"}
                 </div>
               </motion.div>
               <div className="flex flex-col sm:flex-row gap-4">

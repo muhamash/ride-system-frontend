@@ -3,6 +3,7 @@
 import { useContinuousLocation } from "@/components/hooks/useGeolocation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useUserDataQuery } from "@/redux/features/api/auth.api";
@@ -168,14 +169,14 @@ export default function RequestRide() {
                     <Button
                       type="button"
                       variant={useCurrentLocation ? "default" : "outline"}
-                      onClick={() => setUseCurrentLocation(true)}
+                      onClick={() => setUseCurrentLocation( true )}
                     >
                       Use Current Location
                     </Button>
                     <Button
                       type="button"
                       variant={!useCurrentLocation ? "default" : "outline"}
-                      onClick={() => setUseCurrentLocation(false)}
+                      onClick={() => setUseCurrentLocation( false )}
                     >
                       Search Manually
                     </Button>
@@ -183,16 +184,32 @@ export default function RequestRide() {
                 </div>
 
                 <div className="space-y-4">
-                  <LocationInput
-                    id="pickup"
-                    label="Pickup Location"
-                    value={pickupLocation}
-                    onChange={setPickupLocation}
-                    onLocationSelect={(location) => handleLocationSelect(location, true)}
-                    locations={[]}
-                    icon={<MapPin className="h-4 w-4 text-blue-600" />}
-                    inputRef={pickupInputRef}
-                  />
+                  {/* Pickup Location */}
+                  {useCurrentLocation ? (
+                    <div className="space-y-2">
+                      <Label className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-blue-600" />
+                        Pickup Location (Current)
+                      </Label>
+                      <Input
+                        value={pickupLocation}
+                        readOnly
+                        className="bg-gray-100 cursor-not-allowed"
+                      />
+                    </div>
+                  ) : (
+                    <LocationInput
+                      id="pickup"
+                      label="Pickup Location"
+                      value={pickupLocation}
+                      onChange={setPickupLocation}
+                      onLocationSelect={( location ) => handleLocationSelect( location, true )}
+                      locations={[]}
+                      icon={<MapPin className="h-4 w-4 text-blue-600" />}
+                      inputRef={pickupInputRef}
+                    />
+                  )}
+
 
                   <Button
                     type="button"
@@ -211,7 +228,7 @@ export default function RequestRide() {
                     label="Destination"
                     value={destination}
                     onChange={setDestination}
-                    onLocationSelect={(location) => handleLocationSelect(location, false)}
+                    onLocationSelect={( location ) => handleLocationSelect( location, false )}
                     locations={[]}
                     icon={<MapPin className="h-4 w-4 text-red-600" />}
                     inputRef={destinationInputRef}
@@ -222,7 +239,7 @@ export default function RequestRide() {
                 <div className="space-y-4">
                   <Label className="text-lg">Choose Ride Type</Label>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {rideOptions.map((option) => (
+                    {rideOptions.map( ( option ) => (
                       <RideTypeCard
                         key={option.id}
                         option={option}
@@ -230,7 +247,7 @@ export default function RequestRide() {
                         onSelect={setRideType}
                         rideTypesData={rideTypesDataRef.current}
                       />
-                    ))}
+                    ) )}
                   </div>
                 </div>
 
@@ -244,7 +261,7 @@ export default function RequestRide() {
                     <Switch
                       id="payment-method"
                       checked={paymentMethod === "card"}
-                      onCheckedChange={(checked) => setPaymentMethod(checked ? "card" : "cash")}
+                      onCheckedChange={( checked ) => setPaymentMethod( checked ? "card" : "cash" )}
                     />
                     <Label htmlFor="payment-method" className="cursor-pointer">
                       {paymentMethod === "card" ? "Credit Card" : "Cash"}
