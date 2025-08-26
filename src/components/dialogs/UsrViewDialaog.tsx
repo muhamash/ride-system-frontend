@@ -98,7 +98,7 @@ export function UserViewDialog ( { userId }: UserViewDialogProps )
   };
 
   return (
-    <Dialog open={editOpen} onOpenChange={setEditOpen}>
+    <Dialog className="z-99" open={editOpen} onOpenChange={setEditOpen}>
       <DialogTrigger asChild>
         <Button size="sm" className="bg-teal-100 cursor-pointer" variant="outline">
           View user

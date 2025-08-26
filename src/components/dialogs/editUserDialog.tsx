@@ -180,7 +180,7 @@ export default function EditUserDialog({ user }: IEditUserDialog) {
               onChange={() =>
               {
                 setEditName( !editName );
-                if ( !editName ) setEditVehicle( false ); // turn off vehicle switch
+                if ( !editName ) setEditVehicle( false ); 
               }}
             />
           </label>

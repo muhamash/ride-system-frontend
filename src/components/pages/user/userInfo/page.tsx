@@ -1,4 +1,7 @@
 import UpdateProfileModal from "@/components/dialogs/UpdateProfile";
+import { VehicleEditModal } from "@/components/dialogs/VehicleInfoEditDialong";
+import { Badge } from "@/components/ui/badge";
+import { UserRole } from "@/constants/userRole";
 import { useUserDataQuery } from "@/redux/features/api/auth.api";
 
 export default function UserInfo() {
@@ -30,7 +33,7 @@ export default function UserInfo() {
                 <p className="text-blue-100 mt-1">Manage your account information</p>
               </div>
               <div>
-                <UpdateProfileModal user={user}/>
+                <UpdateProfileModal user={user} />
               </div>
             </div>
           </div>
@@ -63,11 +66,34 @@ export default function UserInfo() {
                     <p className="text-gray-800">{user.username}</p>
                   </div>
                   
-                  <div>
+                  <div className="flex flex-col gap-3">
                     <label className="block text-sm font-medium text-gray-600 mb-1">Role</label>
-                    <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                    <Badge className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                       {user.role}
-                    </div>
+                    </Badge>
+                    {
+                      user?.role === UserRole.DRIVER && (
+                        <div className="p-4 border rounded-lg shadow-sm bg-white space-y-2">
+                          <h3 className="text-lg font-semibold text-rose-500">Vehicle Information</h3>
+                          <div className="grid grid-cols-1 gap-4">
+                            <div>
+                              <span className="font-medium ">License:</span> {user?.driver?.vehicleInfo?.license || "N/A"}
+                            </div>
+                            <div>
+                              <span className="font-medium">Model:</span> {user?.driver?.vehicleInfo?.model || "N/A"}
+                            </div>
+                            <div>
+                              <span className="font-medium">Plate Number:</span> {user?.driver?.vehicleInfo?.plateNumber || "N/A"}
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    }
+                    {
+                      user?.role === UserRole.DRIVER && (
+                        <VehicleEditModal userId={user?.driver?._id} vehicleData={user?.driver?.vehicleInfo} />
+                      )
+                    }
                   </div>
                 </div>
               </div>
@@ -84,7 +110,7 @@ export default function UserInfo() {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-600 mb-1">Account Status</label>
-                    <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${user.isBlocked ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                    <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${ user.isBlocked ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' }`}>
                       {user.isBlocked ? 'Blocked' : 'Active'}
                     </div>
                   </div>
@@ -92,7 +118,7 @@ export default function UserInfo() {
                   <div>
                     <label className="block text-sm font-medium text-gray-600 mb-1">Online Status</label>
                     <div className="flex items-center">
-                      <div className={`h-3 w-3 rounded-full mr-2 ${user.isOnline ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                      <div className={`h-3 w-3 rounded-full mr-2 ${ user.isOnline ? 'bg-green-500' : 'bg-gray-400' }`}></div>
                       <span className={user.isOnline ? "text-green-600 font-medium" : "text-gray-600"}>
                         {user.isOnline ? "Online" : "Offline"}
                       </span>
@@ -101,7 +127,7 @@ export default function UserInfo() {
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-600 mb-1">Last Online</label>
-                    <p className="text-gray-800">{new Date(user.lastOnlineAt).toLocaleString()}</p>
+                    <p className="text-gray-800">{new Date( user.lastOnlineAt ).toLocaleString()}</p>
                   </div>
                 </div>
               </div>
@@ -133,12 +159,12 @@ export default function UserInfo() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-600 mb-1">Created At</label>
-                    <p className="text-gray-800">{new Date(user.createdAt).toLocaleString()}</p>
+                    <p className="text-gray-800">{new Date( user.createdAt ).toLocaleString()}</p>
                   </div>
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-600 mb-1">Last Updated</label>
-                    <p className="text-gray-800">{new Date(user.updatedAt).toLocaleString()}</p>
+                    <p className="text-gray-800">{new Date( user.updatedAt ).toLocaleString()}</p>
                   </div>
                 </div>
               </div>

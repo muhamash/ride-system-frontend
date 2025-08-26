@@ -169,7 +169,11 @@ export default function RequestRide() {
                     <Button
                       type="button"
                       variant={useCurrentLocation ? "default" : "outline"}
-                      onClick={() => setUseCurrentLocation( true )}
+                      onClick={() =>
+                      {
+                        retry();
+                        setUseCurrentLocation( true )
+                      }}
                     >
                       Use Current Location
                     </Button>

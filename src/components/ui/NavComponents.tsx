@@ -19,7 +19,7 @@ const SubMenuLink = ( { item }: { item: MenuItem } ) =>
 {
   return (
     <Link
-      className="hover:bg-muted hover:text-accent-foreground flex select-none flex-row gap-4 rounded-md p-3 leading-none no-underline outline-none transition-colors bg-chart-5 w-full"
+      className="hover:bg-muted hover:text-accent-foreground flex select-none flex-row gap-4 rounded-md p-3 leading-none no-underline outline-none transition-colors bg-chart-5 w-full my-1"
       to={item.url}
     >
       <div className="text-foreground">{item.icon}</div>
@@ -38,7 +38,7 @@ const SubMenuLink = ( { item }: { item: MenuItem } ) =>
 const renderMobileMenuItem = (item: MenuItem) => {
   if (item.items) {
     return (
-      <AccordionItem key={item.title} value={item.title} className="border-b-0">
+      <AccordionItem key={item.title} value={item.title} className="border-b-0 my-2">
         <AccordionTrigger className="text-md py-0 font-semibold hover:no-underline">
           {item.title}
         </AccordionTrigger>

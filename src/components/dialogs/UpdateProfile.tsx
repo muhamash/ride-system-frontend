@@ -75,8 +75,6 @@ export default function UpdateProfileModal({ user }: IUserModalProps) {
     {
       console.log( "Update name:", data, user );
 
-      
-
       await editUser( {
         id: user?._id,
         payload: data
