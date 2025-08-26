@@ -58,7 +58,11 @@ export default function RegistrationForm ()
     {
         if ( form.watch( "role" ) !== UserRole.DRIVER )
         {
-            form.setValue( "vehicleInfo", undefined ); 
+            form.setValue( "vehicleInfo", {
+                model: "",
+                license: "",
+                plateNumber: "",
+            } );
         }
     }, [ form.watch( "role" ) ] );
 
@@ -75,7 +79,7 @@ export default function RegistrationForm ()
         try 
         {
             const res = await register( data );
-            console.log(res.data)
+            console.log(res)
 
             if ( res?.data?.statusCode === 201 )
             {
