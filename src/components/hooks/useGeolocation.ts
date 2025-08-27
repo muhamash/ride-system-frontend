@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { envString } from "@/lib/envString";
 import axios from "axios";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
 interface LocationData {
@@ -20,21 +20,7 @@ export const useContinuousLocation = ( userId: string ) =>
     const socketRef = useRef<Socket | null>( null );
     const lastCallTimeRef = useRef<number>( 0 );
 
-    useEffect( () =>
-    {
-        if ( !userId ) return;
-
-        socketRef.current = io( "http://localhost:3000" );
-        startTracking();
-
-        return () =>
-        {
-            if ( watchIdRef.current !== null ) navigator.geolocation.clearWatch( watchIdRef.current );
-            socketRef.current?.disconnect();
-        };
-    }, [ userId ] );
-
-    const fetchAddress = async ( lat: number, lng: number ) =>
+    const fetchAddress = useCallback( async ( lat: number, lng: number ) =>
     {
         const now = Date.now();
         if ( now - lastCallTimeRef.current < 2000 )
@@ -57,9 +43,9 @@ export const useContinuousLocation = ( userId: string ) =>
             console.error( "Reverse geocode error:", err );
             return "Unknown location";
         }
-    };
+    }, [ coords?.address ] );
 
-    const startTracking = () =>
+    const startTracking = useCallback( () =>
     {
         if ( !navigator.geolocation )
         {
@@ -97,9 +83,25 @@ export const useContinuousLocation = ( userId: string ) =>
             },
             { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 }
         );
-    };
+    }, [fetchAddress, userId] );
+    
+    useEffect( () =>
+    {
+        if ( !userId ) return;
 
-    console.log(coords)
+        socketRef.current = io( "http://localhost:3000" );
+        startTracking();
+
+        return () =>
+        {
+            if ( watchIdRef.current !== null ) navigator.geolocation.clearWatch( watchIdRef.current );
+            socketRef.current?.disconnect();
+        };
+    }, [startTracking, userId] );
+
+    
+
+    console.log("location fetching")
 
     return { coords, error, retry: startTracking };
 };

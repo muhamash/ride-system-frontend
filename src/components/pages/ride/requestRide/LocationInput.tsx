@@ -110,7 +110,6 @@ export default function LocationInput({
                         onClick={() =>
                         {
                             onChange( " " );
-                            onLocationSelect( false );
                         }}
                     >
                         <X className="h-4 w-4" />

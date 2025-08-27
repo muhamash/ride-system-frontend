@@ -15,11 +15,11 @@ import { calculateFare } from "@/utils/ride.util";
 import { LatLng } from 'leaflet';
 import { Car, CreditCard, MapPin, Navigation, User } from "lucide-react";
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from "react-router";
 import LocationInput from "./LocationInput";
 import RideMap from "./RideMap";
 import RideSummary from "./RideSummery";
 import RideTypeCard from "./RideTypeCard";
-import { useNavigate } from "react-router";
 
 const rideOptions = [
   { id: "standard", name: "standard", price: "12-15 tk", eta: "5 min", icon: <Car className="h-5 w-5" /> },
@@ -213,6 +213,7 @@ export default function RequestRide() {
                       {
                         retry();
                         setUseCurrentLocation( true )
+                        window.location.reload()
                       }}
                     >
                       Use Current Location
@@ -220,7 +221,12 @@ export default function RequestRide() {
                     <Button
                       type="button"
                       variant={!useCurrentLocation ? "default" : "outline"}
-                      onClick={() => setUseCurrentLocation( false )}
+                      onClick={() =>
+                      {
+                        setUseCurrentLocation( false )
+                        setPickupLocation( "");
+                        setPickupCoords({ lat: "", lng: "" } as LatLng);
+                      }}
                     >
                       Search Manually
                     </Button>
