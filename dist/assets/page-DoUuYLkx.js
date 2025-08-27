@@ -1,1 +1,0 @@
-import{j as r}from"./index-CISkBYe2.js";import{u as t,a as l,b as o}from"./admin.api-Cox9SDEL.js";function i(){const{data:a}=t(),{data:e}=l(),{data:s}=o();return console.log(a,s,e),r.jsx("div",{children:"UpdateUserPage"})}export{i as default};

@@ -1,0 +1,1 @@
+import{aq as r,ar as t,as as l,j as o}from"./index-DGVUP1Vm.js";function u(){const{data:a}=r(),{data:e}=t(),{data:s}=l();return console.log(a,s,e),o.jsx("div",{children:"UpdateUserPage"})}export{u as default};

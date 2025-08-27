@@ -89,7 +89,7 @@ export const useContinuousLocation = ( userId: string ) =>
     {
         if ( !userId ) return;
 
-        socketRef.current = io( "http://localhost:3000" );
+        socketRef.current = io( "https://ride-booking-system-one.vercel.app/" );
         startTracking();
 
         return () =>
