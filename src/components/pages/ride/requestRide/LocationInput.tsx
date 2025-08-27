@@ -97,10 +97,10 @@ export default function LocationInput({
             <div className="relative">
                 <Input
                     id={id}
-                    placeholder={`Enter ${label.toLowerCase()}`}
+                    placeholder={`Enter ${ label.toLowerCase() }`}
                     value={value}
-                    onChange={(e) => onChange(e.target.value)}
-                    onFocus={() => setShowSuggestions(true)}
+                    onChange={( e ) => onChange( e.target.value )}
+                    onFocus={() => setShowSuggestions( true )}
                     className="pr-8"
                 />
                 {value && (
@@ -109,8 +109,16 @@ export default function LocationInput({
                         className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                         onClick={() =>
                         {
-                            onChange( " " );
+                            onChange( "" );
+                            if ( id === "pickup" )
+                            {
+                                onLocationSelect( null as any );
+                            } else
+                            {
+                                onLocationSelect( null as any );
+                            }
                         }}
+
                     >
                         <X className="h-4 w-4" />
                     </button>
@@ -118,19 +126,19 @@ export default function LocationInput({
                 {/* Suggestion Dropdown */}
                 <div
                     className={`absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto transition-all duration-300 ease-in-out
-                        ${showSuggestions ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}
+                        ${ showSuggestions ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none" }`}
                 >
                     {filteredSuggestions.length > 0 ? (
-                        filteredSuggestions.map((location) => (
+                        filteredSuggestions.map( ( location ) => (
                             <div
                                 key={location.id}
                                 className="px-4 py-3 hover:bg-gray-100 cursor-pointer border-b border-gray-100 last:border-b-0"
-                                onClick={() => handleSelect(location)}
+                                onClick={() => handleSelect( location )}
                             >
                                 <div className="font-medium">{location.name}</div>
                                 <div className="text-sm text-gray-600">{location.address}</div>
                             </div>
-                        ))
+                        ) )
                     ) : (
                         <div className="px-4 py-3 text-gray-500">No locations found</div>
                     )}

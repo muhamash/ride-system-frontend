@@ -101,17 +101,31 @@ export default function RequestRide() {
     fetchRoute();
   }, [ pickupCoords, destinationCoords, getDirection ] );
 
-  const handleLocationSelect = (location: any, isPickup: boolean) => {
-    if (isPickup) {
-      setPickupLocation(location.name);
-      setPickupCoords(location.coords);
-    } else {
-      setDestination(location.name);
-      setDestinationCoords(location.coords);
+  const handleLocationSelect = ( location: any, isPickup: boolean ) =>
+  {
+    if ( !location )
+    {
+      if ( isPickup )
+      {
+        setPickupCoords( null );
+        setPickupLocation( "" );
+      } else
+      {
+        setDestinationCoords( null );
+        setDestination( "" );
+      }
+      return;
     }
 
-    // dispatch( locationService.util.resetApiState() );
-    // dispatch( rideApi.util.resetApiState() );
+    if ( isPickup )
+    {
+      setPickupLocation( location.name );
+      setPickupCoords( location.coords );
+    } else
+    {
+      setDestination( location.name );
+      setDestinationCoords( location.coords );
+    }
   };
 
   const handleSwapLocations = () => {
