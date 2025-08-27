@@ -9,6 +9,7 @@ export const baseApi = createApi( {
     //     headers.set( 'Content-Type', 'application/json' );
     //     return headers;
     // },
+    credentials: 'includes',
     tagTypes: [ "USER", "DRIVER", "RIDES", "RIDER", "RIDE" ],
     endpoints: () =>
     ( {
