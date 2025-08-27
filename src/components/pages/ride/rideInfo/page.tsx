@@ -1,4 +1,5 @@
  
+import { useMyToast } from "@/components/layouts/MyToast.tsx";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,15 +7,16 @@ import { Separator } from "@/components/ui/separator";
 import { UserRole } from "@/constants/userRole";
 import { useUserDataQuery } from "@/redux/features/api/auth.api";
 import { locationService } from "@/redux/features/api/locationService.api.ts";
-import { rideApi, useGetRideByIdQuery } from "@/redux/features/api/ride.api";
+import { rideApi, useCancelRideMutation, useGetRideByIdQuery } from "@/redux/features/api/ride.api";
 import { useAppDispatch } from "@/redux/hooks";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import FloatEmergencyContact from "./FloatEmergenctContact.tsx";
 import RideActionsWrapper from "./RideActions.tsx";
 import RouteFetcher from "./RouteFetcher.tsx";
 
 export default function RideInfoPage() {
   const { data: userData, isLoading: driverLoading } = useUserDataQuery();
+  const [ cancelRide ] = useCancelRideMutation();
   const { id } = useParams();
   const {
     data: rideData,
@@ -29,6 +31,36 @@ export default function RideInfoPage() {
     dispatch(rideApi.util.resetApiState());
     dispatch(locationService.util.resetApiState());
     window.location.reload();
+  };
+
+  const navigate = useNavigate();
+  const { showToast } = useMyToast();
+
+  const handleUserCancelRide = async () =>
+  {
+
+    const rideId = ride?._id
+
+    try
+    {
+      console.log( rideId );
+      const res = await cancelRide( { id } );
+      console.log( res )
+      
+      if ( !res.data )
+      {
+        showToast( { type: "info", message: res?.error?.data?.message || "Something wrong in there!" } );
+        return;
+      }
+
+      dispatch( rideApi.util.resetApiState() );
+      showToast( { type: "success", message: res.data?.message } );
+      navigate( "/ride/ride-info" )
+    }
+    catch ( error: unknown )
+    {
+      showToast({type: "error", message: error?.message ||  error?.error?.message || error?.data?.message || "Something went wrong!"})
+    }
   };
 
   const ride = rideData?.data;
@@ -76,6 +108,12 @@ export default function RideInfoPage() {
           >
             Refresh
           </Button>
+          <p className="text-sm text-blue-600 font-mono py-3">Note: If you don't see any map with your (routes!) accept loading(?) don't panic! just refresh the button please!!! I am using free apis from (geoApify) </p>
+          {
+            role !== UserRole.DRIVER && ride.status === "REQUESTED" && (
+              <Button onClick={handleUserCancelRide} variant={"destructive"}>Cancel the ride!</Button>
+            )
+          }
         </CardHeader>
         <CardContent className="space-y-4">
           <FloatEmergencyContact />
