@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import SeeRidesPage from "@/components/pages/ride/SeeRidesPage";
 import { lazy } from "react";
 
 const RequestRidePage = lazy( () => import( "@/components/pages/ride/requestRide/page" ) );
@@ -10,6 +9,7 @@ const VehicleInfoPage = lazy( () => import( "@/components/pages/user/vehicleInfo
 const UserInfo = lazy( () => import( "@/components/pages/user/userInfo/page" ) );
 const UpdateUserPage = lazy( () => import( "@/components/pages/user/updateUser/page" ) );
 const ControlUserPage = lazy( () => import( "@/components/pages/user/manageAccessUser/page.tsx" ) ); 
+const SeeRidesPage = lazy( () => import( "@/components/pages/ride/SeeRidesPage" ) );
 
 
 export const navItemLinks = {
@@ -32,13 +32,13 @@ export const navItemLinks = {
           roles: [ "RIDER", "ADMIN" ],
           Component: RequestRidePage
         },
-        {
-          title: "See ride info",
-          description: "Check your ride info",
-          url: "/ride/ride-info/:id",
-          roles: [ "RIDER", "DRIVER", "ADMIN" ],
-          Component: RideInfoPage
-        },
+        // {
+        //   title: "See ride info",
+        //   description: "Check your ride info",
+        //   url: "/ride/ride-info/:id",
+        //   roles: [ "RIDER", "DRIVER", "ADMIN" ],
+        //   Component: RideInfoPage
+        // },
         {
           title: "See rides",
           description: "Check your ride info",
@@ -76,10 +76,10 @@ export const navItemLinks = {
           
         },
         {
-          title: "Vehicle info",
-          description: "Profile and settings",
-          url: "/user/vehicle",
-          roles: [ "ADMIN", "DRIVER" ],
+          title: "Driver stats",
+          description: "Driver stats and details",
+          url: "/user/driver-stats",
+          roles: [ "DRIVER" ],
           Component: VehicleInfoPage
         },
         // {

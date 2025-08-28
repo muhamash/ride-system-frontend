@@ -7,9 +7,12 @@ import FAQPage from "@/components/pages/FaqPage";
 import FeaturesPage from "@/components/pages/FeaturesPage";
 import Home from "@/components/pages/home/page";
 import NotFoundPage from "@/components/pages/NotFound";
+import RideInfoPage from "@/components/pages/ride/rideInfo/page";
 import UnAuthPage from "@/components/pages/UnAuthPage";
 import { navItemLinks } from "@/constants/links";
+import { UserRole } from "@/constants/userRole";
 import { generateRoutes } from "@/utils/generateRoutes";
+import { withAuth } from "@/utils/withAuth";
 import { lazy } from "react";
 import { createBrowserRouter } from "react-router";
 
@@ -28,6 +31,10 @@ export const appRouter = createBrowserRouter( [
         
       },
       ...dynamicRoutes,
+      {
+        path: "/ride/ride-info/:id",
+        Component: withAuth(RideInfoPage, [UserRole.DRIVER, UserRole.ADMIN, UserRole.RIDER]),
+      },
       {
         path: '/about',
         Component: AboutPage
