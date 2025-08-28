@@ -4,12 +4,12 @@ import { lazy } from "react";
 const RequestRidePage = lazy( () => import( "@/components/pages/ride/requestRide/page" ) );
 const RideInfoPage = lazy( () => import( "@/components/pages/ride/rideInfo/page" ) );
 const CheckRideRequestPage = lazy( () => import( "@/components/pages/ride/checkRideRequest/page" ) );
-const CheckRideStatus = lazy( () => import( "@/components/pages/ride/checkRideStatus/page" ) );
+const CheckRideStatus = lazy( () => import( "@/components/pages/ride/checkRides/page" ) );
 const VehicleInfoPage = lazy( () => import( "@/components/pages/user/vehicleInfo/page" ) );
 const UserInfo = lazy( () => import( "@/components/pages/user/userInfo/page" ) );
 const UpdateUserPage = lazy( () => import( "@/components/pages/user/updateUser/page" ) );
 const ControlUserPage = lazy( () => import( "@/components/pages/user/manageAccessUser/page.tsx" ) ); 
-const SeeRidesPage = lazy( () => import( "@/components/pages/ride/SeeRidesPage" ) );
+const SeeRidesPage = lazy( () => import( "@/components/pages/ride/checkRides/page" ) );
 
 
 export const navItemLinks = {
