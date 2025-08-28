@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMyToast } from "@/components/layouts/MyToast";
 import { Button } from "@/components/ui/button";
 import
@@ -38,20 +39,22 @@ export function LoginForm({
 
     const onSubmit: SubmitHandler<FieldValue> = async ( data: z.infer<typeof loginSchema> ) =>
     {
-        console.log( data );
+        // console.log( data );
 
         try
         {
             const result = await loginUser( data ).unwrap();
-            console.log( result, { isLoading, error } );
+            // console.log( result, { isLoading, error } );
             
 
             showToast( {
                 message: result?.message || "Welcome bro",
                 type: "success",
             } );
+
+            // console.log(result.data)
         
-            navigate("/")
+            navigate( "/" );
         }
         catch ( error )
         {
@@ -128,7 +131,7 @@ export function LoginForm({
                                 )}
                             />
                             <Button type="submit" className="w-full cursor-pointer">
-                                Login
+                                {isLoading ? "working behind..." : "Login"}
                             </Button>
                         </div>
 
