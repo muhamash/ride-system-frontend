@@ -15,11 +15,12 @@ import
 import type { MenuItem } from "@/types/layout.types";
 import { Link } from "react-router";
 
-const SubMenuLink = ( { item }: { item: MenuItem } ) =>
+const SubMenuLink = ( { item, pathName }: { item: MenuItem, pathName: string } ) =>
 {
+  // console.log(pathName, item)
   return (
     <Link
-      className="hover:bg-muted hover:text-accent-foreground flex select-none flex-row gap-4 rounded-md p-3 leading-none no-underline outline-none transition-colors bg-chart-5 w-full my-1"
+      className={`hover:bg-muted hover:text-accent-foreground flex select-none flex-row gap-4 rounded-md p-3 leading-none no-underline outline-none transition-colors ${pathName === item.url ? " bg-sky-300" : "bg-yellow-200"} w-full my-1`}
       to={item.url}
     >
       <div className="text-foreground">{item.icon}</div>
@@ -35,7 +36,7 @@ const SubMenuLink = ( { item }: { item: MenuItem } ) =>
   );
 };
 
-const renderMobileMenuItem = (item: MenuItem) => {
+const renderMobileMenuItem = (item: MenuItem, pathName: string) => {
   if (item.items) {
     return (
       <AccordionItem key={item.title} value={item.title} className="border-b-0 my-2">
@@ -44,7 +45,7 @@ const renderMobileMenuItem = (item: MenuItem) => {
         </AccordionTrigger>
         <AccordionContent className="mt-2">
           {item.items.map((subItem) => (
-            <SubMenuLink key={subItem.title} item={subItem} />
+            <SubMenuLink key={subItem.title} pathName={pathName} item={subItem} />
           ))}
         </AccordionContent>
       </AccordionItem>
@@ -58,8 +59,9 @@ const renderMobileMenuItem = (item: MenuItem) => {
   );
 };
 
-const renderMenuItem = ( item: MenuItem ) =>
-{
+const renderMenuItem = ( item: MenuItem, pathName?: string ) =>
+{ 
+    // console.log(pathName)
     if ( item.items )
     {
         return (
@@ -69,7 +71,7 @@ const renderMenuItem = ( item: MenuItem ) =>
                     <div className="grid gap-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                         {item.items.map( ( subItem ) => (
                             <NavigationMenuLink asChild key={subItem.title} className="w-80">
-                                <SubMenuLink item={subItem} />
+                            <SubMenuLink pathName={ pathName } item={subItem} />
                             </NavigationMenuLink>
                         ) )}
                       

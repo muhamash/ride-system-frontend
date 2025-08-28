@@ -159,7 +159,7 @@ export default function RequestRide() {
       lat: destinationCoords.lat,
       lng: destinationCoords.lng,
       picLat: pickupCoords?.lat,
-      picLng: pickupCoords.lng
+      picLng: pickupCoords?.lng
     }
 
     const toastId = showToast( { type: "loading", message: "Requesting a ride!" } );
@@ -172,7 +172,7 @@ export default function RequestRide() {
         type: "success",
         message: res?.message
       } )
-      
+      console.log(payload)
       navigate(`/ride/ride-info/${res?.data?.ride?._id}`)
     }
     catch ( error: unknown )
@@ -247,7 +247,7 @@ export default function RequestRide() {
                       {
                         setUseCurrentLocation( false )
                         setPickupLocation( "");
-                        setPickupCoords({ lat: "", lng: "" } as LatLng);
+                        setPickupCoords();
                       }}
                     >
                       Search Manually

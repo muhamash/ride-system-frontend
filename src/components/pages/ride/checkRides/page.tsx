@@ -10,7 +10,9 @@ import { Link } from "react-router";
 export default function SeeRidesPage() {
   const { data: userRidesData, isLoading: userRidesLoading } = useGetUserRidesQuery();
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
+  const [ filterStatus, setFilterStatus ] = useState( "" );
+  
+  console.log(userRidesData)
 
   if (userRidesLoading) return <p className="text-center mt-10">Loading rides...</p>;
 

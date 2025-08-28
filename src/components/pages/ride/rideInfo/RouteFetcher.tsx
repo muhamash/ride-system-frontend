@@ -12,39 +12,42 @@ export default function RouteFetcher({ ride }) {
   });
   const mapRef = useRef<any>(null);
 
-  const normalizeCoords = (coords: number[]) => [coords[1], coords[0]]; 
+  
+  const driverCoords = ride.driverLocation.coordinates;
+  const pickupCoords = ride.pickUpLocation.coordinates;
+  const dropOffCoords = ride.dropOffLocation.coordinates;
 
-  useEffect(() => {
-    const fetchRoute = async () => {
-      if (!ride) return;
+  useEffect( () =>
+  {
+    const fetchRoute = async () =>
+    {
+      if ( !ride ) return;
 
-      const driverCoords = normalizeCoords(ride.driverLocation.coordinates);
-      const pickupCoords = normalizeCoords(ride.pickUpLocation.coordinates);
-      const dropOffCoords = normalizeCoords(ride.dropOffLocation.coordinates);
-
-      const payloadTemplate = (start: number[], end: number[]) => ({
+      const payloadTemplate = ( start: number[], end: number[] ) => ( {
         profile: "driving",
-        coordinates: `${start[1]},${start[0]};${end[1]},${end[0]}`,
+        coordinates: `${ start[ 1 ] },${ start[ 0 ] };${ end[ 1 ] },${ end[ 0 ] }`,
         alternatives: false,
         steps: true,
         overview: "full",
-      });
+      } );
 
-      try {
+      try
+      {
         const routeToPickup = await getDirection(
-          payloadTemplate(driverCoords, pickupCoords)
+          payloadTemplate( driverCoords, pickupCoords )
         ).unwrap();
 
         const routeToDropoff = await getDirection(
-          payloadTemplate(pickupCoords, [dropOffCoords[1], dropOffCoords[0]])
+          payloadTemplate( pickupCoords, dropOffCoords )
         ).unwrap();
 
-        setLocation({
+        setLocation( {
           driveToPickUp: routeToPickup.data,
           drivePickUpToDrop: routeToDropoff.data,
-        });
-      } catch (err) {
-        console.error("Error fetching routes:", err);
+        } );
+      } catch ( err )
+      {
+        console.error( "Error fetching routes:", err );
       }
     };
 
@@ -58,18 +61,17 @@ export default function RouteFetcher({ ride }) {
 
   if (!location.driveToPickUp || !location.drivePickUpToDrop) return null;
 
-  const driverCoords = normalizeCoords(ride.driverLocation.coordinates);
-  const pickupCoords = normalizeCoords(ride.pickUpLocation.coordinates);
-  const dropOffCoords = normalizeCoords( ride.dropOffLocation.coordinates );
+  console.log( "Driver Coords:", driverCoords );
+  console.log( "Pickup Coords:", pickupCoords );
+  console.log( "Dropoff Coords:", dropOffCoords );
   
-  // console.log([dropOffCoords[1], dropOffCoords[0]])
 
   return (
     <RideMap
       pickupLocation={ride.pickUpLocation.address}
       destination={ride.dropOffLocation.address}
       pickupCoords={pickupCoords}
-      destinationCoords={[dropOffCoords[1], dropOffCoords[0]]}
+      destinationCoords={dropOffCoords}
       mapRef={mapRef}
       routeData={[location.driveToPickUp, location.drivePickUpToDrop]}
       acceptDriverCords={driverCoords}

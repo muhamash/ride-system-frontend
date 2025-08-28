@@ -25,7 +25,6 @@ export const useContinuousLocation = ( userId: string ) =>
         const now = Date.now();
         if ( now - lastCallTimeRef.current < 2000 )
         {
-            // Skip if less than 2 sec
             return coords?.address || "Default location!";
         }
         lastCallTimeRef.current = now;
@@ -71,7 +70,7 @@ export const useContinuousLocation = ( userId: string ) =>
 
                 socketRef.current?.emit( "update-location", {
                     userId,
-                    coordinates: [ lng, lat ],
+                    coordinates: [ lat, lng ],
                     address: address.length ? address : "Default address",
                 } );
             },

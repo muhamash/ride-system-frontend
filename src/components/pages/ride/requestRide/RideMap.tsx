@@ -53,10 +53,10 @@ export default function RideMap({
   });
 
   const onlineDriverData = onlineDrivers
-    ? onlineDrivers.map(driver => ({
+    ? onlineDrivers?.map(driver => ({
         id: driver.email,
-        lat: driver.location.coordinates[1],
-        lng: driver.location.coordinates[0],
+        lat: driver?.location?.coordinates[0],
+        lng: driver?.location?.coordinates[1],
       }))
     : [];
 
@@ -93,8 +93,8 @@ export default function RideMap({
             {destinationCoords && <Marker position={destinationCoords}><Popup>Destination: {destination}</Popup></Marker>}
 
             {onlineDriverData?.map( driver => (
-              <Marker key={driver.id} position={[ driver.lat, driver.lng ]} icon={bicycleIcon}>
-                <Popup>Driver ID: {driver.id}</Popup>
+              <Marker key={driver?.id} position={[ driver?.lat, driver?.lng ]} icon={bicycleIcon}>
+                <Popup>Driver ID: {driver?.id}</Popup>
               </Marker>
             ) )}
             

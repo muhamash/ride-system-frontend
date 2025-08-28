@@ -29,3 +29,13 @@ export function calculateFare ( distance: number, type: string )
 
   return baseFare + (distance / 1000) * perKmRate;
 }
+
+export function normalizeCoords(coords: number[]): [number, number] {
+  const [a, b] = coords;
+
+  // Latitude must be between -90 and 90
+  // Longitude must be between -180 and 180
+  const isLatFirst = Math.abs(a) <= 90 && Math.abs(b) <= 180;
+
+  return isLatFirst ? [b, a] : [a, b];
+}

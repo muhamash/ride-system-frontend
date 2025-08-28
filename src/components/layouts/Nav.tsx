@@ -22,7 +22,7 @@ import { navItemLinks } from "@/constants/links";
 import { authApi, useLogoutMutation, useUserDataQuery } from "@/redux/features/api/auth.api";
 import { useAppDispatch } from "@/redux/hooks";
 import { CarTaxiFront, Menu } from "lucide-react";
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { renderMenuItem, renderMobileMenuItem } from "../ui/NavComponents";
 
 const Navbar = ( ) =>
@@ -31,6 +31,8 @@ const Navbar = ( ) =>
   const [ logout ] = useLogoutMutation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  // console.log( location );
 
   // console.log( data )
   
@@ -74,7 +76,7 @@ const Navbar = ( ) =>
             <div className="flex items-center">
               <NavigationMenu>
                 <NavigationMenuList>
-                  {roleBasedMenu.map( ( item ) => renderMenuItem( item ) )}
+                  {roleBasedMenu.map( ( item ) => renderMenuItem( item, location?.pathname ) )}
                 </NavigationMenuList>
               </NavigationMenu>
             </div>
@@ -144,7 +146,7 @@ const Navbar = ( ) =>
                     collapsible
                     className="flex w-full flex-col gap-4"
                   >
-                    {roleBasedMenu.map( ( item ) => renderMobileMenuItem( item ) )}
+                    {roleBasedMenu.map( ( item ) => renderMobileMenuItem( item, location?.pathname ) )}
                   </Accordion>
 
                   <div className="flex flex-col gap-3">

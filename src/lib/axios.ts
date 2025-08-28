@@ -67,14 +67,13 @@ axiosInstance.interceptors.response.use(
             isRefreshing = true;
             try
             {
-                // Call refresh endpoint; backend sets new access token in cookie
                 await axiosInstance.post( "/auth/refresh-token" );
 
                 console.log( "new tokens!!" );
 
                 processQueue( null );
 
-                // Retry original request; cookies automatically sent
+                // Retry original request
                 return axiosInstance( originalRequest );
             } catch ( err )
             {

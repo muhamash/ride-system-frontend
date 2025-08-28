@@ -50,16 +50,16 @@ export const navItemLinks = {
           title: "Check requested ride",
           description: "Check your requested ride status",
           url: "/ride/check-ride-request",
-          roles: [ "DRIVER", "ADMIN" ],
+          roles: [ "DRIVER" ],
           Component: CheckRideRequestPage
         },
-        {
-          title: "See ride status",
-          description: "Check your ride status",
-          url: "/ride/ride-status",
-          roles: [ "ADMIN" ],
-          Component: CheckRideStatus
-        },
+        // {
+        //   title: "See ride status",
+        //   description: "Check your ride status",
+        //   url: "/ride/ride-status",
+        //   roles: [ "ADMIN" ],
+        //   Component: CheckRideStatus
+        // },
       ],
     },
     {
