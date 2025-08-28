@@ -34,25 +34,28 @@ export default function RequestRide() {
   
   const { data } = useUserDataQuery();
   const userId = data?.data?._id || "";
+  // console.log(userId)
   const { coords, error: locationError, retry } = useContinuousLocation( userId );
-  const [useCurrentLocation, setUseCurrentLocation] = useState(true);
 
+  const [ useCurrentLocation, setUseCurrentLocation ] = useState( true );
   const [pickupCoords, setPickupCoords] = useState<LatLng | null>(null);
   const [ destinationCoords, setDestinationCoords ] = useState<LatLng | null>( null );
-
+  const [ routeDataState, setRouteDataState ] = useState<any>( );
 
   const mapRef = useRef<any>(null);
   const pickupInputRef = useRef<HTMLInputElement>(null);
   const destinationInputRef = useRef<HTMLInputElement>( null );
-  const [ routeDataState, setRouteDataState ] = useState<any>( );
+  const rideTypesDataRef = useRef(null);
+  
   const dispatch = useAppDispatch();
+
   const [ getDirection, { data: routeData, isLoading, error } ] = useGetDirectionMutation();
   const { showToast, updateToast } = useMyToast();
   const { data: onlineDrivers } = useGetOnlineDriversQuery();
   const [ requestRide ] = useRequestRideMutation();
-  console.log( onlineDrivers?.data )
+  // console.log( onlineDrivers?.data, coords )
   
-  const rideTypesDataRef = useRef(null);
+  
 
   // Auto-update pickup if using current location
   useEffect( () =>
@@ -211,6 +214,11 @@ export default function RequestRide() {
                 <Navigation className="h-6 w-6 text-blue-600" />
                 Ride Details
               </CardTitle>
+              {
+                !coords && useCurrentLocation && (
+                  <p className="text-sm text-pink-400 font-mono py-5 leading-tight">NOTE : You have not permitted your device location to the app! Or maybe you are location is not supported for the reverse geo api!! Please allow location or give permission to the website!! for better result reload the page after permitted the location service!! else you better enter manually coord/location info at the input box!!</p>
+                )
+              }
              
             </CardHeader>
             <CardContent className="p-0">

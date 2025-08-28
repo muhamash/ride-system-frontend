@@ -39,7 +39,7 @@ export default function LocationInput({
     const [filteredSuggestions, setFilteredSuggestions] = useState<Location[]>(locations);
     const debouncedValue = useDebounce(value, 500);
     const [searchLocation] = useSearchLocationMutation();
-    const containerRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>( null );
 
     // Fetch locations on debounced input
     useEffect(() => {
@@ -49,13 +49,15 @@ export default function LocationInput({
                 return;
             }
             try {
-                const searchResult: any = await searchLocation({ query_text: debouncedValue }).unwrap();
+                const searchResult: any = await searchLocation( { query_text: debouncedValue } ).unwrap();
+                // console.log( searchResult.data );
+
                 if (searchResult?.statusCode === 200 && Array.isArray(searchResult.data)) {
                     const mappedLocations: Location[] = searchResult.data.map((loc: any) => ({
-                        id: loc.place_id,
-                        name: loc.address_line1,
-                        address: loc.address_line2,
-                        coords: { lat: loc.lat, lng: loc.lon },
+                        id: loc.id,
+                        name: loc.name,
+                        address: loc.address,
+                        coords: { lat: loc.location[0], lng: loc.location[1] },
                     }));
                     setFilteredSuggestions(mappedLocations);
                 } else {

@@ -16,7 +16,7 @@ export const withAuth = ( Component: ComponentType, allowedRoles?: UserRole[] ) 
             return <Navigate to="/login" />;
         }
 
-        console.log(allowedRoles, userRole)
+        // console.log(allowedRoles, userRole)
         if ( allowedRoles && !isLoading && !allowedRoles.includes( userRole ) )
         {
             return <Navigate to="/unauthorized" />;

@@ -36,7 +36,7 @@ export const useContinuousLocation = ( userId: string ) =>
             const res = await axios.get(
                 `https://us1.locationiq.com/v1/reverse?key=pk.ec2814e98c3e1916390f6dd2a3dda00d&lat=${ lat }&lon=${ lng }&format=json&_gl=1*1jxiud2*_ga*MTkxNDUwNTc4Ny4xNzU1OTY2MjIx*_ga_TRV5GF9KFC*czE3NTU5NjYyMjEkbzEkZzEkdDE3NTU5NjY4MTMkajYwJGwwJGgw`,
             );
-            // console.log( res.data )
+            // console.log( res.data, lat,lng )
             return res.data.display_name || "Address not found";
         } catch ( err )
         {
@@ -52,10 +52,16 @@ export const useContinuousLocation = ( userId: string ) =>
             setError( "Geolocation not supported by your browser." );
             return;
         }
+        
+        if ( watchIdRef.current !== null )
+        {
+            navigator.geolocation.clearWatch( watchIdRef.current );
+        }
 
         watchIdRef.current = navigator.geolocation.watchPosition(
             async ( pos ) =>
             {
+                // console.log( "Position Update:", pos ); 
                 const lat = pos.coords.latitude;
                 const lng = pos.coords.longitude;
                 const address = await fetchAddress( lat, lng );
@@ -74,7 +80,7 @@ export const useContinuousLocation = ( userId: string ) =>
                 if ( err.code === err.PERMISSION_DENIED )
                 {
                     setError(
-                        "Location permission denied. Please enable it in your browser settings and retry."
+                        "Location permission denied. Enable it in browser settings and retry."
                     );
                 } else
                 {
@@ -83,7 +89,7 @@ export const useContinuousLocation = ( userId: string ) =>
             },
             { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 }
         );
-    }, [fetchAddress, userId] );
+    }, [ fetchAddress, userId ] );
     
     useEffect( () =>
     {
@@ -101,7 +107,7 @@ export const useContinuousLocation = ( userId: string ) =>
 
     
 
-    console.log("location fetching")
+    console.log("location fetching", coords)
 
     return { coords, error, retry: startTracking };
 };
