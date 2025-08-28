@@ -83,7 +83,7 @@ const Home = () =>
 
   const handleDriverClick = () =>
   {
-    if ( !role === UserRole.DRIVER )
+    if ( role !== UserRole.DRIVER )
     {
       showToast( {
         type: "info",

@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMyToast } from "@/components/layouts/MyToast";
 import { Button } from "@/components/ui/button";
-import { useCompleteRideMutation, useInTransitRideMutation, usePickUpRideMutation } from "@/redux/features/api/ride.api"; // import your mutations
+import { rideApi, useCompleteRideMutation, useInTransitRideMutation, usePickUpRideMutation } from "@/redux/features/api/ride.api"; // import your mutations
+import { useAppDispatch } from "@/redux/hooks";
 import { CheckCircleIcon, FlagIcon, TruckIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -35,8 +36,7 @@ const getCurrentStepIndex = ( status: RideStatus ): number =>
 export default function RideActionsWrapper ( { ride, onRideUpdate }: RideActionsProps )
 {
     const [ currentStep, setCurrentStep ] = useState( getCurrentStepIndex( ride.status ) );
-    
-    
+    const dispatch = useAppDispatch();
 
     console.log(ride.status)
 
@@ -48,10 +48,10 @@ export default function RideActionsWrapper ( { ride, onRideUpdate }: RideActions
 
 
     const navigate = useNavigate();
-    console.log(ride)
-  const [pickUpRide] = usePickUpRideMutation();
-  const [inTransitRide] = useInTransitRideMutation();
-  const [completeRide] = useCompleteRideMutation();
+    // console.log(ride)
+    const [ pickUpRide ] = usePickUpRideMutation();
+    const [ inTransitRide ] = useInTransitRideMutation();
+    const [ completeRide ] = useCompleteRideMutation();
 
     const { showToast, updateToast } = useMyToast();
 
@@ -62,29 +62,32 @@ export default function RideActionsWrapper ( { ride, onRideUpdate }: RideActions
 
         try
         {
+            let res;
             if ( currentStepKey === "ACCEPTED" )
             {
-                const res = await pickUpRide( { id: ride._id } ).unwrap();
-                console.log( res );
+                res = await pickUpRide( { id: ride._id } ).unwrap();
+                // console.log( res );
             } else if ( currentStepKey === "PICKED_UP" )
             {
-                await inTransitRide( { id: ride._id } ).unwrap();
+                res = await inTransitRide( { id: ride._id } ).unwrap();
             } else if ( currentStepKey === "IN_TRANSIT" )
             {
-                await completeRide( { id: ride._id } ).unwrap();
+                res = await completeRide( { id: ride._id } ).unwrap();
             }
 
             setCurrentStep( currentStep + 1 );
 
             // Notify parent to refetch ride
             onRideUpdate?.();
-            updateToast( toastId, { type: "success", message: `"${ steps[ currentStep ].label }" completed successfully!` } );
+            updateToast( toastId, { type: "success", message: res?.message } );
+            dispatch( rideApi.util.resetApiState() );
 
             if ( currentStep === steps.length - 1 )
             {
-                navigate("/ride/check-ride-request")
+                navigate( "/ride/check-ride-request" )
             }
-        } catch ( error: any )
+        }
+        catch ( error: any )
         {
             console.error( "API error:", error );
             const errorMessage = error?.data?.message || error?.message || "Something went wrong!";
@@ -92,15 +95,13 @@ export default function RideActionsWrapper ( { ride, onRideUpdate }: RideActions
         }
     };
 
-    
-
     const getStepStatus = ( index: number ) =>
     {
         if ( ride.status === "COMPLETED" )
         {
             // Mark all except last as completed
             if ( index < steps.length - 1 ) return "completed";
-            if ( index === steps.length - 1 ) return "completed"; // or "final" if you want different style
+            if ( index === steps.length - 1 ) return "completed"; 
         }
 
         if ( index < currentStep ) return "completed";
@@ -162,7 +163,7 @@ export default function RideActionsWrapper ( { ride, onRideUpdate }: RideActions
                     className="w-full py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
                     onClick={handleNext}
                 >
-                    {currentStep === steps.length - 2 ? "Take cash!" : "Next Step"}
+                    {currentStep === steps.length - 2 ? "Take cash and complete it!" : "Next Step"}
                 </Button>
             )}
 

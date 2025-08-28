@@ -12,15 +12,15 @@ export default function RouteFetcher({ ride }) {
   });
   const mapRef = useRef<any>(null);
 
-  
-  const driverCoords = ride.driverLocation.coordinates;
-  const pickupCoords = ride.pickUpLocation.coordinates;
-  const dropOffCoords = ride.dropOffLocation.coordinates;
 
   useEffect( () =>
   {
     const fetchRoute = async () =>
     {
+      const driverCoords = ride.driverLocation.coordinates;
+      const pickupCoords = ride.pickUpLocation.coordinates;
+      const dropOffCoords = ride.dropOffLocation.coordinates;
+
       if ( !ride ) return;
 
       const payloadTemplate = ( start: number[], end: number[] ) => ( {
@@ -61,10 +61,9 @@ export default function RouteFetcher({ ride }) {
 
   if (!location.driveToPickUp || !location.drivePickUpToDrop) return null;
 
-  console.log( "Driver Coords:", driverCoords );
-  console.log( "Pickup Coords:", pickupCoords );
-  console.log( "Dropoff Coords:", dropOffCoords );
-  
+  const driverCoords = ride.driverLocation.coordinates;
+  const pickupCoords = ride.pickUpLocation.coordinates;
+  const dropOffCoords = ride.dropOffLocation.coordinates;
 
   return (
     <RideMap

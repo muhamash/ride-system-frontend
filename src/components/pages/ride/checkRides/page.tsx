@@ -32,7 +32,7 @@ export default function SeeRidesPage() {
 
   return (
     <div className="container mx-auto p-4 py-30  space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900">Your Rides</h1>
+      <h1 className="text-3xl font-bold text-gray-900">Your Ride history</h1>
 
       {/* Search & Filter */}
       <div className="flex flex-col md:flex-row gap-4 mb-4">
