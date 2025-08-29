@@ -94,7 +94,8 @@ export const useContinuousLocation = ( userId: string ) =>
     {
         if ( !userId ) return;
 
-        socketRef.current = io( "" );
+        // send data to backend
+        socketRef.current = io( "https://ride-booking-system-one.vercel.app" );
         startTracking();
 
         return () =>
