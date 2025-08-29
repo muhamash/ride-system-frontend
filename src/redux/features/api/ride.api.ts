@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
  
 import { baseApi } from "@/redux/baseApi";
+import type { Ride } from "./admin.api";
 
 // interface ApiResponse<T> {
 //   message: string;
@@ -86,21 +87,52 @@ export const rideApi = baseApi.injectEndpoints( {
             revalidateTags: [ "RIDES" ]
         } ),
 
-        getUserRides: builder.query( {
-            query: ( { page = 1, limit = 5, search = "", status = "" } ) => ( {
-                url: `/ride/view-user-rides?page=${ page }&limit=${ limit }&search=${ search }&status=${ status }`,
-                method: "GET",
-            } ),
-            providesTags: [ "RIDES" ],
-        } ),
-        getAllRides: builder.query( {
-            query: ( { page = 1, limit = 5, search = "", status = "" } ) => ( {
-                url: `/admin/all-rides?page=${ page }&limit=${ limit }&search=${ search }&status=${ status }`,
-                method: "GET",
-            } ),
-            providesTags: [ "RIDES" ],
-        } ),
+        getUserRides: builder.query<ApiResponse<Ride[]>,{ page?: number; limit?: number; search?: string; sort?: string; status?: string }>( {
+            query: ( params = {} ) =>
+            {
+                const urlParams = new URLSearchParams();
 
+                if ( params.page !== undefined ) urlParams.append( "page", params.page.toString() );
+                if ( params.limit !== undefined ) urlParams.append( "limit", params.limit.toString() );
+                if ( params.search ) urlParams.append( "search", params.search );
+                if ( params.status ) urlParams.append( "status", params.status );
+                if ( params.sort ) urlParams.append( "sort", params.sort );
+
+                return {
+                    url: `/ride/view-user-rides${ urlParams.toString() ? `?${ urlParams.toString() }` : "" }`,
+                    method: "GET",
+                };
+            },
+            serializeQueryArgs: ( { endpointName, queryArgs } ) =>
+            {
+                return `${ endpointName }-${ queryArgs.page ?? "" }-${ queryArgs.limit ?? "" }-${ queryArgs.search ?? "" }-${ queryArgs.sort ?? "" }-${ queryArgs.status ?? "" }`;
+            },
+
+            providesTags: [ "RIDES" ],
+        } ),
+        
+        getAllRides: builder.query<ApiResponse<Ride[]>, { page?: number; limit?: number; search?: string; sort?: string }>(
+            {
+                query: ( params = {} ) =>
+                {
+                    const urlParams = new URLSearchParams();
+                    if ( params.page ) urlParams.append( "page", params.page.toString() );
+                    if ( params.limit ) urlParams.append( "limit", params.limit.toString() );
+                    if ( params.search ) urlParams.append( "search", params.search );
+                    if ( params.status ) urlParams.append( "status", params.status );
+                    if ( params.sort ) urlParams.append( "sort", params.sort );
+
+                    return {
+                        url: `/admin/all-rides?${ urlParams.toString() }`,
+                        method: "GET",
+                    };
+                },
+                serializeQueryArgs: ( { endpointName, queryArgs } ) =>
+                {
+                    return `${ endpointName }-${ queryArgs.page }-${ queryArgs.limit }-${ queryArgs.search }-${ queryArgs.sort }`;
+                },
+                providesTags: [ "RIDES" ],
+            } ),
 
     } )
 } );

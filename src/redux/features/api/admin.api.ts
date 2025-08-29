@@ -2,12 +2,30 @@
 import type { approvalParam, blockParam, suspendParam } from "@/components/pages/user/manageAccessUser/type";
 import { baseApi } from "@/redux/baseApi";
 
-interface ApiResponse<T> {
-  message: string;
-  statusCode: number;
-  data: T;
+export interface Ride {
+  _id: string;
+  pickUpLocation: { address: string };
+  dropOffLocation: { address: string };
+  driverUserName: string;
+  riderUserName: string;
+  status: string;
 }
 
+export interface Meta {
+  limit: number;
+  page: number;
+  totalDocuments: number;
+  totalPage: number;
+}
+
+export interface ApiResponse<T> {
+  message: string;
+  statusCode: number;
+  data: {
+    data: T;
+    meta: Meta;
+  };
+}
 export const adminApi = baseApi.injectEndpoints( {
     endpoints: ( builder ) => ( {
         allUserData: builder.query<ApiResponse<User[]>, { page?: number; limit?: number; search?: string; sort?: string }>(

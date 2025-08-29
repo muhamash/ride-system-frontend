@@ -1,58 +1,104 @@
-import { Phone, Share2 } from "lucide-react";
+import { useMyToast } from "@/components/layouts/MyToast";
+import { Button } from "@/components/ui/button";
+import { Tooltip } from "@/components/ui/tooltip";
+import { Facebook, MessageSquare, Share2, Twitter } from "lucide-react";
 import { useState } from "react";
 
 export default function FloatActions() {
-  const emergencyNumber = "+880123456789"; // Emergency call number
   const [open, setOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false); 
+  const [shareUrls, setShareUrls] = useState<{
+    whatsapp: string;
+    twitter: string;
+    facebook: string;
+  } | null>(null);
 
-  const handleCall = () => {
-    window.location.href = `tel:${emergencyNumber}`;
-  };
+  const { showToast } = useMyToast();
 
   const handleShareLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        const { latitude, longitude } = position.coords;
-        const shareText = `My location: https://www.google.com/maps?q=${latitude},${longitude}`;
-        if (navigator.share) {
-          navigator.share({ text: shareText });
-        } else {
-          alert("Share this link: " + shareText);
-        }
-      });
-    } else {
-      alert("Geolocation not supported by your browser");
+    if (!navigator.geolocation) {
+      showToast({ type: "danger", message: "Geolocation not supported" });
+      return;
     }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        const googleMapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
+        const encodedLink = encodeURIComponent(googleMapsLink);
+
+        setShareUrls({
+          whatsapp: `https://wa.me/?text=Hey i am riding on Let's Ride web app developed by github.com/muhamash; for security i am sharing  my location for testing purpose: ${encodedLink}`,
+          twitter: `https://twitter.com/intent/tweet?text=My location: ${encodedLink}`,
+          facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedLink}`,
+        });
+
+        setShareOpen((prev) => !prev);
+      },
+      () => {
+        showToast({ type: "danger", message: "Please allow location access" });
+      }
+    );
+  };
+
+  const handleSocialClick = (platform: "whatsapp" | "twitter" | "facebook") => {
+    if (!shareUrls) return;
+    window.open(shareUrls[platform], "_blank");
   };
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end space-y-3">
-      {open && (
-        <>
-          <button
-            onClick={handleShareLocation}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-full shadow-lg transition-all duration-200"
+      {/* Social Share Buttons */}
+      {shareOpen && shareUrls && (
+        <div className="flex flex-col items-end space-y-2 mb-2">
+          <Button
+            variant="outline"
+            className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-full"
+            onClick={() => handleSocialClick("whatsapp")}
           >
-            <Share2 className="h-5 w-5" />
-            Share Location
-          </button>
-
-          <button
-            onClick={handleCall}
-            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-full shadow-lg transition-all duration-200"
+            <MessageSquare className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="outline"
+            className="bg-blue-400 hover:bg-blue-500 text-white p-3 rounded-full"
+            onClick={() => handleSocialClick("twitter")}
           >
-            <Phone className="h-5 w-5" />
-            Emergency
-          </button>
-        </>
+            <Twitter className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="outline"
+            className="bg-blue-700 hover:bg-blue-800 text-white p-3 rounded-full"
+            onClick={() => handleSocialClick("facebook")}
+          >
+            <Facebook className="h-5 w-5" />
+          </Button>
+        </div>
       )}
 
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center justify-center bg-yellow-500 hover:bg-green-700 text-white h-12 w-12 rounded-full shadow-lg transition-all duration-200"
+      {/* Share Location Toggle Button */}
+      {open && (
+        <Tooltip content="Share Location">
+          <Button
+            variant="primary"
+            className="flex items-center gap-2 bg-pink-200"
+            onClick={handleShareLocation}
+          >
+            <Share2 className="h-5 w-5" />
+            Share
+          </Button>
+        </Tooltip>
+      )}
+
+      {/* Main SOS Toggle */}
+      <Button
+        onClick={() => {
+          setOpen(!open);
+          if (!open) setShareOpen(false); 
+        }}
+        className="h-12 w-12 rounded-full bg-yellow-500 hover:bg-green-700 text-white shadow-lg"
       >
-        {open ? "X" : "sos"}
-      </button>
+        {open ? "X" : "SOS"}
+      </Button>
     </div>
   );
 }

@@ -70,7 +70,7 @@ export const navItemLinks = {
           Component: VehicleInfoPage
         },
         {
-          title: "Check all user and driver stats",
+          title: "All user and driver stats",
           description: "Check all user and driver stats",
           url: "/ride/check-stats",
           roles: [ "ADMIN" ],

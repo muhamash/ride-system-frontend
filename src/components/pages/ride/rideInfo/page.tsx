@@ -1,4 +1,3 @@
- 
 import { useMyToast } from "@/components/layouts/MyToast.tsx";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,19 +12,33 @@ import { useNavigate, useParams } from "react-router";
 import FloatEmergencyContact from "./FloatEmergenctContact.tsx";
 import RideActionsWrapper from "./RideActions.tsx";
 import RouteFetcher from "./RouteFetcher.tsx";
+import Loading from "@/components/layouts/Loading.tsx";
 
 export default function RideInfoPage() {
-  const { data: userData, isLoading: driverLoading } = useUserDataQuery();
-  const [ cancelRide ] = useCancelRideMutation();
   const { id } = useParams();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { showToast } = useMyToast();
+
+  // Fetch current user
+  const { data: userData, isLoading: userLoading } = useUserDataQuery();
+
   const {
     data: rideData,
-    isLoading: rideDataLoading,
-    refetch: refetchRide,
-  } = useGetRideByIdQuery({ id });
+    isLoading: rideLoading,
+    isError: rideError,
+    refetch: refetchRide
+  } = useGetRideByIdQuery({ id: id! }, { skip: !id });
+
+  const [cancelRide] = useCancelRideMutation();
+
+  const ride = rideData?.data;
 
   const role = userData?.data?.role;
-  const dispatch = useAppDispatch();
+
+  const hasValidCoordinates =
+    ride?.pickUpLocation?.coordinates?.length === 2 &&
+    ride?.dropOffLocation?.coordinates?.length === 2;
 
   const handleRefresh = () => {
     dispatch(rideApi.util.resetApiState());
@@ -33,56 +46,38 @@ export default function RideInfoPage() {
     window.location.reload();
   };
 
-  const navigate = useNavigate();
-  const { showToast } = useMyToast();
+  const handleUserCancelRide = async () => {
+    if (!ride?._id) return;
 
-  const handleUserCancelRide = async () =>
-  {
-
-    const rideId = ride?._id
-
-    try
-    {
-      console.log( rideId );
-      const res = await cancelRide( { id } );
-      console.log( res )
-      
-      if ( !res.data )
-      {
-        showToast( { type: "info", message: res?.error?.data?.message || "Something wrong in there!" } );
+    try {
+      const res = await cancelRide({ id: ride._id });
+      if (!res.data) {
+        showToast({ type: "info", message: res?.error?.data?.message || "Something went wrong!" });
         return;
       }
-
-      dispatch( rideApi.util.resetApiState() );
-      showToast( { type: "success", message: res.data?.message } );
-      navigate( "/ride/ride-info" )
-    }
-    catch ( error: unknown )
-    {
-      showToast({type: "error", message: error?.message ||  error?.error?.message || error?.data?.message || "Something went wrong!"})
+      dispatch(rideApi.util.resetApiState());
+      showToast({ type: "success", message: res.data?.message });
+      navigate("/ride/ride-info");
+    } catch (error: unknown) {
+      showToast({
+        type: "error",
+        message: error?.message || error?.error?.message || error?.data?.message || "Something went wrong!"
+      });
     }
   };
 
-  const ride = rideData?.data;
+  // Loading state
+  if (userLoading || rideLoading) {
+    return (
+      <Loading/>
+    );
+  }
 
-
-  const hasValidCoordinates =
-    ride.pickUpLocation?.coordinates?.length === 2 &&
-    ride.dropOffLocation?.coordinates?.length === 2;
-  
-    if (driverLoading || rideDataLoading) {
-    return ( <div className="min-h-screen bg-gray-50 flex items-center justify-center py-30">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-        <p className="mt-4 text-gray-600">Loading ...</p>
-      </div>
-    </div> );
-    }
-  
-    if (!ride) {
+  // Error or missing ride
+  if (rideError || !ride) {
     return (
       <p className="py-30 flex items-center justify-center text-4xl text-red-600">
-        No ride in the database
+        Ride not found or missing location data
       </p>
     );
   }
@@ -91,93 +86,80 @@ export default function RideInfoPage() {
     <div className="max-w-3xl mx-auto space-y-6 py-30">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">
-            Ride Details
-            <Badge
-              className={`ml-3 ${
-                ride.status === "ACCEPTED"
-                  ? "bg-green-500"
-                  : ride.status === "PENDING"
-                  ? "bg-yellow-500"
-                  : "bg-gray-500"
-              }`}
-            >
-              {ride.status}
-            </Badge>
+          <CardTitle className="text-2xl font-bold flex items-center justify-between">
+            <span>
+              Ride Details
+              <Badge
+                className={`ml-3 ${
+                  ride.status === "ACCEPTED"
+                    ? "bg-green-500"
+                    : ride.status === "PENDING"
+                    ? "bg-yellow-500"
+                    : "bg-gray-500"
+                }`}
+              >
+                {ride.status}
+              </Badge>
+            </span>
+            <div className="flex gap-2">
+              <Button onClick={handleRefresh} variant="secondary" size="sm" className="bg-purple-200">
+                Refresh
+              </Button>
+              {role !== UserRole.DRIVER && ride.status === "REQUESTED" && (
+                <Button onClick={handleUserCancelRide} variant="destructive" size="sm">
+                  Cancel Ride
+                </Button>
+              )}
+            </div>
           </CardTitle>
-          <Button
-            onClick={handleRefresh}
-            variant={"secondary"}
-            size={"sm"}
-            className="w-[100px] bg-purple-200"
-          >
-            Refresh
-          </Button>
-          <p className="text-sm text-blue-600 font-mono py-3">Note: If you don't see any map with your (routes!) accept loading(?) don't panic! just refresh the button please!!! I am using free apis from (geoApify) </p>
-          {
-            role !== UserRole.DRIVER && ride.status === "REQUESTED" && (
-              <Button onClick={handleUserCancelRide} variant={"destructive"}>Cancel the ride!</Button>
-            )
-          }
+          <p className="text-sm text-blue-600 font-mono py-3">
+            Note: If the map doesn't load immediately, refresh the page. Using free APIs from GeoApify.
+          </p>
         </CardHeader>
         <CardContent className="space-y-4">
           <FloatEmergencyContact />
           <div>
             <p className="text-lg font-semibold">Rider</p>
-            <p className="text-sm text-gray-600">
-              {ride.rider?.name} ({ride.rider?.email})
-            </p>
+            <p className="text-sm text-gray-600">{ride.rider?.name} ({ride.rider?.email})</p>
           </div>
           <Separator />
           <div>
             <p className="text-lg font-semibold">Driver</p>
-            <p className="text-sm text-gray-600">
-              {ride.driverUserName || "Not Assigned"}
-            </p>
+            <p className="text-sm text-gray-600">{ride.driverUserName || "Not Assigned"}</p>
           </div>
           <Separator />
           <div>
             <p className="text-lg font-semibold">Pickup Location</p>
-            <p className="text-sm text-gray-600">
-              {ride.pickUpLocation?.address}
-            </p>
+            <p className="text-sm text-gray-600">{ride.pickUpLocation?.address || "N/A"}</p>
           </div>
           <div>
             <p className="text-lg font-semibold">Drop-off Location</p>
-            <p className="text-sm text-gray-600">
-              {ride.dropOffLocation?.address}
-            </p>
+            <p className="text-sm text-gray-600">{ride.dropOffLocation?.address || "N/A"}</p>
           </div>
           <Separator />
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-lg font-semibold">Distance</p>
-              <p className="text-sm text-gray-600">{ride.distanceInKm} km</p>
+              <p className="text-sm text-gray-600">{ride.distanceInKm ?? "N/A"} km</p>
             </div>
             <div>
               <p className="text-lg font-semibold">Fare</p>
-              <p className="text-sm text-gray-600">৳{ride.fare}</p>
+              <p className="text-sm text-gray-600">৳{ride.fare ?? "N/A"}</p>
             </div>
           </div>
           <Separator />
           <div>
             <p className="text-lg font-semibold">Requested At</p>
-            <p className="text-sm text-gray-600">
-              {new Date(ride.requestedAt).toLocaleString()}
-            </p>
+            <p className="text-sm text-gray-600">{ride.requestedAt ? new Date(ride.requestedAt).toLocaleString() : "N/A"}</p>
           </div>
           {ride.acceptedAt && (
             <div>
               <p className="text-lg font-semibold">Accepted At</p>
-              <p className="text-sm text-gray-600">
-                {new Date(ride.acceptedAt).toLocaleString()}
-              </p>
+              <p className="text-sm text-gray-600">{new Date(ride.acceptedAt).toLocaleString()}</p>
             </div>
           )}
           <Separator />
-          {role === UserRole.DRIVER && (
-            <RideActionsWrapper ride={ride} onRideUpdate={refetchRide} />
-          )}
+          {role === UserRole.DRIVER && <RideActionsWrapper ride={ride} onRideUpdate={refetchRide} />}
           <Separator />
           {hasValidCoordinates && <RouteFetcher ride={ride} />}
         </CardContent>
