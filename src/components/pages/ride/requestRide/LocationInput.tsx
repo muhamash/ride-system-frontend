@@ -50,7 +50,7 @@ export default function LocationInput({
             }
             try {
                 const searchResult: any = await searchLocation( { query_text: debouncedValue } ).unwrap();
-                // console.log( searchResult.data );
+                console.log( searchResult.data );
 
                 if (searchResult?.statusCode === 200 && Array.isArray(searchResult.data)) {
                     const mappedLocations: Location[] = searchResult.data.map((loc: any) => ({
