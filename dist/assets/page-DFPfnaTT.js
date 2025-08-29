@@ -1,0 +1,1 @@
+import{av as r,aw as t,ax as l,j as o}from"./index-mUdrvzi8.js";function u(){const{data:a}=r(),{data:e}=t(),{data:s}=l();return console.log(a,s,e),o.jsx("div",{children:"UpdateUserPage"})}export{u as default};

@@ -50,14 +50,14 @@ export default function LocationInput({
             }
             try {
                 const searchResult: any = await searchLocation( { query_text: debouncedValue } ).unwrap();
-                console.log( searchResult.data );
+                // console.log( searchResult.data );
 
                 if (searchResult?.statusCode === 200 && Array.isArray(searchResult.data)) {
                     const mappedLocations: Location[] = searchResult.data.map((loc: any) => ({
-                        id: loc.id,
-                        name: loc.name,
-                        address: loc.address,
-                        coords: { lat: loc.location[0], lng: loc.location[1] },
+                        id: loc.place_id,
+                        name: loc.address_line1,
+                        address: loc.address_line2,
+                        coords: { lat: loc.lat, lng: loc.lon },
                     }));
                     setFilteredSuggestions(mappedLocations);
                 } else {
