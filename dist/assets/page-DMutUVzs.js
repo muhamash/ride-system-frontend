@@ -1,0 +1,1 @@
+import{az as r,aA as t,aB as l,j as o}from"./index-Tv_81dye.js";function u(){const{data:a}=r(),{data:e}=t(),{data:s}=l();return console.log(a,s,e),o.jsx("div",{children:"UpdateUserPage"})}export{u as default};

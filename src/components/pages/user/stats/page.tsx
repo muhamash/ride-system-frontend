@@ -1,8 +1,8 @@
 
 export default function VehicleInfoPage() {
   return (
-    <div>
-      VehicleInfoPage
+    <div className="py-30">
+      stats
     </div>
   )
 }

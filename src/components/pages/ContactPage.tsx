@@ -8,6 +8,7 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useMyToast } from "../layouts/MyToast";
 
 const contactSchema = z.object({
   name: z.string().nonempty("Name is required"),
@@ -23,13 +24,14 @@ export default function ContactPage() {
     defaultValues: { name: "", email: "", subject: "", message: "" },
   });
 
+  const { showToast } = useMyToast();
   const onSubmit = (values: never) => {
     setIsLoading(true);
     new Promise((resolve) => setTimeout(resolve, 1000)).then(() => {
       console.log("Form submitted:", values);
       setIsLoading(false);
       form.reset();
-      alert("Message sent successfully!");
+      showToast({type:"info", message:"Fake submission!!"})
     });
   };
 

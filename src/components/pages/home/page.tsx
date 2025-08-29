@@ -10,7 +10,6 @@ import
     CreditCard,
     DollarSign,
     MapPin,
-    Play,
     Shield,
     Smartphone,
     Star,
@@ -145,17 +144,21 @@ const Home = () =>
                 </div>
               </motion.div>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link
-                  to={role ? "/ride" : "/registration"}
-                  className="bg-yellow-400 text-gray-900 px-8 py-4 rounded-full font-semibold text-lg hover:bg-yellow-300 transition-all duration-200 flex items-center justify-center group"
-                >
-                  Get Started Today
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-                <div className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-all duration-200 flex items-center justify-center cursor-pointer">
+                {
+                  !role && (
+                    <Link
+                      to={"/registration"}
+                      className="bg-yellow-400 text-gray-900 px-8 py-4 rounded-full font-semibold text-lg hover:bg-yellow-300 transition-all duration-200 flex items-center justify-center group"
+                    >
+                      Get Started Today
+                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  )
+                }
+                {/* <div className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-all duration-200 flex items-center justify-center cursor-pointer">
                   <Play className="mr-2 h-5 w-5" />
                   Take a tour??
-                </div>
+                </div> */}
               </div>
               
             </motion.div>
@@ -395,8 +398,8 @@ const Home = () =>
             >
               <Users className="mr-2 h-5 w-5" />
               {
-                    role ? role : "Register"
-                  }
+                role ? role : "Register"
+              }
             </Link>
             <div
               onClick={handleDriverClick}

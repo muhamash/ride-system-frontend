@@ -1,3 +1,4 @@
+import Loading from "@/components/layouts/Loading.tsx";
 import { useMyToast } from "@/components/layouts/MyToast.tsx";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,6 @@ import { useNavigate, useParams } from "react-router";
 import FloatEmergencyContact from "./FloatEmergenctContact.tsx";
 import RideActionsWrapper from "./RideActions.tsx";
 import RouteFetcher from "./RouteFetcher.tsx";
-import Loading from "@/components/layouts/Loading.tsx";
 
 export default function RideInfoPage() {
   const { id } = useParams();
@@ -90,13 +90,12 @@ export default function RideInfoPage() {
             <span>
               Ride Details
               <Badge
-                className={`ml-3 ${
-                  ride.status === "ACCEPTED"
+                className={`ml-3 ${ ride.status === "ACCEPTED"
                     ? "bg-green-500"
                     : ride.status === "PENDING"
-                    ? "bg-yellow-500"
-                    : "bg-gray-500"
-                }`}
+                      ? "bg-yellow-500"
+                      : "bg-gray-500"
+                  }`}
               >
                 {ride.status}
               </Badge>
@@ -113,11 +112,17 @@ export default function RideInfoPage() {
             </div>
           </CardTitle>
           <p className="text-sm text-blue-600 font-mono py-3">
-            Note: If the map doesn't load immediately, refresh the page. Using free APIs from GeoApify.
+            Note: If the map doesn't load immediately, refresh the page. Using free APIs from GeoApify an locationIQ and more other free apis from the internet!!
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
+          
+          {
+            ride.status !== "COMPLETED" && (
           <FloatEmergencyContact />
+          )
+              }
+          
           <div>
             <p className="text-lg font-semibold">Rider</p>
             <p className="text-sm text-gray-600">{ride.rider?.name} ({ride.rider?.email})</p>
@@ -150,12 +155,12 @@ export default function RideInfoPage() {
           <Separator />
           <div>
             <p className="text-lg font-semibold">Requested At</p>
-            <p className="text-sm text-gray-600">{ride.requestedAt ? new Date(ride.requestedAt).toLocaleString() : "N/A"}</p>
+            <p className="text-sm text-gray-600">{ride.requestedAt ? new Date( ride.requestedAt ).toLocaleString() : "N/A"}</p>
           </div>
           {ride.acceptedAt && (
             <div>
               <p className="text-lg font-semibold">Accepted At</p>
-              <p className="text-sm text-gray-600">{new Date(ride.acceptedAt).toLocaleString()}</p>
+              <p className="text-sm text-gray-600">{new Date( ride.acceptedAt ).toLocaleString()}</p>
             </div>
           )}
           <Separator />

@@ -44,7 +44,7 @@ export default function RideMap({
   routeData = [],
 }: RideMapProps) {
   const DEFAULT_CENTER: LatLngExpression = [22.7643863, 90.34924975706107];
-  console.log(routeData, onlineDrivers)
+  // console.log(routeData, onlineDrivers)
 
   const routePositions: LatLngExpression[] = routeData.flatMap(segment => {
     if (!segment?.routes?.length) return [];

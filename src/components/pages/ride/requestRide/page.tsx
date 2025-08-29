@@ -54,8 +54,6 @@ export default function RequestRide() {
   const { data: onlineDrivers } = useGetOnlineDriversQuery();
   const [ requestRide ] = useRequestRideMutation();
   // console.log( onlineDrivers?.data, coords )
-  
-  
 
   // Auto-update pickup if using current location
   useEffect( () =>
@@ -84,6 +82,8 @@ export default function RequestRide() {
           steps: true,
           overview: "full",
         } ).unwrap();
+
+        console.log( response.data.routes[ 0 ].distance / 1000 , "km");
 
         console.log( "Route data:", response.data.routes );
         rideTypesDataRef.current = {
@@ -155,11 +155,12 @@ export default function RequestRide() {
     // console.log( "Destination:", destinationCoords, destination );
     
     const payload = {
-      fare: rideTypesDataRef.current.fare[rideType].toFixed(2),
+      fare: rideTypesDataRef.current.fare[rideType].toFixed(2) || 20,
       lat: destinationCoords.lat,
       lng: destinationCoords.lng,
       picLat: pickupCoords?.lat,
-      picLng: pickupCoords?.lng
+      picLng: pickupCoords?.lng,
+      distanceInKm: Number((rideTypesDataRef.current.distance/1000).toFixed(2)) || 100
     }
 
     const toastId = showToast( { type: "loading", message: "Requesting a ride!" } );
@@ -216,7 +217,7 @@ export default function RequestRide() {
               </CardTitle>
               {
                 !coords && useCurrentLocation && (
-                  <p className="text-sm text-pink-400 font-mono py-5 leading-tight">NOTE : You have not permitted your device location to the app! Or maybe you are location is not supported for the reverse geo api!! Please allow location or give permission to the website!! for better result reload the page after permitted the location service!! else you better enter manually coord/location info at the input box!!</p>
+                  <p className="text-sm text-pink-400 font-mono py-5 leading-tight">NOTE : You have not permitted your device location to the app! Or maybe your location is not supported for the reverse geo api!! Please allow location or give permission to the website!! for better result reload the page after permitted the location service!! else you better enter manually coord/location info at the input box!!</p>
                 )
               }
              

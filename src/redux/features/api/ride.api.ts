@@ -87,7 +87,7 @@ export const rideApi = baseApi.injectEndpoints( {
             revalidateTags: [ "RIDES" ]
         } ),
 
-        getUserRides: builder.query<ApiResponse<Ride[]>,{ page?: number; limit?: number; search?: string; sort?: string; status?: string }>( {
+        getUserRides: builder.query<ApiResponse<Ride[]>, { page?: number; limit?: number; search?: string; sort?: string; status?: string }>( {
             query: ( params = {} ) =>
             {
                 const urlParams = new URLSearchParams();
@@ -111,7 +111,7 @@ export const rideApi = baseApi.injectEndpoints( {
             providesTags: [ "RIDES" ],
         } ),
         
-        getAllRides: builder.query<ApiResponse<Ride[]>, { page?: number; limit?: number; search?: string; sort?: string }>(
+        getAllRides: builder.query<ApiResponse<Ride[]>, { page?: number; limit?: number; search?: string; sort?: string; status?: string }>(
             {
                 query: ( params = {} ) =>
                 {
@@ -119,17 +119,17 @@ export const rideApi = baseApi.injectEndpoints( {
                     if ( params.page ) urlParams.append( "page", params.page.toString() );
                     if ( params.limit ) urlParams.append( "limit", params.limit.toString() );
                     if ( params.search ) urlParams.append( "search", params.search );
-                    if ( params.status ) urlParams.append( "status", params.status );
+                    if ( params.status ) urlParams.append( "status", params.status ); 
                     if ( params.sort ) urlParams.append( "sort", params.sort );
 
                     return {
-                        url: `/admin/all-rides?${ urlParams.toString() }`,
+                        url: `/admin/all-rides${ urlParams.toString() ? `?${ urlParams.toString() }` : "" }`,
                         method: "GET",
                     };
                 },
                 serializeQueryArgs: ( { endpointName, queryArgs } ) =>
                 {
-                    return `${ endpointName }-${ queryArgs.page }-${ queryArgs.limit }-${ queryArgs.search }-${ queryArgs.sort }`;
+                    return `${ endpointName }-${ queryArgs.page ?? "" }-${ queryArgs.limit ?? "" }-${ queryArgs.search ?? "" }-${ queryArgs.sort ?? "" }-${ queryArgs.status ?? "" }`;
                 },
                 providesTags: [ "RIDES" ],
             } ),

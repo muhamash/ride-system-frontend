@@ -1,7 +1,7 @@
 import { useMyToast } from "@/components/layouts/MyToast";
 import { Button } from "@/components/ui/button";
 import { Tooltip } from "@/components/ui/tooltip";
-import { Facebook, MessageSquare, Share2, Twitter } from "lucide-react";
+import { Facebook, MessageSquare, Share2, Twitter, Phone } from "lucide-react";
 import { useState } from "react";
 
 export default function FloatActions() {
@@ -14,6 +14,8 @@ export default function FloatActions() {
   } | null>(null);
 
   const { showToast } = useMyToast();
+
+  const EMERGENCY_NUMBER = "+880123456789"; 
 
   const handleShareLocation = () => {
     if (!navigator.geolocation) {
@@ -46,6 +48,10 @@ export default function FloatActions() {
     window.open(shareUrls[platform], "_blank");
   };
 
+  const handleEmergencyCall = () => {
+    window.location.href = `tel:${EMERGENCY_NUMBER}`;
+  };
+
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end space-y-3">
       {/* Social Share Buttons */}
@@ -75,7 +81,21 @@ export default function FloatActions() {
         </div>
       )}
 
-      {/* Share Location Toggle Button */}
+      {/* Emergency Contact Button */}
+      {open && (
+        <Tooltip content="Call Emergency">
+          <Button
+            variant="destructive"
+            className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white p-3 rounded-full"
+            onClick={handleEmergencyCall}
+          >
+            <Phone className="h-5 w-5" />
+            Call
+          </Button>
+        </Tooltip>
+      )}
+
+
       {open && (
         <Tooltip content="Share Location">
           <Button
@@ -89,7 +109,6 @@ export default function FloatActions() {
         </Tooltip>
       )}
 
-      {/* Main SOS Toggle */}
       <Button
         onClick={() => {
           setOpen(!open);

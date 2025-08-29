@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import Loading from "@/components/layouts/Loading";
 import Pagination from "@/components/layouts/Pagination";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -7,14 +8,13 @@ import { useGetAllRidesQuery, useGetUserRidesQuery } from "@/redux/features/api/
 import { useEffect, useState } from "react";
 import RideList from "./RideList";
 import TabsComponent from "./TabsComponent";
-import Loading from "@/components/layouts/Loading";
 
 export default function SeeRidesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("ALL");
   const [tab, setTab] = useState<"my" | "all">("my");
-  const itemsPerPage = 5;
+  const itemsPerPage = 3;
 
   const { data: userData, isLoading: userDataLoading } = useUserDataQuery();
   const role = userData?.data?.role;
@@ -31,7 +31,9 @@ export default function SeeRidesPage() {
     limit: itemsPerPage,
     search: searchTerm || undefined,
     status: filterStatus !== "ALL" ? filterStatus : undefined,
-  });
+  } );
+  
+    // console.log(userRidesData)
 
   const ridesToShow =
     role === "ADMIN" && tab === "all"

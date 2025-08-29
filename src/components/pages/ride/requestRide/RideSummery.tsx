@@ -25,7 +25,7 @@ export default function RideSummary({
   rideOptions
 }: RideSummaryProps )
 {
-  console.log(rideData?.fare[rideType], rideType)
+  // console.log(rideData?.fare[rideType], rideType)
   return (
     <Card className="shadow-lg">
       <CardHeader className="pb-3">

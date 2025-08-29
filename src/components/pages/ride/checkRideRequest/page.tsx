@@ -1,9 +1,10 @@
+/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMyToast } from "@/components/layouts/MyToast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useUserDataQuery } from "@/redux/features/api/auth.api";
+import { authApi, useUserDataQuery } from "@/redux/features/api/auth.api";
 import
   {
     rideApi,
@@ -100,22 +101,28 @@ export default function CheckRideRequestPage() {
   }, [driverStatus, fetchRideRequests]);
 
   // Toggle availability
-  const toggleAvailability = async () => {
-    if ([DRIVER_STATUS.NOTAPPROVED, DRIVER_STATUS.RIDING, DRIVER_STATUS.SUSPENDED].includes(driverStatus!)) return;
+  const toggleAvailability = async () =>
+  {
+    if ( [ DRIVER_STATUS.NOTAPPROVED, DRIVER_STATUS.RIDING, DRIVER_STATUS.SUSPENDED ].includes( driverStatus! ) ) return;
 
-    try {
+    try
+    {
       const res = await toggleDriverStatus().unwrap();
-      showToast({ message: "Driver status updated successfully!", type: "success" });
+      showToast( { message: "Driver status updated successfully!", type: "success" } );
 
-      const newStatus = res?.data?.driverStatus ?? 
-        (driverStatus === DRIVER_STATUS.AVAILABLE ? DRIVER_STATUS.UNAVAILABLE : DRIVER_STATUS.AVAILABLE);
-      setDriverStatus(newStatus);
+      const newStatus = res?.data?.driverStatus ??
+        ( driverStatus === DRIVER_STATUS.AVAILABLE ? DRIVER_STATUS.UNAVAILABLE : DRIVER_STATUS.AVAILABLE );
+      setDriverStatus( newStatus );
 
-      if (newStatus === DRIVER_STATUS.AVAILABLE) fetchRideRequests();
-    } catch (error: any) {
-      showToast({ message: error?.data?.message || error.message, type: "error" });
-    } finally {
-      dispatch(rideApi.util.resetApiState());
+      if ( newStatus === DRIVER_STATUS.AVAILABLE ) fetchRideRequests();
+    } catch ( error: any )
+    {
+      showToast( { message: error?.data?.message || error.message, type: "error" } );
+    } finally
+    {
+      dispatch( rideApi.util.resetApiState() );
+      dispatch( authApi.util.resetApiState() );
+      window.location.reload();
     }
   };
 

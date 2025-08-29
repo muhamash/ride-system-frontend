@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import userStatsPage from "@/components/pages/user/userStatsPage";
+import { UserStatsPage } from "@/components/pages/user/userStatsPage";
 import { lazy } from "react";
 
 const RequestRidePage = lazy( () => import( "@/components/pages/ride/requestRide/page" ) );
 const RideInfoPage = lazy( () => import( "@/components/pages/ride/rideInfo/page" ) );
 const CheckRideRequestPage = lazy( () => import( "@/components/pages/ride/checkRideRequest/page" ) );
 const CheckRideStatus = lazy( () => import( "@/components/pages/ride/rideHistory/page" ) );
-const VehicleInfoPage = lazy( () => import( "@/components/pages/user/vehicleInfo/page" ) );
+const VehicleInfoPage = lazy( () => import( "@/components/pages/user/stats/page" ) );
 const UserInfo = lazy( () => import( "@/components/pages/user/userInfo/page" ) );
 const UpdateUserPage = lazy( () => import( "@/components/pages/user/updateUser/page" ) );
 const ControlUserPage = lazy( () => import( "@/components/pages/user/manageAccessUser/page.tsx" ) ); 
@@ -63,18 +63,18 @@ export const navItemLinks = {
           
         },
         {
-          title: "Driver stats",
-          description: "Driver stats and details",
-          url: "/user/driver-stats",
-          roles: [ "DRIVER" ],
-          Component: VehicleInfoPage
+          title: "User stats",
+          description: "User stats and details for individuals",
+          url: "/user/user-stats",
+          roles: [ "DRIVER" , "RIDER", "ADMIN"],
+          Component: UserStatsPage
         },
         {
           title: "All user and driver stats",
           description: "Check all user and driver stats",
           url: "/ride/check-stats",
           roles: [ "ADMIN" ],
-          Component: userStatsPage
+          // Component: userStatsPage
         },
         {
           title: "Control user",

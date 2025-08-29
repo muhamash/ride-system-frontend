@@ -25,7 +25,7 @@ export function calculateFare ( distance: number, type: string )
 {
   
   const baseFare = type === "premium" ? 50 : 30; 
-  const perKmRate = type === "premium" ? 18 : 12; // Taka per km
+  const perKmRate = type === "premium" ? 18 : 12;
 
   return baseFare + (distance / 1000) * perKmRate;
 }
