@@ -92,9 +92,17 @@ export const rideApi = baseApi.injectEndpoints( {
                 method: "GET",
             } ),
             providesTags: ["RIDES"]
-        }),
+        } ),
+        
+        getAllRides: builder.query( {
+            query: () => ( {
+                url: `/admin/all-rides`,
+                method: "GET",
+            } ),
+            providesTags: ["RIDES"]
+        } ),
 
     } )
 } );
 
-export const { useCheckRideRequestMutation, useToggleDriverStatusMutation, useAcceptRideMutation, useGetRideByIdQuery, useCancelRideMutation, useCompleteRideMutation, useInTransitRideMutation, usePickUpRideMutation, useRequestRideMutation, useGetUserRidesQuery } = rideApi;
+export const { useCheckRideRequestMutation, useToggleDriverStatusMutation, useAcceptRideMutation, useGetRideByIdQuery, useCancelRideMutation, useCompleteRideMutation, useInTransitRideMutation, usePickUpRideMutation, useRequestRideMutation, useGetUserRidesQuery, useGetAllRidesQuery } = rideApi;

@@ -65,22 +65,27 @@ export default function RideInfoPage() {
 
   const ride = rideData?.data;
 
-  if (driverLoading || rideDataLoading) {
-    return <p className="py-3 text-center">Loading...</p>;
-  }
 
-  if (!ride) {
+  const hasValidCoordinates =
+    ride.pickUpLocation?.coordinates?.length === 2 &&
+    ride.dropOffLocation?.coordinates?.length === 2;
+  
+    if (driverLoading || rideDataLoading) {
+    return ( <div className="min-h-screen bg-gray-50 flex items-center justify-center py-30">
+      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Loading ...</p>
+      </div>
+    </div> );
+    }
+  
+    if (!ride) {
     return (
       <p className="py-30 flex items-center justify-center text-4xl text-red-600">
         No ride in the database
       </p>
     );
   }
-
-  // Validate coordinates before passing to map
-  const hasValidCoordinates =
-    ride.pickUpLocation?.coordinates?.length === 2 &&
-    ride.dropOffLocation?.coordinates?.length === 2;
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 py-30">

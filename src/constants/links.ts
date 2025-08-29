@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import userStatsPage from "@/components/pages/user/userStatsPage";
 import { lazy } from "react";
 
 const RequestRidePage = lazy( () => import( "@/components/pages/ride/requestRide/page" ) );
@@ -32,16 +33,9 @@ export const navItemLinks = {
           roles: [ "RIDER", "ADMIN" ],
           Component: RequestRidePage
         },
-        // {
-        //   title: "See ride info",
-        //   description: "Check your ride info",
-        //   url: "/ride/ride-info/:id",
-        //   roles: [ "RIDER", "DRIVER", "ADMIN" ],
-        //   Component: RideInfoPage
-        // },
         {
-          title: "See rides",
-          description: "Check your ride info",
+          title: "See ride history",
+          description: "Check your ride history",
           url: "/ride/ride-info",
           roles: [ "RIDER", "DRIVER", "ADMIN" ],
           Component: SeeRidesPage
@@ -53,13 +47,6 @@ export const navItemLinks = {
           roles: [ "DRIVER" ],
           Component: CheckRideRequestPage
         },
-        // {
-        //   title: "See ride status",
-        //   description: "Check your ride status",
-        //   url: "/ride/ride-status",
-        //   roles: [ "ADMIN" ],
-        //   Component: CheckRideStatus
-        // },
       ],
     },
     {
@@ -82,13 +69,13 @@ export const navItemLinks = {
           roles: [ "DRIVER" ],
           Component: VehicleInfoPage
         },
-        // {
-        //   title: "Update user",
-        //   description: "Manage user accounts",
-        //   url: "/user/update",
-        //   roles: [ "ADMIN" ],
-        //   Component: UpdateUserPage
-        // },
+        {
+          title: "Check all user and driver stats",
+          description: "Check all user and driver stats",
+          url: "/ride/check-stats",
+          roles: [ "ADMIN" ],
+          Component: userStatsPage
+        },
         {
           title: "Control user",
           description: "Manage user access",

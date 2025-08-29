@@ -27,9 +27,6 @@ export default function ManageAccessUser() {
     refetchOnMountOrArgChange: true,
   });
 
-  if (isLoading) return <div className="flex justify-center items-center h-64">Loading users...</div>;
-  if (error) return <div className="flex justify-center items-center h-64 text-red-500">Error loading users</div>;
-
   const users = allUser?.data?.data || [];
   const meta = allUser?.data?.meta || {};
 
@@ -51,6 +48,14 @@ export default function ManageAccessUser() {
     { name: 'Drivers', value: roleCounts.DRIVER, color: '#10b981' },
   ];
 
+    if ( isLoading ) return ( <div className="min-h-screen bg-gray-50 flex items-center justify-center py-30">
+    <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md text-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+      <p className="mt-4 text-gray-600">Loading...</p>
+    </div>
+  </div> );
+  if ( error ) return <div className="flex justify-center items-center h-64 text-red-500">Error loading users</div>;
+  
   return (
     <div className="container mx-auto space-y-6 py-30 px-4">
       <div className="flex justify-between items-center">
