@@ -36,7 +36,7 @@ export const rideApi = baseApi.injectEndpoints( {
             revalidateTags: [ "RIDES" ]
         } ),
         cancelRide: builder.mutation( {
-            query: ( {id}:{id: string} ) =>
+            query: ( { id }: { id: string } ) =>
             ( {
                 url: `/driver/cancel-ride-request/${ id }`,
                 method: "POST",
@@ -44,7 +44,7 @@ export const rideApi = baseApi.injectEndpoints( {
             providesTags: [ "RIDES" ]
         } ),
         getRideById: builder.query( {
-            query: (  { id }: { id: string } ) =>
+            query: ( { id }: { id: string } ) =>
             ( {
                 url: `/admin/ride/${ id }`,
                 method: "GET",
@@ -87,20 +87,20 @@ export const rideApi = baseApi.injectEndpoints( {
         } ),
 
         getUserRides: builder.query( {
-            query: () => ( {
-                url: `/ride/view-user-rides`,
+            query: ( { page = 1, limit = 5, search = "", status = "" } ) => ( {
+                url: `/ride/view-user-rides?page=${ page }&limit=${ limit }&search=${ search }&status=${ status }`,
                 method: "GET",
             } ),
-            providesTags: ["RIDES"]
+            providesTags: [ "RIDES" ],
         } ),
-        
         getAllRides: builder.query( {
-            query: () => ( {
-                url: `/admin/all-rides`,
+            query: ( { page = 1, limit = 5, search = "", status = "" } ) => ( {
+                url: `/admin/all-rides?page=${ page }&limit=${ limit }&search=${ search }&status=${ status }`,
                 method: "GET",
             } ),
-            providesTags: ["RIDES"]
+            providesTags: [ "RIDES" ],
         } ),
+
 
     } )
 } );

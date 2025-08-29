@@ -1,43 +1,65 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import Pagination from "@/components/layouts/Pagination";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUserDataQuery } from "@/redux/features/api/auth.api";
 import { useGetAllRidesQuery, useGetUserRidesQuery } from "@/redux/features/api/ride.api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import RideList from "./RideList";
 import TabsComponent from "./TabsComponent";
 
 export default function SeeRidesPage() {
-  const { data: userRidesData, isLoading: userRidesLoading } = useGetUserRidesQuery();
-  const { data: getAllRides, isLoading: getAllRidesLoading } = useGetAllRidesQuery();
-  const { data: userData, isLoading: userDataLoading } = useUserDataQuery();
-
-  console.log(getAllRides, userRidesData)
-
+  const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [tab, setTab] = useState<"my" | "all">("my");
+  const itemsPerPage = 5;
 
+  const { data: userData, isLoading: userDataLoading } = useUserDataQuery();
   const role = userData?.data?.role;
 
-  const allRidesArray = Array.isArray( getAllRides?.data?.data ) ? getAllRides.data?.data : [];
-  const userRidesArray = Array.isArray( userRidesData?.data?.data ) ? userRidesData.data?.data : [];
+  const { data: userRidesData, isLoading: userRidesLoading } = useGetUserRidesQuery({
+    page: currentPage,
+    limit: itemsPerPage,
+    search: searchTerm,
+    status: filterStatus,
+  });
+
+  const { data: getAllRides, isLoading: getAllRidesLoading } = useGetAllRidesQuery({
+    page: currentPage,
+    limit: itemsPerPage,
+    search: searchTerm,
+    status: filterStatus,
+  });
+
+  const allRidesArray = Array.isArray(getAllRides?.data?.data) ? getAllRides.data.data : [];
+  const userRidesArray = Array.isArray(userRidesData?.data?.data) ? userRidesData.data.data : [];
   const ridesToShow = role === "ADMIN" && tab === "all" ? allRidesArray : userRidesArray;
-  
-  // console.log(ridesToShow)
 
-  const filteredRides = ridesToShow.filter( ( ride: any ) =>
-  {
+  // Filter rides locally
+  const filteredRides = ridesToShow.filter((ride: any) => {
     const matchesSearch =
-      ride.pickUpLocation?.address.toLowerCase().includes( searchTerm.toLowerCase() ) ||
-      ride.dropOffLocation?.address.toLowerCase().includes( searchTerm.toLowerCase() ) ||
-      ride.driverUserName.toLowerCase().includes( searchTerm.toLowerCase() ) ||
-      ride.riderUserName.toLowerCase().includes( searchTerm.toLowerCase() );
+      ride.pickUpLocation?.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ride.dropOffLocation?.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ride.driverUserName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ride.riderUserName?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesStatus = filterStatus === "ALL" || !filterStatus ? true : ride.status === filterStatus;
+    const matchesStatus =
+      filterStatus === "ALL" || !filterStatus ? true : ride.status === filterStatus;
 
     return matchesSearch && matchesStatus;
-  } );
+  });
+
+  const meta =
+    role === "ADMIN" && tab === "all" ? getAllRides?.data?.meta : userRidesData?.data?.meta;
+
+  // Debounce search
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      setCurrentPage(1);
+    }, 400);
+    return () => clearTimeout(delayDebounce);
+  }, [searchTerm]);
 
   const handleTabChange = (value: "my" | "all") => {
     setTab(value);
@@ -47,10 +69,8 @@ export default function SeeRidesPage() {
     <div className="container mx-auto p-4 py-30 space-y-6">
       <h1 className="text-3xl font-bold text-gray-900">Your Ride History</h1>
 
-      {/* Tabs (Only for Admin) */}
-      {role === "ADMIN" && (
-        <TabsComponent tab={tab} handleTabChange={handleTabChange} />
-      )}
+      {/* Tabs (Admin Only) */}
+      {role === "ADMIN" && <TabsComponent tab={tab} handleTabChange={handleTabChange} />}
 
       {/* Search & Filter */}
       <div className="flex flex-col md:flex-row gap-4 mb-4">
@@ -75,6 +95,7 @@ export default function SeeRidesPage() {
         </Select>
       </div>
 
+      {/* Loader */}
       {( userRidesLoading || userDataLoading || getAllRidesLoading ) && (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center py-30">
           <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md text-center">
@@ -84,15 +105,25 @@ export default function SeeRidesPage() {
         </div>
       )}
 
-
       {/* Rides List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredRides && filteredRides.length > 0 ? (
-          filteredRides.map( ( ride: any ) => (
-            <RideList key={ride._id} ride={ride} />
-          ) )
+        {filteredRides.length > 0 ? (
+          filteredRides.map( ( ride: any ) => <RideList key={ride._id} ride={ride} /> )
         ) : (
           <p className="text-gray-500 col-span-full text-center">No rides found.</p>
+        )}
+      </div>
+
+      {/* Pagination */}
+      <div className="w-full mx-auto">
+        {filteredRides.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            totalPages={meta?.totalPage || 1}
+            meta={meta}
+            setCurrentPage={setCurrentPage}
+          />
         )}
       </div>
     </div>

@@ -1,0 +1,1 @@
+import{aw as r,ax as t,ay as l,j as o}from"./index-BoU8ccGb.js";function u(){const{data:a}=r(),{data:e}=t(),{data:s}=l();return console.log(a,s,e),o.jsx("div",{children:"UpdateUserPage"})}export{u as default};
