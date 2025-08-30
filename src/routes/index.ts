@@ -5,9 +5,7 @@ import RegistrationPage from "@/components/pages/auth/registration/page";
 import ContactPage from "@/components/pages/ContactPage";
 import FAQPage from "@/components/pages/FaqPage";
 import FeaturesPage from "@/components/pages/FeaturesPage";
-import Home from "@/components/pages/home/page";
 import NotFoundPage from "@/components/pages/NotFound";
-import RideInfoPage from "@/components/pages/ride/rideInfo/page";
 import UnAuthPage from "@/components/pages/UnAuthPage";
 import { navItemLinks } from "@/constants/links";
 import { UserRole } from "@/constants/userRole";
@@ -17,6 +15,8 @@ import { lazy } from "react";
 import { createBrowserRouter } from "react-router";
 
 const App = lazy( () => import( "@/App" ) );
+const Home = lazy( () => import( "@/components/pages/home/page" ) );
+const RideInfoPage = lazy( () => import( "@/components/pages/ride/rideInfo/page" ) );
 
 const dynamicRoutes =  generateRoutes( navItemLinks );
 
