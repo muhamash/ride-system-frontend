@@ -61,14 +61,14 @@ const Footer = () => {
           </p>
 
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link className="text-gray-400 hover:text-white text-sm transition-colors">
-              Privacy Policy
+            <Link to={"/wrong-contact-information"} className="text-gray-400 hover:text-white text-sm transition-colors">
+              Contact
             </Link>
-            <Link className="text-gray-400 hover:text-white text-sm transition-colors">
-              Terms of Service
+            <Link to={"/faq"} className="text-gray-400 hover:text-white text-sm transition-colors">
+              FAQ
             </Link>
-            <Link className="text-gray-400 hover:text-white text-sm transition-colors">
-              Cookie Policy
+            <Link to={"/about"} className="text-gray-400 hover:text-white text-sm transition-colors">
+              About
             </Link>
           </div>
         </div>

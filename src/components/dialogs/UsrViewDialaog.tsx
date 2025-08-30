@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,358 +14,561 @@ import
     DialogTitle,
     DialogTrigger,
   } from "@/components/ui/dialog";
-import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
 import { useLazyGetUserByIdQuery } from "@/redux/features/api/admin.api";
-import { Car, Mail, MapPin, Navigation, Shield, Star, User } from "lucide-react";
+import
+  {
+    Award,
+    BarChart3,
+    Calendar,
+    Car,
+    Clock,
+    CreditCard,
+    Mail,
+    MapPin,
+    Navigation,
+    Shield,
+    Star,
+    TrendingUp,
+    UserCheck,
+    UserX
+  } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Bar, BarChart, Cell, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 interface UserViewDialogProps {
   userId?: string;
 }
 
-export function UserViewDialog ( { userId }: UserViewDialogProps )
-{
-  
+export function UserViewDialog({ userId }: UserViewDialogProps) {
   const [editOpen, setEditOpen] = useState(false);
-  const [triggerGetUser, { data, isFetching }] = useLazyGetUserByIdQuery();
+  const [triggerGetUser, { data, isFetching, isLoading }] = useLazyGetUserByIdQuery();
 
-  // Trigger fetch only when dialog opens
   useEffect(() => {
     if (editOpen) {
       triggerGetUser(userId);
     }
-  }, [editOpen, userId, triggerGetUser]);
+  }, [editOpen, triggerGetUser, userId]);
 
-  const user = data?.data;
-  
+  const user = data?.data?.user;
+  const stats = data?.data?.stats;
 
-  // Mock map component
-  const MapPreview = ({ coordinates }: { coordinates?: [number, number] }) => {
-    if (!coordinates) {
-      return (
-        <div className="flex items-center justify-center h-40 bg-muted rounded-lg">
-          <p className="text-muted-foreground">No location data available</p>
-        </div>
-      );
-    }
+  const LoadingSpinner = () => (
+    <div className="flex items-center justify-center p-6">
+      <div className="animate-spin h-8 w-8 border-4 border-teal-500 border-t-transparent rounded-full"></div>
+    </div>
+  );
 
-    return (
-      <div className="relative h-40 bg-muted rounded-lg overflow-hidden">
-        <div className="absolute inset-0 bg-teal-50 flex items-center justify-center">
-          <div className="text-center">
-            <MapPin className="w-8 h-8 text-red-500 mx-auto mb-2" />
-            <p className="text-sm font-medium">User Location</p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Coordinates: {coordinates[0].toFixed(4)}, {coordinates[1].toFixed(4)}
-            </p>
-          </div>
-        </div>
-        <div className="absolute bottom-2 right-2">
-          <Button size="sm" variant="outline" className="text-xs">
-            <Navigation className="w-3 h-3 mr-1" />
-            View in Maps
-          </Button>
-        </div>
-      </div>
-    );
-  };
-
-  // Rating stars component
-  const RatingStars = ({ rating, totalReviews }: { rating: number; totalReviews: number }) => {
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
+  const getRatingDistribution = (ratings: any[]) => {
+    const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
     
-    return (
-      <div className="flex items-center gap-2">
-        <div className="flex">
-          {[...Array(5)].map((_, i) => (
-            <Star
-              key={i}
-              className={`w-4 h-4 ${
-                i < fullStars
-                  ? "text-yellow-400 fill-yellow-400"
-                  : i === fullStars && hasHalfStar
-                  ? "text-yellow-400 fill-yellow-400"
-                  : "text-muted"
-              }`}
-            />
-          ))}
-        </div>
-        <span className="text-sm font-medium">{rating.toFixed(1)}</span>
-        <span className="text-sm text-muted-foreground">({totalReviews} reviews)</span>
-      </div>
-    );
+    ratings?.forEach(rating => {
+      const stars = Math.round(rating.value);
+      if (stars >= 1 && stars <= 5) {
+        distribution[stars as keyof typeof distribution]++;
+      }
+    });
+    
+    return Object.entries(distribution).map(([name, value]) => ({
+      name: `${name} star${value !== 1 ? 's' : ''}`,
+      value
+    }));
   };
+
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const getOnlineStatus = (lastOnline: string) => {
+    const lastOnlineDate = new Date(lastOnline);
+    const now = new Date();
+    const diffMinutes = Math.floor((now.getTime() - lastOnlineDate.getTime()) / (1000 * 60));
+    
+    if (diffMinutes < 5) return { status: "Online", variant: "default" as const };
+    if (diffMinutes < 60) return { status: `Last online ${diffMinutes} min ago`, variant: "secondary" as const };
+    if (diffMinutes < 1440) return { status: `Last online ${Math.floor(diffMinutes/60)} hours ago`, variant: "outline" as const };
+    return { status: `Last online ${Math.floor(diffMinutes/1440)} days ago`, variant: "outline" as const };
+  };
+
+  const StatusBadge = ({ status }: { status: string }) => {
+    const statusConfig: Record<string, { variant: "default" | "secondary" | "destructive" | "outline", label: string }> = {
+      AVAILABLE: { variant: "default", label: "Available" },
+      ON_RIDE: { variant: "secondary", label: "On Ride" },
+      OFFLINE: { variant: "outline", label: "Offline" },
+      BLOCKED: { variant: "destructive", label: "Blocked" }
+    };
+    
+    const config = statusConfig[status] || { variant: "outline", label: status };
+    
+    return <Badge variant={config.variant}>{config.label}</Badge>;
+  };
+
+  const onlineStatus = user ? getOnlineStatus(user.lastOnlineAt) : { status: "Unknown", variant: "outline" as const };
 
   return (
-    <Dialog className="z-99" open={editOpen} onOpenChange={setEditOpen}>
+    <Dialog open={editOpen} onOpenChange={setEditOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" className="bg-teal-100 cursor-pointer" variant="outline">
-          View user
-        </Button>
+        <Button size="sm" variant="outline" className="bg-teal-100">View user</Button>
       </DialogTrigger>
-
-      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader className="px-1">
-          <DialogTitle className="text-xl font-bold flex items-center gap-2">
-            <User className="w-5 h-5" />
-            User Details
-          </DialogTitle>
+      <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>User Details</DialogTitle>
           <DialogDescription>
             Comprehensive information for {user?.name}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="mt-4">
-          {isFetching ? (
-            <div className="flex items-center justify-center p-4">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500"></div>
-            </div>
-          ) : !user &&  (
-            <p className="text-red-500">No user data found.</p>
-          )}
-        </div>
-
-        <div className="space-y-4 py-2">
-          {/* User Profile Header */}
-          <Card className="bg-gradient-to-r from-teal-50 to-blue-50 border-0">
-            <CardContent className="p-4">
-              <div className="flex flex-col sm:flex-row items-start gap-4">
-                <Avatar className="w-16 h-16">
-                  <AvatarFallback className="bg-teal-500 text-white text-lg">
-                    {user?.name?.charAt(0) || "U"}
+        {isFetching || isLoading ? (
+          <LoadingSpinner />
+        ) : !user ? (
+          <p className="text-red-500 text-center">No user data found.</p>
+        ) : (
+          <div className="space-y-6">
+            {/* Profile Header */}
+            <Card className="bg-gradient-to-r from-teal-50 to-blue-50 border-0 shadow-sm">
+              <CardContent className="p-6 flex flex-col md:flex-row gap-6 items-start">
+                <Avatar className="w-20 h-20">
+                  <AvatarFallback className="bg-teal-500 text-white text-xl">
+                    {user.name?.[0]?.toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
+                
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold">{user?.name ?? "N/A"}</h3>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                    <Mail className="w-4 h-4" />
-                    {user?.email ?? "N/A"}
+                  <div className="flex flex-wrap items-center gap-3 mb-3">
+                    <h3 className="text-2xl font-bold">{user.name}</h3>
+                    <Badge variant="secondary" className="gap-1">
+                      <Shield className="w-3 h-3" /> {user.role}
+                    </Badge>
+                    <Badge variant={user.isBlocked ? "destructive" : "default"}>
+                      {user.isBlocked ? "Blocked" : "Active"}
+                    </Badge>
+                    <Badge variant={onlineStatus.variant}>
+                      {user.isOnline ? "Online" : onlineStatus.status}
+                    </Badge>
                   </div>
-                  <div className="flex flex-wrap items-center gap-2 mt-3">
-                    <Badge variant="secondary" className="flex items-center gap-1">
-                      <Shield className="w-3 h-3" />
-                      {user?.role ?? "N/A"}
-                    </Badge>
-                    <Badge variant={user?.isBlocked ? "destructive" : "default"}>
-                      {user?.isBlocked ? "Blocked" : "Active"}
-                    </Badge>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Mail className="w-4 h-4 text-muted-foreground" />
+                      <span>{user.email}</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-2 text-sm">
+                      <Calendar className="w-4 h-4 text-muted-foreground" />
+                      <span>Joined {formatDate(user.createdAt)}</span>
+                    </div>
+                    
+                    {user.driver?.username && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <UserCheck className="w-4 h-4 text-muted-foreground" />
+                        <span>Driver ID: {user.driver.username}</span>
+                      </div>
+                    )}
+                    
+                    {user.driver?.driverStatus && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <Navigation className="w-4 h-4 text-muted-foreground" />
+                        <StatusBadge status={user.driver.driverStatus} />
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Left Column - Basic Info */}
-            <div className="lg:col-span-2 space-y-4">
-              {/* Contact Information */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <User className="w-4 h-4" />
-                    Contact Information
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Phone Number</p>
-                      <p className="text-base">{user?.phone ?? "Not provided"}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Joined Date</p>
-                      <p className="text-base">{user?.joinDate ? new Date(user.joinDate).toLocaleDateString() : "N/A"}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Last Active</p>
-                      <p className="text-base">{user?.lastActive ? new Date(user.lastActive).toLocaleDateString() : "N/A"}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Driver Specific Info */}
-              {user?.role === "DRIVER" && user?.driver && (
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <Car className="w-4 h-4" />
-                      Driver Information
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Driver Status</p>
-                        <p className="text-base capitalize">{user?.driver.driverStatus?.toLowerCase() ?? "N/A"}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Total Rides</p>
-                        <p className="text-base">{user.driver.totalRides ?? 0}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Total Earnings</p>
-                        <p className="text-base font-semibold">${user.driver.totalEarnings?.toFixed(2) ?? "0.00"}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Acceptance Rate</p>
-                        <div className="flex items-center gap-2">
-                          <Progress value={user.driver.acceptanceRate || 0} className="h-2 w-24" />
-                          <span className="text-sm">{user.driver.acceptanceRate || 0}%</span>
+            {/* Main Content Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left Column */}
+              <div className="space-y-6">
+                {/* Driver Stats */}
+                {user.role === "DRIVER" && user.driver && (
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="flex items-center gap-2">
+                        <BarChart3 className="w-5 h-5" />
+                        Driver Performance
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1 p-3 bg-muted/30 rounded-lg">
+                          <p className="text-sm font-medium text-muted-foreground">Total Earnings</p>
+                          <p className="text-2xl font-bold text-teal-600 flex items-center gap-1">
+                            {(user.driver.totalEarnings || 0).toLocaleString('en-US', {
+                              style: 'currency',
+                              currency: 'USD',
+                              minimumFractionDigits: 0,
+                              maximumFractionDigits: 2
+                            })}
+                          </p>
                         </div>
-                      </div>
-                    </div>
-
-                     
-                    {user?.driver?.rating && (
-                      <>
-                        <Separator />
-                        <div>
-                          <h5 className="font-medium text-foreground mb-2">Ratings</h5>
-                          <RatingStars 
-                            rating={user.driver.rating.averageRating || 0} 
-                            totalReviews={user.driver.rating.totalRating || 0} 
-                          />
-                          
-                          {/* Rating breakdown */}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
-                            {user.driver.rating.breakdown && Object.entries(user.driver.rating.breakdown).map(([category, score]) => (
-                              <div key={category} className="flex items-center justify-between text-sm">
-                                <span className="capitalize">{category.replace(/([A-Z])/g, ' $1').toLowerCase()}:</span>
-                                <div className="flex items-center gap-1">
-                                  <span className="font-medium">{score}/5</span>
-                                  <Progress value={score * 20} className="h-1.5 w-16" />
-                                </div>
-                              </div>
+                        
+                        <div className="space-y-1 p-3 bg-muted/30 rounded-lg">
+                          <p className="text-sm font-medium text-muted-foreground">Total Rides</p>
+                          <p className="text-2xl font-bold text-blue-600">{user.driver.totalRides || 0}</p>
+                        </div>
+                        
+                        <div className="space-y-1 p-3 bg-muted/30 rounded-lg">
+                          <p className="text-sm font-medium text-muted-foreground">Average Rating</p>
+                          <div className="flex items-center gap-1">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`w-4 h-4 ${i < (user.driver.rating?.averageRating || 0) ? "text-yellow-400 fill-yellow-400" : "text-muted-foreground"}`}
+                              />
                             ))}
+                            <span className="text-lg font-bold ml-1">
+                              {user.driver.rating?.averageRating?.toFixed(1) || '0.0'}
+                            </span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            ({user.driver.rating?.totalRatings || 0} reviews)
+                          </p>
+                        </div>
+                        
+                        <div className="space-y-1 p-3 bg-muted/30 rounded-lg">
+                          <p className="text-sm font-medium text-muted-foreground">Approval Status</p>
+                          <div className="flex items-center gap-1">
+                            {user.driver.isApproved ? (
+                              <>
+                                <UserCheck className="w-4 h-4 text-green-600" />
+                                <span className="font-medium">Approved</span>
+                              </>
+                            ) : (
+                              <>
+                                <UserX className="w-4 h-4 text-amber-600" />
+                                <span className="font-medium">Pending Approval</span>
+                              </>
+                            )}
                           </div>
                         </div>
-                      </>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
+                      </div>
+                      
+                      {/* Rating Distribution Chart */}
+                      {user.driver.rating?.ratings && user.driver.rating.ratings.length > 0 && (
+                        <div className="mt-4">
+                          <h4 className="text-sm font-medium mb-2">Rating Distribution</h4>
+                          <div className="h-40">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <PieChart>
+                                <Pie
+                                  data={getRatingDistribution(user.driver.rating.ratings)}
+                                  cx="50%"
+                                  cy="50%"
+                                  innerRadius={40}
+                                  outerRadius={60}
+                                  paddingAngle={2}
+                                  dataKey="value"
+                                  label={({ name, percent }) => 
+                                    `${name} (${(percent * 100).toFixed(0)}%)`
+                                  }
+                                >
+                                  {getRatingDistribution(user.driver.rating.ratings).map((entry, index) => (
+                                    <Cell 
+                                      key={`cell-${index}`} 
+                                      fill={[
+                                        '#f87171', // red for 1-star
+                                        '#fb923c', // orange for 2-star
+                                        '#fbbf24', // amber for 3-star
+                                        '#a3e635', // lime for 4-star
+                                        '#4ade80'  // green for 5-star
+                                      ][index]} 
+                                    />
+                                  ))}
+                                </Pie>
+                                <Tooltip />
+                              </PieChart>
+                            </ResponsiveContainer>
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
 
-              {/* Vehicle Info */}
-              {user?.vehicleInfo && (
+                {/* Rider Stats */}
+                {(user.role === "RIDER" || user.role === "ADMIN") && stats && (
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5" />
+                        Ride Statistics
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="space-y-1 p-3 bg-muted/30 rounded-lg">
+                          <p className="text-sm font-medium text-muted-foreground">Total Trips</p>
+                          <p className="text-2xl font-bold text-blue-600">{stats.totalTrips || 0}</p>
+                        </div>
+                        
+                        <div className="space-y-1 p-3 bg-muted/30 rounded-lg">
+                          <p className="text-sm font-medium text-muted-foreground">Total Spent</p>
+                          <p className="text-2xl font-bold text-teal-600 flex items-center gap-1">
+
+                            {(stats.totalSpent || 0).toLocaleString('en-US', {
+                              style: 'currency',
+                              currency: 'USD',
+                              minimumFractionDigits: 0,
+                              maximumFractionDigits: 2
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {stats.tripHistoryChart && stats.tripHistoryChart.length > 0 && (
+                        <>
+                          <h4 className="text-sm font-medium mb-2">Spending Trend</h4>
+                          <div className="h-40">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <BarChart data={stats.tripHistoryChart}>
+                                <XAxis 
+                                  dataKey="date" 
+                                  tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                  fontSize={12}
+                                />
+                                <YAxis fontSize={12} />
+                                <Tooltip 
+                                  formatter={(value) => [
+                                    Number(value).toLocaleString('en-US', {
+                                      style: 'currency',
+                                      currency: 'USD'
+                                    }),
+                                    'Fare'
+                                  ]}
+                                  labelFormatter={(label) => `Date: ${new Date(label).toLocaleDateString()}`}
+                                />
+                                <Bar dataKey="fare" fill="#0d9488" radius={[4, 4, 0, 0]} />
+                              </BarChart>
+                            </ResponsiveContainer>
+                          </div>
+                        </>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Location Info */}
                 <Card>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <Car className="w-4 h-4" />
-                      Vehicle Information
+                    <CardTitle className="flex items-center gap-2">
+                      <MapPin className="w-5 h-5" />
+                      Location Details
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Model</p>
-                        <p className="text-base">{user.vehicleInfo.model ?? "N/A"}</p>
+                    {user?.location ? (
+                      <div className="space-y-3">
+                        <div className="flex items-start gap-2">
+                          <Navigation className="w-4 h-4 mt-1 text-muted-foreground" />
+                          <div>
+                            <p className="text-sm font-medium">Coordinates</p>
+                            <p className="text-sm">
+                              {user.location.coordinates?.[0]?.toFixed(6)}, {user.location.coordinates?.[1]?.toFixed(6)}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-start gap-2">
+                          <MapPin className="w-4 h-4 mt-1 text-muted-foreground" />
+                          <div>
+                            <p className="text-sm font-medium">Address</p>
+                            <p className="text-sm">{user.location.address}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-start gap-2">
+                          <Clock className="w-4 h-4 mt-1 text-muted-foreground" />
+                          <div>
+                            <p className="text-sm font-medium">Last Location Update</p>
+                            <p className="text-sm">{formatDate(user.updatedAt)}</p>
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Year</p>
-                        <p className="text-base">{user.vehicleInfo.year ?? "N/A"}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">License Plate</p>
-                        <p className="text-base font-mono">{user.vehicleInfo.plateNumber ?? "N/A"}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">Color</p>
-                        <p className="text-base">{user.vehicleInfo.color ?? "N/A"}</p>
-                      </div>
-                    </div>
-                    {user.vehicleInfo.verificationStatus && (
-                      <div className="mt-4 pt-4 border-t">
-                        <p className="text-sm font-medium text-muted-foreground">Verification Status</p>
-                        <Badge
-                          variant={
-                            user.vehicleInfo.verificationStatus === "APPROVED" 
-                              ? "default"
-                              : user.vehicleInfo.verificationStatus === "PENDING"
-                              ? "secondary"
-                              : "destructive"
-                          }
-                          className="mt-1"
-                        >
-                          {user.vehicleInfo.verificationStatus}
-                        </Badge>
-                      </div>
+                    ) : (
+                      <p className="text-muted-foreground">No location data available</p>
                     )}
                   </CardContent>
                 </Card>
-              )}
-            </div>
+              </div>
 
-            {/* Right Column - Location & Stats */}
-            <div className="space-y-4">
-              {/* Location Map */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <MapPin className="w-4 h-4" />
-                    Location
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {user?.location ? (
-                    <>
-                      <MapPreview coordinates={user.location.coordinates as [number, number]} />
-                      <div className="mt-4">
-                        <p className="text-sm font-medium text-muted-foreground">Address</p>
-                        <p className="text-base mt-1">{user.location.address ?? "N/A"}</p>
+              {/* Right Column */}
+              <div className="space-y-6">
+                {/* Vehicle Information */}
+                {user.role === "DRIVER" && user.driver?.vehicleInfo && (
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="flex items-center gap-2">
+                        <Car className="w-5 h-5" />
+                        Vehicle Information
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <CreditCard className="w-4 h-4 text-muted-foreground" />
+                          <div>
+                            <p className="text-sm font-medium">License Plate</p>
+                            <p className="text-sm">{user.driver.vehicleInfo.plateNumber}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <Award className="w-4 h-4 text-muted-foreground" />
+                          <div>
+                            <p className="text-sm font-medium">Model</p>
+                            <p className="text-sm">{user.driver.vehicleInfo.model}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <Shield className="w-4 h-4 text-muted-foreground" />
+                          <div>
+                            <p className="text-sm font-medium">License Number</p>
+                            <p className="text-sm">{user.driver.vehicleInfo.license}</p>
+                          </div>
+                        </div>
                       </div>
-                      {user.location.lastUpdated && (
-                        <p className="text-xs text-muted-foreground mt-2">
-                          Last updated: {new Date(user.location.lastUpdated).toLocaleDateString()}
-                        </p>
-                      )}
-                    </>
-                  ) : (
-                    <div className="flex items-center justify-center h-40 bg-muted rounded-lg">
-                      <p className="text-muted-foreground">No location data available</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+                    </CardContent>
+                  </Card>
+                )}
 
-              {/* Stats Card */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base">Quick Stats</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Completed Trips</span>
-                      <span className="font-medium">{user?.stats?.completedTrips || 0}</span>
+                {/* Earnings/Rides Chart */}
+                {user.role === "DRIVER" && user.driver && (
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5" />
+                        Earnings Trend
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {user.driver.rides && user.driver.rides.length > 0 ? (
+                        <div className="h-60">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <LineChart
+                              data={user.driver.rides
+                                .slice()
+                                .sort((a: any, b: any) => 
+                                  new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+                                )
+                                .map((ride: any) => ({
+                                  date: ride.createdAt,
+                                  fare: ride.fare,
+                                  dateFormatted: new Date(ride.createdAt).toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric'
+                                  })
+                                }))}
+                            >
+                              <XAxis 
+                                dataKey="dateFormatted"
+                                fontSize={12}
+                              />
+                              <YAxis 
+                                fontSize={12}
+                                tickFormatter={(value) => `$${value}`}
+                              />
+                              <Tooltip 
+                                formatter={(value) => [
+                                  Number(value).toLocaleString('en-US', {
+                                    style: 'currency',
+                                    currency: 'USD'
+                                  }),
+                                  'Earnings'
+                                ]}
+                                labelFormatter={(label, payload) => {
+                                  if (payload && payload.length > 0) {
+                                    return `Date: ${payload[0].payload.dateFormatted}`;
+                                  }
+                                  return `Date: ${new Date(label).toLocaleDateString()}`;
+                                }}
+                              />
+                              <Line 
+                                type="monotone" 
+                                dataKey="fare" 
+                                stroke="#0d9488" 
+                                strokeWidth={2}
+                                dot={{ r: 3 }}
+                                activeDot={{ r: 6 }}
+                              />
+                            </LineChart>
+                          </ResponsiveContainer>
+                        </div>
+                      ) : (
+                        <p className="text-muted-foreground text-center py-8">No ride data available</p>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Account Status */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2">
+                      <Shield className="w-5 h-5" />
+                      Account Status
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium">Registration Date</span>
+                        <span className="text-sm">{formatDate(user.createdAt)}</span>
+                      </div>
+                      
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium">Last Updated</span>
+                        <span className="text-sm">{formatDate(user.updatedAt)}</span>
+                      </div>
+                      
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium">Block Status</span>
+                        <Badge variant={user.isBlocked ? "destructive" : "default"}>
+                          {user.isBlocked ? "Blocked" : "Active"}
+                        </Badge>
+                      </div>
+                      
+                      {user.role === "DRIVER" && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium">Approval Status</span>
+                          <Badge variant={user.driver?.isApproved ? "default" : "secondary"}>
+                            {user.driver?.isApproved ? "Approved" : "Pending Approval"}
+                          </Badge>
+                        </div>
+                      )}
+                      
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium">Online Status</span>
+                        <Badge variant={onlineStatus.variant}>
+                          {user.isOnline ? "Online" : "Offline"}
+                        </Badge>
+                      </div>
+                      
+                      {!user.isOnline && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium">Last Online</span>
+                          <span className="text-sm">{formatDate(user.lastOnlineAt)}</span>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Cancellation Rate</span>
-                      <span className="font-medium">{user?.stats?.cancellationRate || 0}%</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Response Time</span>
-                      <span className="font-medium">{user?.stats?.avgResponseTime || 0}s</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
-        <DialogFooter className="px-1">
+        <DialogFooter>
           <DialogClose asChild>
             <Button variant="outline">Close</Button>
           </DialogClose>
-          {user?.role === "DRIVER" && (
-            <Button className="bg-teal-600 hover:bg-teal-700">
-              View Full Profile
-            </Button>
-          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
