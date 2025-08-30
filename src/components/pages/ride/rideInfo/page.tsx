@@ -91,10 +91,10 @@ export default function RideInfoPage() {
               Ride Details
               <Badge
                 className={`ml-3 ${ ride.status === "ACCEPTED"
-                    ? "bg-green-500"
-                    : ride.status === "PENDING"
-                      ? "bg-yellow-500"
-                      : "bg-gray-500"
+                  ? "bg-green-500"
+                  : ride.status === "PENDING"
+                    ? "bg-yellow-500"
+                    : "bg-gray-500"
                   }`}
               >
                 {ride.status}
@@ -119,9 +119,9 @@ export default function RideInfoPage() {
           
           {
             ride.status !== "COMPLETED" && (
-          <FloatEmergencyContact />
-          )
-              }
+              <FloatEmergencyContact latitude={ride?.pickUpLocation?.coordinates[ 0 ]} longitude={ride?.pickUpLocation?.coordinates[ 1 ]} />
+            )
+          }
           
           <div>
             <p className="text-lg font-semibold">Rider</p>

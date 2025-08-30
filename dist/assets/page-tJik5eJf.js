@@ -1,1 +1,0 @@
-import{ax as r,ay as t,az as l,j as o}from"./index-HgAHZzay.js";function u(){const{data:a}=r(),{data:e}=t(),{data:s}=l();return console.log(a,s,e),o.jsx("div",{children:"UpdateUserPage"})}export{u as default};

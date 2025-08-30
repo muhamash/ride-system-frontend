@@ -1,10 +1,16 @@
 import { useMyToast } from "@/components/layouts/MyToast";
 import { Button } from "@/components/ui/button";
 import { Tooltip } from "@/components/ui/tooltip";
-import { Facebook, MessageSquare, Share2, Twitter, Phone } from "lucide-react";
+import { Facebook, MessageSquare, Phone, Share2, Twitter } from "lucide-react";
 import { useState } from "react";
 
-export default function FloatActions() {
+interface IFloatActions
+{
+  latitude: number;
+  longitude: number;
+}
+
+export default function FloatActions({ latitude, longitude }: IFloatActions ) {
   const [open, setOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false); 
   const [shareUrls, setShareUrls] = useState<{
@@ -17,33 +23,26 @@ export default function FloatActions() {
 
   const EMERGENCY_NUMBER = "+880123456789"; 
 
-  const handleShareLocation = () =>
+  const handleShareLocation = ( ) =>
   {
     showToast( { type: "info", message: "Recheck that you have allowed me your location information!" } );
     
-    if (!navigator.geolocation) {
-      showToast({ type: "danger", message: "Geolocation not supported" });
+    if ( !latitude || !longitude )
+    {
+      showToast( { type: "danger", message: "Geolocation not supported" } );
       return;
     }
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        const googleMapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
-        const encodedLink = encodeURIComponent(googleMapsLink);
+    const googleMapsLink = `https://www.google.com/maps?q=${ latitude },${ longitude }`;
+    const encodedLink = encodeURIComponent( googleMapsLink );
 
-        setShareUrls({
-          whatsapp: `https://wa.me/?text=Hey i am riding on Let's Ride web app developed by github.com/muhamash; for security i am sharing  my location for testing purpose: ${encodedLink}`,
-          twitter: `https://twitter.com/intent/tweet?text=My location: ${encodedLink}`,
-          facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedLink}`,
-        });
+    setShareUrls( {
+      whatsapp: `https://wa.me/?text=Hey i am riding on Let's Ride web app developed by github.com/muhamash; for security i am sharing  my location for testing purpose: ${ encodedLink }`,
+      twitter: `https://twitter.com/intent/tweet?text=My location: ${ encodedLink }`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${ encodedLink }`,
+    } );
 
-        setShareOpen((prev) => !prev);
-      },
-      () => {
-        showToast({ type: "danger", message: "Please allow location access" });
-      }
-    );
+    setShareOpen( ( prev ) => !prev );
   };
 
   const handleSocialClick = (platform: "whatsapp" | "twitter" | "facebook") => {
