@@ -17,7 +17,10 @@ export default function FloatActions() {
 
   const EMERGENCY_NUMBER = "+880123456789"; 
 
-  const handleShareLocation = () => {
+  const handleShareLocation = () =>
+  {
+    showToast( { type: "info", message: "Recheck that you have allowed me your location information!" } );
+    
     if (!navigator.geolocation) {
       showToast({ type: "danger", message: "Geolocation not supported" });
       return;
