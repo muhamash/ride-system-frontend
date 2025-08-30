@@ -9,6 +9,26 @@ A scalable, production-grade, and fully responsive **ride booking platform** sim
 [**Backend Code base**] (https://github.com/muhamash/Ride-Booking-System.git)
 ---
 
+---
+
+
+### Demo credentials
+
+## Admin
+email : ash@test.admin
+password : ash@test.adminM
+
+## Rider
+email : ash@test.rider
+password : ash@test.riderM
+
+## Driver
+email : ash@test.driver
+password : ash@test.driverM
+
+
+---
+
 ## 📖 Project Overview  
 This project provides a **role-based frontend application** for **Riders**, **Drivers**, and **Admins**.  
 It interacts with a backend API to offer ride booking, real-time tracking, user management, analytics, and more, with a polished and intuitive user interface.  
@@ -137,8 +157,7 @@ src/
 ## 📝 Additional Notes  
 - **Lazy-loading** for better performance.  
 - **Role-based access** using HOCs & conditional rendering.  
-- **Form validation** with clear error messages.  
-- **Meaningful commit history** with at least 10 commits.  
+- **Form validation** with clear error messages.    
 
 ---
 
