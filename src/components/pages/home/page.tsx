@@ -350,11 +350,11 @@ const Home = () =>
                 </div>
                 <p className="text-gray-700 mb-6 italic">"{testimonial.comment}"</p>
                 <div className="flex items-center">
-                  <img
+                  {/* <img
                     src={testimonial.image}
                     alt={testimonial.name}
                     className="w-12 h-12 rounded-full mr-4 object-cover"
-                  />
+                  /> */}
                   <div>
                     <div className="font-bold text-gray-900">{testimonial.name}</div>
                     <div className="text-sm text-gray-600">{testimonial.role}</div>
