@@ -62,13 +62,13 @@ export const navItemLinks = {
           Component: UserInfo
           
         },
-        {
-          title: "User stats",
-          description: "User stats and details for individuals",
-          url: "/user/user-stats",
-          roles: [ "DRIVER" , "RIDER", "ADMIN"],
-          Component: UserStatsPage
-        },
+        // {
+        //   title: "User stats",
+        //   description: "User stats and details for individuals",
+        //   url: "/user/user-stats",
+        //   roles: [ "DRIVER" , "RIDER", "ADMIN"],
+        //   Component: UserStatsPage
+        // },
         {
           title: "All user and driver stats",
           description: "Check all user and driver stats",

@@ -105,8 +105,6 @@ export const useContinuousLocation = ( userId: string ) =>
         };
     }, [startTracking, userId] );
 
-    
-
     console.log("location fetching", coords)
 
     return { coords, error, retry: startTracking };
